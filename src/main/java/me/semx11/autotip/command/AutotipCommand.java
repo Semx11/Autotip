@@ -158,10 +158,9 @@ public class AutotipCommand extends AUniversalCommand {
                     ClientMessage.separator();
                     ClientMessage.send(ChatColor.GOLD + "What's new in Autotip v" + Autotip.VERSION
                             + ":");
-                    Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog()
-                            .forEach(s -> {
-                                ClientMessage.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s);
-                            });
+                    Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog().forEach(
+                            s -> ClientMessage
+                                    .send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
                     ClientMessage.separator();
                     break;
                 case "update":
