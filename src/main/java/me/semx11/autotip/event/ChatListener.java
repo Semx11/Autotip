@@ -96,9 +96,8 @@ public class ChatListener {
             }
         }
 
-        if (LimboCommand.executed && msg.startsWith("A kick occurred in your connection") && msg
-                .contains(
-                        "Illegal characters")) {
+        if (LimboCommand.executed && msg.startsWith("A kick occurred in your connection") &&
+                msg.contains("Illegal characters")) {
             event.setCanceled(true);
             LimboCommand.executed = false;
         }

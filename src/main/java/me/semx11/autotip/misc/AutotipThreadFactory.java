@@ -9,7 +9,7 @@ public class AutotipThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        return new Thread(r, "AutotipThread-" + threadNumber.getAndIncrement());
+        return new Thread(r, "Autotip" + threadNumber.getAndIncrement());
     }
 
 }
