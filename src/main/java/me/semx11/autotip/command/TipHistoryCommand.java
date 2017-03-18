@@ -1,13 +1,12 @@
 package me.semx11.autotip.command;
 
+import java.util.Collections;
+import java.util.List;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.ClientMessage;
 import me.semx11.autotip.util.TimeUtil;
 import net.minecraft.command.ICommandSender;
-
-import java.util.Collections;
-import java.util.List;
 
 public class TipHistoryCommand extends AUniversalCommand {
 
@@ -37,15 +36,17 @@ public class TipHistoryCommand extends AUniversalCommand {
             int page = 1;
             int pages = (int) Math.ceil((double) TipTracker.tipsSentHistory.size() / 7.0);
 
-            if (args.length > 0) try {
-                page = Integer.parseInt(args[0]);
-            } catch (NumberFormatException ignored) {
-                page = -1;
+            if (args.length > 0) {
+                try {
+                    page = Integer.parseInt(args[0]);
+                } catch (NumberFormatException ignored) {
+                    page = -1;
+                }
             }
 
-            if (page < 1 || page > pages)
+            if (page < 1 || page > pages) {
                 ClientMessage.send(ChatColor.RED + "Invalid page number.");
-            else {
+            } else {
                 ClientMessage.separator();
                 ClientMessage.send(ChatColor.GOLD + "Tip History " + ChatColor.GRAY
                         + "[Page " + page + " of " + pages + "]" + ChatColor.GOLD + ":");

@@ -1,21 +1,20 @@
 package me.semx11.autotip.util;
 
+import static me.semx11.autotip.util.ReflectionUtil.getClazz;
+import static me.semx11.autotip.util.ReflectionUtil.getConstructor;
+import static me.semx11.autotip.util.ReflectionUtil.getEnum;
+import static me.semx11.autotip.util.ReflectionUtil.getField;
+import static me.semx11.autotip.util.ReflectionUtil.getMethod;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.net.SocketAddress;
 import me.semx11.autotip.Autotip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.net.SocketAddress;
-
-import static me.semx11.autotip.util.ReflectionUtil.getClazz;
-import static me.semx11.autotip.util.ReflectionUtil.getConstructor;
-import static me.semx11.autotip.util.ReflectionUtil.getEnum;
-import static me.semx11.autotip.util.ReflectionUtil.getField;
-import static me.semx11.autotip.util.ReflectionUtil.getMethod;
 
 public class UniversalUtil {
 
@@ -56,7 +55,8 @@ public class UniversalUtil {
                     break;
             }
             // Original method name: getRemoteAddress
-            address = (SocketAddress) getMethod(networkManager.getClass(), "func_74430_c").invoke(networkManager);
+            address = (SocketAddress) getMethod(networkManager.getClass(), "func_74430_c")
+                    .invoke(networkManager);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -79,7 +79,8 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
-                    component = getMethod(ClientChatReceivedEvent.class, "getMessage").invoke(event);
+                    component = getMethod(ClientChatReceivedEvent.class, "getMessage")
+                            .invoke(event);
                     break;
             }
             // Original method name: getUnformattedText
@@ -177,45 +178,51 @@ public class UniversalUtil {
                     Object chatClickEvent = null;
                     Object chatHoverEvent = null;
 
-                    if (url != null && !url.equals(""))
+                    if (url != null && !url.equals("")) {
                         chatClickEvent = getConstructor(
                                 getClazz("net.minecraft.event.ClickEvent"),
                                 getClazz("net.minecraft.event.ClickEvent$Action"),
                                 String.class
                         ).newInstance(
-                                getEnum(getClazz("net.minecraft.event.ClickEvent$Action"), "OPEN_URL"),
+                                getEnum(getClazz("net.minecraft.event.ClickEvent$Action"),
+                                        "OPEN_URL"),
                                 url
                         );
+                    }
 
-                    if (hoverText != null && !hoverText.equals(""))
+                    if (hoverText != null && !hoverText.equals("")) {
                         chatHoverEvent = getConstructor(
                                 getClazz("net.minecraft.event.HoverEvent"),
                                 getClazz("net.minecraft.event.HoverEvent$Action"),
                                 getClazz("net.minecraft.util.IChatComponent")
                         ).newInstance(
-                                getEnum(getClazz("net.minecraft.event.HoverEvent$Action"), "SHOW_TEXT"),
+                                getEnum(getClazz("net.minecraft.event.HoverEvent$Action"),
+                                        "SHOW_TEXT"),
                                 createComponent(hoverText)
                         );
+                    }
 
                     Object chatStyle = getConstructor(
                             getClazz("net.minecraft.util.ChatStyle")
                     ).newInstance();
 
                     // Original method name: setChatClickEvent
-                    if (url != null && !url.equals(""))
+                    if (url != null && !url.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.ChatStyle"),
                                 "func_150241_a",
                                 getClazz("net.minecraft.event.ClickEvent")
                         ).invoke(chatStyle, chatClickEvent);
+                    }
 
                     // Original method name: setChatHoverEvent
-                    if (hoverText != null && !hoverText.equals(""))
+                    if (hoverText != null && !hoverText.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.ChatStyle"),
                                 "func_150209_a",
                                 getClazz("net.minecraft.event.HoverEvent")
                         ).invoke(chatStyle, chatHoverEvent);
+                    }
 
                     Object chatComponent = createComponent(text);
 
@@ -234,7 +241,7 @@ public class UniversalUtil {
                     Object clickEvent = null;
                     Object hoverEvent = null;
 
-                    if (url != null && !url.equals(""))
+                    if (url != null && !url.equals("")) {
                         clickEvent = getConstructor(
                                 getClazz("net.minecraft.util.text.event.ClickEvent"),
                                 getClazz("net.minecraft.util.text.event.ClickEvent$Action"),
@@ -244,8 +251,9 @@ public class UniversalUtil {
                                         "OPEN_URL"),
                                 url
                         );
+                    }
 
-                    if (hoverText != null && !hoverText.equals(""))
+                    if (hoverText != null && !hoverText.equals("")) {
                         hoverEvent = getConstructor(
                                 getClazz("net.minecraft.util.text.event.HoverEvent"),
                                 getClazz("net.minecraft.util.text.event.HoverEvent$Action"),
@@ -255,26 +263,29 @@ public class UniversalUtil {
                                         "SHOW_TEXT"),
                                 createComponent(hoverText)
                         );
+                    }
 
                     Object style = getConstructor(
                             getClazz("net.minecraft.util.text.Style")
                     ).newInstance();
 
                     // Original method name: setChatClickEvent
-                    if (url != null && !url.equals(""))
+                    if (url != null && !url.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.text.Style"),
                                 "func_150241_a",
                                 getClazz("net.minecraft.util.text.event.ClickEvent")
                         ).invoke(style, clickEvent);
+                    }
 
                     // Original method name: setChatHoverEvent
-                    if (hoverText != null && !hoverText.equals(""))
+                    if (hoverText != null && !hoverText.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.text.Style"),
                                 "func_150209_a",
                                 getClazz("net.minecraft.util.text.event.HoverEvent")
                         ).invoke(style, hoverEvent);
+                    }
 
                     Object textComponent = createComponent(text);
 

@@ -1,5 +1,12 @@
 package me.semx11.autotip;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import me.semx11.autotip.command.AUniversalCommand;
 import me.semx11.autotip.command.AutotipCommand;
 import me.semx11.autotip.command.LimboCommand;
@@ -22,21 +29,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 @Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.11.2]")
 public class Autotip {
 
     public static final String MODID = "autotip";
     public static final String VERSION_STRING = "2.0.3";
     public static final Version VERSION = new Version(VERSION_STRING);
-    public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(new AutotipThreadFactory());
+    public static final ExecutorService THREAD_POOL = Executors
+            .newCachedThreadPool(new AutotipThreadFactory());
     public static String USER_DIR = "";
 
     public static MinecraftVersion MC_VERSION;
@@ -55,7 +55,8 @@ public class Autotip {
         try {
             MC_VERSION = MinecraftVersion.fromString(UniversalUtil.getMinecraftVersion());
             playerUUID = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
-            USER_DIR = "mods" + File.separator + "autotip" + File.separator + playerUUID + File.separator;
+            USER_DIR = "mods" + File.separator + "autotip" + File.separator + playerUUID
+                    + File.separator;
 
             registerEvents(this, new Tipper(), new HypixelListener(), new ChatListener());
             registerCommands(new AutotipCommand(), new TipHistoryCommand(), new LimboCommand());

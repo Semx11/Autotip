@@ -2,13 +2,12 @@ package me.semx11.autotip.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.io.IOUtils;
 
 public class Versions {
 
@@ -40,7 +39,8 @@ public class Versions {
         instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
     }
 
-    public void addVersion(Version version, VersionInfo.Severity severity, boolean isBetaVersion, String... changelog) {
+    public void addVersion(Version version, VersionInfo.Severity severity, boolean isBetaVersion,
+            String... changelog) {
         versions.add(new VersionInfo(version, severity, isBetaVersion, changelog));
     }
 
@@ -57,7 +57,8 @@ public class Versions {
 
     public List<VersionInfo> getHigherVersionInfo(Version version, Version highest) {
         return versions.stream()
-                .filter(vi -> vi.getVersion().compareTo(version) == 1 && vi.getVersion().compareTo(highest) < 1)
+                .filter(vi -> vi.getVersion().compareTo(version) == 1
+                        && vi.getVersion().compareTo(highest) < 1)
                 .collect(Collectors.toList());
     }
 

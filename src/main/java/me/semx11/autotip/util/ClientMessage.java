@@ -2,7 +2,9 @@ package me.semx11.autotip.util;
 
 public class ClientMessage {
 
-    private static String prefix = ChatColor.GOLD + "A" + ChatColor.YELLOW + "T" + ChatColor.DARK_GRAY + " > " + ChatColor.GRAY;
+    private static String prefix =
+            ChatColor.GOLD + "A" + ChatColor.YELLOW + "T" + ChatColor.DARK_GRAY + " > "
+                    + ChatColor.GRAY;
 
     public static void send(String msg) {
         UniversalUtil.chatMessage(prefix + msg);
@@ -17,7 +19,8 @@ public class ClientMessage {
     }
 
     public static void separator() {
-        UniversalUtil.chatMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "----------------------------------");
+        UniversalUtil.chatMessage(
+                ChatColor.GOLD + "" + ChatColor.BOLD + "----------------------------------");
     }
 
 }

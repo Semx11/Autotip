@@ -1,8 +1,5 @@
 package me.semx11.autotip.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class Host {
 
     private String id;

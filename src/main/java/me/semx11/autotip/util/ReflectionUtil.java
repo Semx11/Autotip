@@ -20,7 +20,9 @@ public class ReflectionUtil {
     private static Map<Class<?>, Map<String, Enum<?>>> loadedEnums = new HashMap<>();
 
     public static Class<?> getClazz(String className) {
-        if (loadedClasses.containsKey(className)) return loadedClasses.get(className);
+        if (loadedClasses.containsKey(className)) {
+            return loadedClasses.get(className);
+        }
 
         try {
             Class clazz = Class.forName(className);
@@ -33,11 +35,15 @@ public class ReflectionUtil {
     }
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
-        if (!loadedConstructors.containsKey(clazz)) loadedConstructors.put(clazz, new HashMap<>());
+        if (!loadedConstructors.containsKey(clazz)) {
+            loadedConstructors.put(clazz, new HashMap<>());
+        }
 
         Map<Class<?>[], Constructor<?>> clazzConstructors = loadedConstructors.get(clazz);
 
-        if (clazzConstructors.containsKey(params)) clazzConstructors.get(params);
+        if (clazzConstructors.containsKey(params)) {
+            clazzConstructors.get(params);
+        }
 
         Constructor<?> constructor = null;
         try {
@@ -52,11 +58,15 @@ public class ReflectionUtil {
     }
 
     public static Method getMethod(Class<?> clazz, String methodName, Class<?>... params) {
-        if (!loadedMethods.containsKey(clazz)) loadedMethods.put(clazz, new HashMap<>());
+        if (!loadedMethods.containsKey(clazz)) {
+            loadedMethods.put(clazz, new HashMap<>());
+        }
 
         Map<String, Method> clazzMethods = loadedMethods.get(clazz);
 
-        if (clazzMethods.containsKey(methodName)) return clazzMethods.get(methodName);
+        if (clazzMethods.containsKey(methodName)) {
+            return clazzMethods.get(methodName);
+        }
 
         Method method = null;
         try {
@@ -71,11 +81,15 @@ public class ReflectionUtil {
     }
 
     public static Field getField(Class<?> clazz, String fieldName) {
-        if (!loadedFields.containsKey(clazz)) loadedFields.put(clazz, new HashMap<>());
+        if (!loadedFields.containsKey(clazz)) {
+            loadedFields.put(clazz, new HashMap<>());
+        }
 
         Map<String, Field> clazzFields = loadedFields.get(clazz);
 
-        if (clazzFields.containsKey(fieldName)) return clazzFields.get(fieldName);
+        if (clazzFields.containsKey(fieldName)) {
+            return clazzFields.get(fieldName);
+        }
 
         Field field = null;
         try {
@@ -90,19 +104,27 @@ public class ReflectionUtil {
     }
 
     public static Enum<?> getEnum(Class<?> clazz, String enumName) {
-        if (!loadedEnums.containsKey(clazz)) loadedEnums.put(clazz, new HashMap<>());
+        if (!loadedEnums.containsKey(clazz)) {
+            loadedEnums.put(clazz, new HashMap<>());
+        }
 
         Map<String, Enum<?>> clazzEnums = loadedEnums.get(clazz);
 
-        if (clazzEnums.containsKey(enumName.toUpperCase())) return clazzEnums.get(enumName.toUpperCase());
+        if (clazzEnums.containsKey(enumName.toUpperCase())) {
+            return clazzEnums.get(enumName.toUpperCase());
+        }
 
-        if (clazz.getEnumConstants().length == 0) return null;
+        if (clazz.getEnumConstants().length == 0) {
+            return null;
+        }
 
         Enum<?> theEnum = null;
         for (Object o : clazz.getEnumConstants()) {
             Enum<?> anEnum = (Enum<?>) o;
             clazzEnums.put(anEnum.name(), anEnum);
-            if (anEnum.name().equalsIgnoreCase(enumName)) theEnum = anEnum;
+            if (anEnum.name().equalsIgnoreCase(enumName)) {
+                theEnum = anEnum;
+            }
         }
         loadedEnums.put(clazz, clazzEnums);
         return theEnum;

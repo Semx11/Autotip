@@ -1,5 +1,8 @@
 package me.semx11.autotip.misc;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.ClientMessage;
@@ -10,21 +13,7 @@ import me.semx11.autotip.util.Versions;
 import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-
 public class StartLogin implements Runnable {
-
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(5000);
-            login();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static void login() {
         Versions.updateVersions();
@@ -51,15 +40,27 @@ public class StartLogin implements Runnable {
             ClientMessage.send(
                     ChatColor.RED + "Autotip is out of date! Click here to update.",
                     "https://" + downloadHost.getUrl(),
-                    ChatColor.GRAY + "Click to visit " + ChatColor.GOLD + downloadHost.getUrl() + ChatColor.GRAY + "!"
+                    ChatColor.GRAY + "Click to visit " + ChatColor.GOLD + downloadHost.getUrl()
+                            + ChatColor.GRAY + "!"
             );
             ClientMessage.send("Update info:");
             vInfo.forEach(vi -> {
                 ClientMessage.send(ChatColor.GOLD + "Autotip v" + vi.getVersion());
                 ClientMessage.send("Update severity: " + vi.getSeverity().toColoredString());
-                vi.getChangelog().forEach(s -> ClientMessage.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
+                vi.getChangelog().forEach(
+                        s -> ClientMessage.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
             });
             ClientMessage.separator();
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            Thread.sleep(5000);
+            login();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

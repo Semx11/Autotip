@@ -1,5 +1,7 @@
 package me.semx11.autotip.misc;
 
+import java.io.IOException;
+import java.util.Collections;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.event.Tipper;
 import me.semx11.autotip.util.Host;
@@ -12,10 +14,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.util.Collections;
-
 public class FetchBoosters implements Runnable {
+
     @Override
     public void run() {
         Host tipHost = Hosts.getInstance().getHostById("totip");
@@ -27,7 +27,8 @@ public class FetchBoosters implements Runnable {
                 request.setEntity(new StringEntity(Autotip.mc.thePlayer.getDisplayNameString() + ":"
                         + String.join(":", Autotip.alreadyTipped)));
                 HttpResponse response = httpClient.execute(request);
-                Collections.addAll(Tipper.tipQueue, EntityUtils.toString(response.getEntity()).split(":"));
+                Collections.addAll(Tipper.tipQueue,
+                        EntityUtils.toString(response.getEntity()).split(":"));
                 System.out.println("Fetched Boosters: " + StringUtils.join(Tipper.tipQueue, ", "));
             } catch (IOException e) {
                 e.printStackTrace();

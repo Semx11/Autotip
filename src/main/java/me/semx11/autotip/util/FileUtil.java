@@ -1,11 +1,5 @@
 package me.semx11.autotip.util;
 
-import me.semx11.autotip.Autotip;
-import me.semx11.autotip.misc.Stats;
-import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.misc.Writer;
-import org.apache.commons.io.FileUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +15,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
+import me.semx11.autotip.Autotip;
+import me.semx11.autotip.misc.Stats;
+import me.semx11.autotip.misc.TipTracker;
+import me.semx11.autotip.misc.Writer;
+import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
 
@@ -58,7 +57,8 @@ public class FileUtil {
 
             if (exists(Autotip.USER_DIR + "upgrade-date.at")) {
                 String explainCode = "I had to write this crappy code because 2pi didn't learn about proper serialization.";
-                String date = FileUtils.readFileToString(Paths.get(Autotip.USER_DIR + "upgrade-date.at").toFile());
+                String date = FileUtils
+                        .readFileToString(Paths.get(Autotip.USER_DIR + "upgrade-date.at").toFile());
                 LocalDate parsed;
                 try {
                     parsed = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -70,7 +70,9 @@ public class FileUtil {
             } else {
                 LocalDate date = LocalDate.now().plusDays(1);
                 String dateString = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(date);
-                FileUtils.writeStringToFile(Paths.get(Autotip.USER_DIR + "upgrade-date.at").toFile(), dateString);
+                FileUtils
+                        .writeStringToFile(Paths.get(Autotip.USER_DIR + "upgrade-date.at").toFile(),
+                                dateString);
                 Stats.setUpgradeDate(date);
             }
 
@@ -95,7 +97,8 @@ public class FileUtil {
 //                Files.deleteIfExists(Paths.get(oldDir + "tipped.at"));
 
             if (exists(Autotip.USER_DIR + "options.at")) {
-                try (BufferedReader readOptions = new BufferedReader(new FileReader(Autotip.USER_DIR + "options.at"))) {
+                try (BufferedReader readOptions = new BufferedReader(
+                        new FileReader(Autotip.USER_DIR + "options.at"))) {
                     List<String> lines = readOptions.lines().collect(Collectors.toList());
                     if (lines.size() >= 4) {
                         Autotip.toggle = Boolean.parseBoolean(lines.get(0)); // mod enabled
@@ -132,18 +135,22 @@ public class FileUtil {
 
             if (exists(Autotip.USER_DIR + "stats" + File.separator + getDate() + ".at")) {
                 try (BufferedReader readDaily = new BufferedReader(
-                        new FileReader(Autotip.USER_DIR + "stats" + File.separator + getDate() + ".at"))) {
+                        new FileReader(
+                                Autotip.USER_DIR + "stats" + File.separator + getDate() + ".at"))) {
                     List<String> lines = readDaily.lines().collect(Collectors.toList());
                     if (lines.size() >= 2) {
                         String[] tipStats = lines.get(0).split(":");
                         TipTracker.tipsSent = Integer.parseInt(tipStats[0]);
-                        TipTracker.tipsReceived = tipStats.length > 1 ? Integer.parseInt(tipStats[1]) : 0;
+                        TipTracker.tipsReceived =
+                                tipStats.length > 1 ? Integer.parseInt(tipStats[1]) : 0;
                         TipTracker.karmaCount = Integer.parseInt(lines.get(1));
                         lines.stream().skip(2).forEach(line -> {
                             String[] stats = line.split(":");
                             TipTracker.tipsSentEarnings.put(stats[0], Integer.parseInt(stats[1]));
-                            if (stats.length > 2)
-                                TipTracker.tipsReceivedEarnings.put(stats[0], Integer.parseInt(stats[2]));
+                            if (stats.length > 2) {
+                                TipTracker.tipsReceivedEarnings
+                                        .put(stats[0], Integer.parseInt(stats[2]));
+                            }
                         });
                     }
                 }
@@ -152,7 +159,8 @@ public class FileUtil {
             }
 
             if (new File(Autotip.USER_DIR + "tipped.at").exists()) {
-                try (BufferedReader f = new BufferedReader(new FileReader(Autotip.USER_DIR + "tipped.at"))) {
+                try (BufferedReader f = new BufferedReader(
+                        new FileReader(Autotip.USER_DIR + "tipped.at"))) {
                     List<String> lines = f.lines().collect(Collectors.toList());
                     if (lines.size() >= 1) {
                         String date = lines.get(0);

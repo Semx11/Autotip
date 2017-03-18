@@ -1,13 +1,13 @@
 package me.semx11.autotip.misc;
 
-import me.semx11.autotip.Autotip;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import me.semx11.autotip.Autotip;
 
 public class TipTracker {
+
     public static Map<Long, String> tipsSentHistory = new TreeMap<>(Collections.reverseOrder());
     public static Map<String, Integer> tipsSentEarnings = new HashMap<>();
     public static Map<String, Integer> tipsReceivedEarnings = new HashMap<>();

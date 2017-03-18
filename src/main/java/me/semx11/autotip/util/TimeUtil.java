@@ -30,7 +30,9 @@ public class TimeUtil {
             }
 
             temp = duration / ONE_SECOND;
-            if (temp > 0) sb.append(temp).append(" second").append(temp > 1 ? "s" : "");
+            if (temp > 0) {
+                sb.append(temp).append(" second").append(temp > 1 ? "s" : "");
+            }
             return sb.toString() + " ago";
         } else {
             return "just now";

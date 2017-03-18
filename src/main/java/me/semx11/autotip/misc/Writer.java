@@ -1,8 +1,5 @@
 package me.semx11.autotip.misc;
 
-import me.semx11.autotip.Autotip;
-import me.semx11.autotip.util.FileUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import me.semx11.autotip.Autotip;
+import me.semx11.autotip.util.FileUtil;
 
 public class Writer implements Runnable {
 
@@ -52,8 +51,11 @@ public class Writer implements Runnable {
             ).distinct().collect(Collectors.toList());
 
             games.forEach(game -> {
-                int sent = TipTracker.tipsSentEarnings.containsKey(game) ? TipTracker.tipsSentEarnings.get(game) : 0;
-                int received = TipTracker.tipsReceivedEarnings.containsKey(game) ? TipTracker.tipsReceivedEarnings.get(
+                int sent =
+                        TipTracker.tipsSentEarnings.containsKey(game) ? TipTracker.tipsSentEarnings
+                                .get(game) : 0;
+                int received = TipTracker.tipsReceivedEarnings.containsKey(game)
+                        ? TipTracker.tipsReceivedEarnings.get(
                         game) : 0;
                 write(dailyStats, game + ":" + sent + ":" + received + ls);
             });
@@ -62,7 +64,8 @@ public class Writer implements Runnable {
             lastDate = FileUtil.getDate();
 
             if (new File(Autotip.USER_DIR + "tipped.at").exists()) {
-                try (BufferedReader f = new BufferedReader(new FileReader(Autotip.USER_DIR + "tipped.at"));) {
+                try (BufferedReader f = new BufferedReader(
+                        new FileReader(Autotip.USER_DIR + "tipped.at"));) {
                     List<String> lines = f.lines().collect(Collectors.toList());
                     if (lines.size() >= 1) {
                         String date = lines.get(0);

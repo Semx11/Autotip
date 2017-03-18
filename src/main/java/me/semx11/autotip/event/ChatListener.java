@@ -1,5 +1,10 @@
 package me.semx11.autotip.event;
 
+import static me.semx11.autotip.util.MessageOption.COMPACT;
+import static me.semx11.autotip.util.MessageOption.HIDDEN;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.LimboCommand;
 import me.semx11.autotip.misc.TipTracker;
@@ -10,12 +15,6 @@ import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.UniversalUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static me.semx11.autotip.util.MessageOption.COMPACT;
-import static me.semx11.autotip.util.MessageOption.HIDDEN;
 
 public class ChatListener {
 
@@ -29,7 +28,9 @@ public class ChatListener {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
 
-        if (!Autotip.onHypixel) return;
+        if (!Autotip.onHypixel) {
+            return;
+        }
 
         String msg = UniversalUtil.getUnformattedText(event);
         MessageOption mOption = Autotip.messageOption;
@@ -42,8 +43,9 @@ public class ChatListener {
                     || msg.startsWith("You can only use the /tip command")
                     || msg.startsWith("You can't tip the same person")
                     || msg.startsWith("You've already tipped someone in the past hour in ")
-                    || msg.startsWith("You've already tipped that person"))
+                    || msg.startsWith("You've already tipped that person")) {
                 event.setCanceled(true);
+            }
 
             if (xpPattern.matcher(msg).matches()) {
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
@@ -80,20 +82,23 @@ public class ChatListener {
                 Writer.execute();
 
                 if (mOption.equals(COMPACT)) {
-                    ClientMessage.sendRaw(String.format("%sEarned %s%d coins%s and %s%d experience%s in %s.",
-                            ChatColor.GREEN, ChatColor.YELLOW, coins,
-                            ChatColor.GREEN, ChatColor.BLUE, xp,
-                            ChatColor.GREEN, game
-                    ));
+                    ClientMessage.sendRaw(
+                            String.format("%sEarned %s%d coins%s and %s%d experience%s in %s.",
+                                    ChatColor.GREEN, ChatColor.YELLOW, coins,
+                                    ChatColor.GREEN, ChatColor.BLUE, xp,
+                                    ChatColor.GREEN, game
+                            ));
                 }
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
-                System.out.println("Earned " + coins + " coins and " + xp + " experience in " + game);
+                System.out
+                        .println("Earned " + coins + " coins and " + xp + " experience in " + game);
                 return;
             }
         }
 
-        if (LimboCommand.executed && msg.startsWith("A kick occurred in your connection") && msg.contains(
-                "Illegal characters")) {
+        if (LimboCommand.executed && msg.startsWith("A kick occurred in your connection") && msg
+                .contains(
+                        "Illegal characters")) {
             event.setCanceled(true);
             LimboCommand.executed = false;
         }

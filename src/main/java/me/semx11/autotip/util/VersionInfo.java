@@ -10,11 +10,13 @@ public class VersionInfo {
     private boolean isBetaVersion;
     private List<String> changelog;
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion, String... changelog) {
+    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
+            String... changelog) {
         this(version, severity, isBetaVersion, Arrays.asList(changelog));
     }
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion, List<String> changelog) {
+    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
+            List<String> changelog) {
         this.version = version;
         this.severity = severity;
         this.isBetaVersion = isBetaVersion;
