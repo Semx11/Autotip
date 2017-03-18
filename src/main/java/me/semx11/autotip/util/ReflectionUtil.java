@@ -6,6 +6,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for Reflection.
+ *
+ * @author Semx11
+ */
 public class ReflectionUtil {
 
     private static Map<String, Class<?>> loadedClasses = new HashMap<>();

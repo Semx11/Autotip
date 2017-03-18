@@ -167,6 +167,7 @@ public class UniversalUtil {
         }
     }
 
+    // Don't try this at home.
     private static Object createComponent(String text, String url, String hoverText) {
         try {
             switch (Autotip.MC_VERSION) {

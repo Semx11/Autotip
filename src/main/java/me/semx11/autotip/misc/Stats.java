@@ -42,15 +42,6 @@ public class Stats {
         printStats(totalDates.toArray(new String[0]));
     }
 
-    public static void main(String[] args) {
-        upgradeDate = LocalDate.of(2017, 1, 22);
-        LocalDate localDate = LocalDate.of(2016, 11, 29);
-        final boolean oldTips = localDate.isBefore(LocalDate.of(2016, 11, 29));
-        final boolean wrongTips = localDate.isAfter(LocalDate.of(2016, 11, 28)) && localDate.isBefore(upgradeDate);
-        System.out.println(oldTips);
-        System.out.println(wrongTips);
-    }
-
     public static void printStats(String... days) {
 
         Map<String, Integer> totalStats = new HashMap<>();
@@ -93,10 +84,6 @@ public class Stats {
             });
         }
 
-//        int tipsSent = sentStats.get("tips");
-//        sentStats.remove("tips");
-//        int tipsReceived = receivedStats.get("tips");
-//        receivedStats.remove("tips");
         int karma = 0;
         if (sentStats.containsKey("karma")) {
             karma = sentStats.get("karma");

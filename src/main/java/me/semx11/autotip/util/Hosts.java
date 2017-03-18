@@ -34,13 +34,6 @@ public class Hosts {
         }
     }
 
-    public static void main(String[] args) {
-        Hosts.updateHosts();
-        System.out.println(Hosts.getInstance()
-                .getHostById("download")
-                .getUrl());
-    }
-
     public Host getHostById(String id) {
         return hosts.stream()
                 .filter(h -> h.getId().equals(id))

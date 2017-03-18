@@ -5,26 +5,6 @@ import java.util.List;
 
 public class VersionInfo {
 
-    public enum Severity {
-        OPTIONAL, ADVISED, CRITICAL;
-
-        public String toColoredString() {
-            String color = "";
-            switch (this) {
-                case CRITICAL:
-                    color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
-                    break;
-                case ADVISED:
-                    color = ChatColor.YELLOW.toString();
-                    break;
-                case OPTIONAL:
-                    color = ChatColor.GREEN.toString();
-                    break;
-            }
-            return color + this.toString();
-        }
-    }
-
     private Version version;
     private Severity severity;
     private boolean isBetaVersion;
@@ -55,6 +35,26 @@ public class VersionInfo {
 
     public List<String> getChangelog() {
         return changelog;
+    }
+
+    public enum Severity {
+        OPTIONAL, ADVISED, CRITICAL;
+
+        public String toColoredString() {
+            String color = "";
+            switch (this) {
+                case CRITICAL:
+                    color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
+                    break;
+                case ADVISED:
+                    color = ChatColor.YELLOW.toString();
+                    break;
+                case OPTIONAL:
+                    color = ChatColor.GREEN.toString();
+                    break;
+            }
+            return color + this.toString();
+        }
     }
 
 }

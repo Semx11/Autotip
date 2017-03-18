@@ -15,13 +15,6 @@ public class Host {
         this.enabled = enabled;
     }
 
-    public static void main(String[] args) {
-        Host host = new Host("download", "autotip.sk1er.club", true);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String json = gson.toJson(host);
-        System.out.println(json);
-    }
-
     public String getId() {
         return id;
     }
