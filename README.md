@@ -5,9 +5,9 @@ This Forge mod automatically tips all active Network Boosters and other Autotip 
 
 
 ## Processes
-Autotip runs in waves of 15 minutes (viewable by the ingame command '''/autotip wave'''), starting at the first login to the Hypixel Network of the Minecraft session. At every pulse, a request will be made to a endpoint on our server side API with the client's username, which first fetches an '''all''' in order to tip online boosters, and then a list of random other online autotip users, plus random gamemodes for each user in the format '''Username GameMode'''. 
+Autotip runs in waves of 15 minutes (viewable by the ingame command ''/autotip wave''), starting at the first login to the Hypixel Network of the Minecraft session. At every pulse, a request will be made to a endpoint on our server side API with the client's username, which first fetches an ''all'' in order to tip online boosters, and then a list of random other online autotip users, plus random gamemodes for each user in the format ''Username GameMode''. 
 
-The command '''/tip ''' is hardcoded into the client, and the server only returns the list of what should be suffixed after that command. This is in order to appease any fears that people with access to the Autotip backend may commit malicious acts on the basis that they have remote access to a player's commands. Any person with such fears can have the peace of mind that this is impossible with how the client acts on the response.
+The command ''/tip '' is hardcoded into the client, and the server only returns the list of what should be suffixed after that command. This is in order to appease any fears that people with access to the Autotip backend may commit malicious acts on the basis that they have remote access to a player's commands. Any person with such fears can have the peace of mind that this is impossible with how the client acts on the response.
 
 
 ## Server Side Components
