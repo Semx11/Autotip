@@ -57,10 +57,16 @@ public class Autotip {
             playerUUID = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
             USER_DIR = "mods" + File.separator + "autotip" + File.separator + playerUUID
                     + File.separator;
-
-            registerEvents(this, new Tipper(), new HypixelListener(), new ChatListener());
-            registerCommands(new AutotipCommand(), new TipHistoryCommand(), new LimboCommand());
-
+            this.registerEvents(
+                    new Tipper(),
+                    new HypixelListener(),
+                    new ChatListener()
+            );
+            this.registerCommands(
+                    new AutotipCommand(),
+                    new TipHistoryCommand(),
+                    new LimboCommand()
+            );
             FileUtil.getVars();
             Hosts.updateHosts();
         } catch (IOException e) {
