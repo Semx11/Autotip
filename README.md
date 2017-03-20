@@ -13,7 +13,7 @@ The command '''/tip ''' is hardcoded into the client, and the server only return
 ## Server Side Components
 Many of the components that make Autotip work take place on the autotip.pro servers, the primary being the mechanic of tipping other online players. Upon the first login to Hypixel, a player will be authenticated with our server side API with basic information, including their Minecraft UUID, Minecraft version, Autotip version, operating system. These are both used in both analytics of the mod and authentication with our online player system. A number of checks will be run on the player in order to prevent spoofing. After authenticated, a request will be made to our API every 15 minutes in order to fetch the tip queue, as discribed in Processes above. The API code is not currently avalible in order to not reveal our authentication methods, and more importantly to not reveal the embarrasingly written code that lies there.
 
-# Contributors
+#### Contributors
 - [Semx11](https://hypixel.net/members/semx11.20123) - Developer of mod, developer of API, PR. 
 - [2Pi](https://hypixel.net/members/2pi.22108) - Developer of API, developer of mod from April 2016 to August 2016, PR.
 - [Sk1er](https://hypixel.net/members/sk1er.199731) - Host, PR.
