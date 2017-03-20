@@ -22,7 +22,7 @@ public class TipHistoryCommand extends AUniversalCommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/tiphistory [page]";
+        return ChatColor.RED + "Usage: /tiphistory [page]";
     }
 
     @Override
