@@ -48,9 +48,7 @@ public class ReflectionUtil {
         Constructor<?> constructor = null;
         try {
             constructor = clazz.getConstructor(params);
-            if (!constructor.isAccessible()) {
-                constructor.setAccessible(true);
-            }
+            constructor.setAccessible(true);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -74,9 +72,7 @@ public class ReflectionUtil {
         Method method = null;
         try {
             method = clazz.getMethod(methodName, params);
-            if (!method.isAccessible()) {
-                method.setAccessible(true);
-            }
+            method.setAccessible(true);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
