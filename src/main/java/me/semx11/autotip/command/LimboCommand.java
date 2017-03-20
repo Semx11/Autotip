@@ -23,7 +23,7 @@ public class LimboCommand extends AUniversalCommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/lasttip";
+        return ChatColor.RED + "Usage: /limbo";
     }
 
     @Override

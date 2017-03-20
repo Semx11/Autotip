@@ -35,7 +35,7 @@ public class AutotipCommand extends AUniversalCommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/autotip <stats, info, messages, toggle, time>";
+        return ChatColor.RED + "Usage: /autotip <stats, info, messages, toggle, time>";
     }
 
     @Override
@@ -175,11 +175,11 @@ public class AutotipCommand extends AUniversalCommand {
                     ClientMessage.separator();
                     break;
                 default:
-                    ClientMessage.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+                    ClientMessage.send(getCommandUsage(sender));
                     break;
             }
         } else {
-            ClientMessage.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+            ClientMessage.send(getCommandUsage(sender));
         }
     }
 
