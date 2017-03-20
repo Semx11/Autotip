@@ -21,7 +21,6 @@ public class UniversalUtil {
     public static String getMinecraftVersion() {
         try {
             Field f = getField(ForgeVersion.class, "mcVersion");
-            Minecraft.getMinecraft().getVersion();
             if (f != null) {
                 return (String) f.get(null);
             } else {
