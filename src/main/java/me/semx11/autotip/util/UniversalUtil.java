@@ -5,6 +5,7 @@ import static me.semx11.autotip.util.ReflectionUtil.getConstructor;
 import static me.semx11.autotip.util.ReflectionUtil.getEnum;
 import static me.semx11.autotip.util.ReflectionUtil.getField;
 import static me.semx11.autotip.util.ReflectionUtil.getMethod;
+import static net.minecraftforge.fml.relauncher.ReflectionHelper.findMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +16,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class UniversalUtil {
 
@@ -50,12 +52,11 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                     networkManager = getMethod(ClientConnectedToServerEvent.class,
-                            "getManager").invoke(event);
+                            new String[]{"getManager"}).invoke(event);
                     break;
             }
             // Original method name: getRemoteAddress
-            address = (SocketAddress) getMethod(networkManager.getClass(), "func_74430_c")
-                    .invoke(networkManager);
+            address = (SocketAddress) getMethod(networkManager.getClass(), new String[]{"func_74430_c", "getRemoteAddress"}).invoke(networkManager);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -78,12 +79,13 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
-                    component = getMethod(ClientChatReceivedEvent.class, "getMessage")
+                    component = getMethod(ClientChatReceivedEvent.class, new String[]{"getMessage"})
                             .invoke(event);
                     break;
             }
             // Original method name: getUnformattedText
-            msg = (String) getMethod(component.getClass(), "func_150260_c").invoke(component);
+            msg = (String) getMethod(component.getClass(), new String[]{"getUnformattedText", "func_150260_c"})
+                    .invoke(component);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -108,7 +110,7 @@ public class UniversalUtil {
                     // Original method name: addChatMessage
                     getMethod(
                             EntityPlayerSP.class,
-                            "func_145747_a",
+                            new String[]{"func_145747_a", "addChatMessage"},
                             getClazz("net.minecraft.util.IChatComponent")
                     ).invoke(thePlayer, component);
                     break;
@@ -119,7 +121,7 @@ public class UniversalUtil {
                     // Original method name: addChatComponentMessage
                     getMethod(
                             EntityPlayerSP.class,
-                            "func_146105_b",
+                            new String[]{"func_146105_b", "addChatComponentMessage"},
                             getClazz("net.minecraft.util.text.ITextComponent")
                     ).invoke(thePlayer, component);
                     break;
@@ -128,7 +130,7 @@ public class UniversalUtil {
                     // Original method name: addChatMessage / sendMessage
                     getMethod(
                             EntityPlayerSP.class,
-                            "func_145747_a",
+                            new String[]{"func_145747_a", "addChatMessage", "sendMessage"},
                             getClazz("net.minecraft.util.text.ITextComponent")
                     ).invoke(thePlayer, component);
                     break;
@@ -209,7 +211,7 @@ public class UniversalUtil {
                     if (url != null && !url.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.ChatStyle"),
-                                "func_150241_a",
+                                new String[]{"func_150241_a", "setChatClickEvent"},
                                 getClazz("net.minecraft.event.ClickEvent")
                         ).invoke(chatStyle, chatClickEvent);
                     }
@@ -218,7 +220,7 @@ public class UniversalUtil {
                     if (hoverText != null && !hoverText.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.ChatStyle"),
-                                "func_150209_a",
+                                new String[]{"func_150209_a", "setChatHoverEvent"},
                                 getClazz("net.minecraft.event.HoverEvent")
                         ).invoke(chatStyle, chatHoverEvent);
                     }
@@ -228,7 +230,7 @@ public class UniversalUtil {
                     // Original method name: setChatStyle
                     return getMethod(
                             getClazz("net.minecraft.util.ChatComponentText"),
-                            "func_150255_a",
+                            new String[]{"func_150255_a", "setChatStyle"},
                             getClazz("net.minecraft.util.ChatStyle")
                     ).invoke(chatComponent, chatStyle);
                 case V1_9:
@@ -272,7 +274,7 @@ public class UniversalUtil {
                     if (url != null && !url.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.text.Style"),
-                                "func_150241_a",
+                                new String[]{"func_150241_a", "setChatClickEvent"},
                                 getClazz("net.minecraft.util.text.event.ClickEvent")
                         ).invoke(style, clickEvent);
                     }
@@ -281,7 +283,7 @@ public class UniversalUtil {
                     if (hoverText != null && !hoverText.equals("")) {
                         getMethod(
                                 getClazz("net.minecraft.util.text.Style"),
-                                "func_150209_a",
+                                new String[]{"func_150209_a", "setChatHoverEvent"},
                                 getClazz("net.minecraft.util.text.event.HoverEvent")
                         ).invoke(style, hoverEvent);
                     }
@@ -291,7 +293,7 @@ public class UniversalUtil {
                     // Original method name: setChatStyle
                     return getMethod(
                             getClazz("net.minecraft.util.text.TextComponentString"),
-                            "func_150255_a",
+                            new String[]{"func_150255_a", "setChatStyle"},
                             getClazz("net.minecraft.util.text.Style")
                     ).invoke(textComponent, style);
                 default:
