@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.11.2]")
+@Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12]")
 public class Autotip {
 
     public static final String MODID = "autotip";
