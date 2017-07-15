@@ -20,7 +20,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 minecraft {
-    version = "1.8.9-11.15.1.1722"
+    version = "1.8.9-11.15.1.1902-1.8.9"
     runDir = "run"
     mappings = "stable_20"
 }
