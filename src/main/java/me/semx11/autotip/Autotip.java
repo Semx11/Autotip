@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 public class Autotip {
 
     public static final String MODID = "autotip";
-    public static final String VERSION_STRING = "2.0.3";
+    public static final String VERSION_STRING = "2.1";
     public static final Version VERSION = new Version(VERSION_STRING);
     public static final ExecutorService THREAD_POOL = Executors
             .newCachedThreadPool(new AutotipThreadFactory());
