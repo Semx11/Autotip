@@ -5,7 +5,6 @@ import static me.semx11.autotip.util.ReflectionUtil.getConstructor;
 import static me.semx11.autotip.util.ReflectionUtil.getEnum;
 import static me.semx11.autotip.util.ReflectionUtil.getField;
 import static me.semx11.autotip.util.ReflectionUtil.getMethod;
-import static net.minecraftforge.fml.relauncher.ReflectionHelper.findMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +15,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class UniversalUtil {
 
@@ -51,12 +49,14 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
+                case V1_12:
                     networkManager = getMethod(ClientConnectedToServerEvent.class,
                             new String[]{"getManager"}).invoke(event);
                     break;
             }
             // Original method name: getRemoteAddress
-            address = (SocketAddress) getMethod(networkManager.getClass(), new String[]{"func_74430_c", "getRemoteAddress"}).invoke(networkManager);
+            address = (SocketAddress) getMethod(networkManager.getClass(),
+                    new String[]{"func_74430_c", "getRemoteAddress"}).invoke(networkManager);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -79,12 +79,14 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
+                case V1_12:
                     component = getMethod(ClientChatReceivedEvent.class, new String[]{"getMessage"})
                             .invoke(event);
                     break;
             }
             // Original method name: getUnformattedText
-            msg = (String) getMethod(component.getClass(), new String[]{"getUnformattedText", "func_150260_c"})
+            msg = (String) getMethod(component.getClass(),
+                    new String[]{"getUnformattedText", "func_150260_c"})
                     .invoke(component);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
@@ -127,10 +129,11 @@ public class UniversalUtil {
                     break;
                 case V1_11:
                 case V1_11_2:
+                case V1_12:
                     // Original method name: addChatMessage / sendMessage
                     getMethod(
                             EntityPlayerSP.class,
-                            new String[]{"func_145747_a", "addChatMessage", "sendMessage"},
+                            new String[]{"func_145747_a", "sendMessage", "addChatMessage"},
                             getClazz("net.minecraft.util.text.ITextComponent")
                     ).invoke(thePlayer, component);
                     break;
@@ -156,6 +159,7 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
+                case V1_12:
                     return getConstructor(
                             getClazz("net.minecraft.util.text.TextComponentString"),
                             String.class
@@ -239,6 +243,7 @@ public class UniversalUtil {
                 case V1_10_2:
                 case V1_11:
                 case V1_11_2:
+                case V1_12:
                     Object clickEvent = null;
                     Object hoverEvent = null;
 
