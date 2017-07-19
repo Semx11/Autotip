@@ -1,5 +1,6 @@
 package me.semx11.autotip.event;
 
+import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.misc.StartLogin;
 import me.semx11.autotip.util.UniversalUtil;
@@ -9,12 +10,15 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 
 public class HypixelListener {
 
+    private static final Pattern IP_PATTERN = Pattern
+            .compile("(^([\\w-]+[.\\u2024])?hypixel[.\\u2024]net|209\\.222\\.115\\.\\d{1,3})");
+
     public static String lastIp;
 
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
         lastIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
-        if (lastIp.contains(".hypixel.net") || lastIp.contains("209.222.115.14")) {
+        if (IP_PATTERN.matcher(lastIp).matches()) {
             Autotip.onHypixel = true;
             Tipper.waveCounter = 910;
             Autotip.THREAD_POOL.submit(new StartLogin());
