@@ -18,7 +18,7 @@ public class HypixelListener {
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
         lastIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
-        if (IP_PATTERN.matcher(lastIp).matches()) {
+        if (IP_PATTERN.matcher(lastIp).find()) {
             Autotip.onHypixel = true;
             Tipper.waveCounter = 910;
             Autotip.THREAD_POOL.submit(new StartLogin());
