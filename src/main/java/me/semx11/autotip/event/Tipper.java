@@ -31,7 +31,7 @@ public class Tipper {
             }
 
             if (!tipQueue.isEmpty() && (tipDelay % 5 == 0)) {
-                System.out.println("Attempting to tip: " + tipQueue.get(0));
+                Autotip.LOGGER.info("Attempting to tip: {}", tipQueue.get(0));
                 Autotip.mc.thePlayer.sendChatMessage("/tip " + tipQueue.get(0));
                 tipQueue.remove(0);
                 tipDelay = 0;

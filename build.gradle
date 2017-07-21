@@ -13,7 +13,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "2.1"
-group = "me.semx11.autotip" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "me.semx11.autotip"
 archivesBaseName = "Autotip"
 
 sourceCompatibility = '1.8'

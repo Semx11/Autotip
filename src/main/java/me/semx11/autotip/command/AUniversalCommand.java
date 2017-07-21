@@ -17,7 +17,7 @@ public abstract class AUniversalCommand extends CommandBase {
         Autotip.THREAD_POOL.submit(() -> onCommand(sender, args));
     }
 
-    // Minecraft 1.9 | 1.9.4 | 1.10 | 1.10.2 | 1.11 | 1.11.2
+    // Minecraft 1.9 | 1.9.4 | 1.10 | 1.10.2 | 1.11 | 1.11.2 | 1.12
     // func_184881_a
     public void func_184881_a(MinecraftServer server, ICommandSender sender, String[] args)
             throws CommandException {
@@ -31,7 +31,7 @@ public abstract class AUniversalCommand extends CommandBase {
         return onTabComplete(sender, args);
     }
 
-    // Minecraft 1.9 | 1.9.4 | 1.10 | 1.10.2 | 1.11 | 1.11.2
+    // Minecraft 1.9 | 1.9.4 | 1.10 | 1.10.2 | 1.11 | 1.11.2 | 1.12
     // Does not seem to work?
     // func_184883_a
     public List<String> func_184883_a(MinecraftServer server, ICommandSender sender, String[] args,

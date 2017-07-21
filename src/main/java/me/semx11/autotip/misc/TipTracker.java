@@ -20,7 +20,8 @@ public class TipTracker {
         tipsSent++;
         Autotip.totalTipsSent++;
         Autotip.alreadyTipped.add(username);
-        System.out.println("Tipped: " + username);
+
+        Autotip.LOGGER.info("Tipped: {}", username);
         Writer.execute();
     }
 

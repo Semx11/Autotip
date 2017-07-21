@@ -29,7 +29,7 @@ public class FetchBoosters implements Runnable {
                 HttpResponse response = httpClient.execute(request);
                 Collections.addAll(Tipper.tipQueue,
                         EntityUtils.toString(response.getEntity()).split(":"));
-                System.out.println("Fetched Boosters: " + StringUtils.join(Tipper.tipQueue, ", "));
+                Autotip.LOGGER.info("Fetched Boosters: " + StringUtils.join(Tipper.tipQueue, ", "));
             } catch (IOException e) {
                 e.printStackTrace();
             }

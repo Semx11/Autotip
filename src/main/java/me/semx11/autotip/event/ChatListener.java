@@ -67,7 +67,6 @@ public class ChatListener {
                 TipTracker.tipsSentEarnings.merge(game, coins, (a, b) -> a + b);
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
 
-                System.out.println("Earned " + coins + " coins in " + game);
                 return;
             }
 
@@ -90,14 +89,14 @@ public class ChatListener {
                             ));
                 }
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
-                System.out
-                        .println("Earned " + coins + " coins and " + xp + " experience in " + game);
+                Autotip.LOGGER.info("Earned {} coins and {} experience in {}.", coins, xp, game);
                 return;
             }
         }
 
-        if (LimboCommand.executed && msg.startsWith("A kick occurred in your connection") &&
-                msg.contains("Illegal characters")) {
+        if (LimboCommand.executed
+                && msg.startsWith("A kick occurred in your connection")
+                && msg.contains("Illegal characters")) {
             event.setCanceled(true);
             LimboCommand.executed = false;
         }

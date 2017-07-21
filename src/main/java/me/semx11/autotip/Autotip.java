@@ -28,6 +28,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12]")
 public class Autotip {
@@ -35,8 +37,11 @@ public class Autotip {
     public static final String MODID = "autotip";
     public static final String VERSION_STRING = "2.1";
     public static final Version VERSION = new Version(VERSION_STRING);
+
+    public static final Logger LOGGER = LogManager.getLogger("Autotip");
     public static final ExecutorService THREAD_POOL = Executors
             .newCachedThreadPool(new AutotipThreadFactory());
+
     public static String USER_DIR = "";
 
     public static MinecraftVersion MC_VERSION;
