@@ -110,6 +110,8 @@ public class ReflectionUtil {
                 return field;
             } catch (NoSuchFieldException e) {
                 err = e;
+            } catch (SecurityException e) {
+                throw new UnableToAccessFieldException(fieldNames, e);
             }
         }
 
