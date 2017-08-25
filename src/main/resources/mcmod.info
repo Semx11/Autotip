@@ -4,7 +4,7 @@
     "name": "Autotip",
     "description": "Autotipper for mc.hypixel.net. Type /autotip in-game to get started.",
     "version": "2.1",
-    "mcversion": "[1.8, 1.12]",
+    "mcversion": "[1.8, 1.12.1]",
     "url": "https://autotip.pro",
     "updateUrl": "",
     "authorList": [

@@ -25,7 +25,7 @@ public class StartLogin implements Runnable {
                         loginHost.getUrl(),
                         Minecraft.getMinecraft().thePlayer.getUniqueID(),
                         Autotip.VERSION.get(),
-                        Autotip.MC_VERSION,
+                        Autotip.mcVersion,
                         Autotip.totalTipsSent,
                         System.getProperty("os.name")
                 )));

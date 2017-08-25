@@ -1,5 +1,6 @@
 package me.semx11.autotip;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import me.semx11.autotip.command.TipHistoryCommand;
 import me.semx11.autotip.event.ChatListener;
 import me.semx11.autotip.event.HypixelListener;
 import me.semx11.autotip.event.Tipper;
-import me.semx11.autotip.misc.AutotipThreadFactory;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.MessageOption;
@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12]")
+@Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12.1]")
 public class Autotip {
 
     public static final String MODID = "autotip";
@@ -40,11 +40,12 @@ public class Autotip {
 
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
     public static final ExecutorService THREAD_POOL = Executors
-            .newCachedThreadPool(new AutotipThreadFactory());
+            .newCachedThreadPool(
+                    new ThreadFactoryBuilder().setNameFormat("AutotipThread-%d").build());
 
     public static String USER_DIR = "";
 
-    public static MinecraftVersion MC_VERSION;
+    public static MinecraftVersion mcVersion;
     public static Minecraft mc = Minecraft.getMinecraft();
 
     public static MessageOption messageOption = MessageOption.SHOWN;
@@ -58,7 +59,7 @@ public class Autotip {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         try {
-            MC_VERSION = MinecraftVersion.fromString(UniversalUtil.getMinecraftVersion());
+            mcVersion = MinecraftVersion.fromString(UniversalUtil.getMinecraftVersion());
             playerUUID = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
             USER_DIR = "mods" + File.separator + "autotip" + File.separator + playerUUID
                     + File.separator;

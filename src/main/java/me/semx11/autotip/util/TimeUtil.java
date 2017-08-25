@@ -7,29 +7,29 @@ public class TimeUtil {
     private final static long ONE_HOUR = ONE_MINUTE * 60;
     private final static long ONE_DAY = ONE_HOUR * 24;
 
-    public static String formatMillis(long duration) {
+    public static String formatMillis(long millis) {
         StringBuilder sb = new StringBuilder();
         long temp;
-        if (duration >= ONE_SECOND) {
-            temp = duration / ONE_DAY;
+        if (millis >= ONE_SECOND) {
+            temp = millis / ONE_DAY;
             if (temp > 0) {
                 sb.append(temp).append(" day").append(temp > 1 ? "s" : "");
                 return sb.toString() + " ago";
             }
 
-            temp = duration / ONE_HOUR;
+            temp = millis / ONE_HOUR;
             if (temp > 0) {
                 sb.append(temp).append(" hour").append(temp > 1 ? "s" : "");
                 return sb.toString() + " ago";
             }
 
-            temp = duration / ONE_MINUTE;
+            temp = millis / ONE_MINUTE;
             if (temp > 0) {
                 sb.append(temp).append(" minute").append(temp > 1 ? "s" : "");
                 return sb.toString() + " ago";
             }
 
-            temp = duration / ONE_SECOND;
+            temp = millis / ONE_SECOND;
             if (temp > 0) {
                 sb.append(temp).append(" second").append(temp > 1 ? "s" : "");
             }

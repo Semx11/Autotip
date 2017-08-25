@@ -40,7 +40,7 @@ public class AutotipCommand extends AUniversalCommand {
 
     @Override
     public List<String> getCommandAliases() {
-        if (!Autotip.MC_VERSION.equals(MinecraftVersion.V1_8)) {
+        if (!Autotip.mcVersion.equals(MinecraftVersion.V1_8)) {
             return Collections.singletonList("at");
         } else {
             return Collections.emptyList();
@@ -66,7 +66,7 @@ public class AutotipCommand extends AUniversalCommand {
                             null,
                             ChatColor.GOLD + "2Pi's legacy will live on."
                     );
-                    ClientMessage.send("Running in " + Autotip.MC_VERSION + "-compatibility mode");
+                    ClientMessage.send("Running in " + Autotip.mcVersion + "-compatibility mode");
                     ClientMessage.send(
                             "Autotipper: " + (Autotip.toggle ? ChatColor.GREEN + "En"
                                     : ChatColor.RED + "Dis") + "abled");
@@ -93,7 +93,7 @@ public class AutotipCommand extends AUniversalCommand {
                                 Stats.printStats(FileUtil.getDate());
                                 break;
                             case "yesterday":
-                                Stats.printStats(LocalDate.now().minusDays(1).format(formatter));
+                                Stats.printStats(now.minusDays(1).format(formatter));
                                 break;
                             case "week":
                             case "weekly":
@@ -169,7 +169,7 @@ public class AutotipCommand extends AUniversalCommand {
                 case "info+":
                     ClientMessage.separator();
                     ClientMessage.send("Last IP joined: " + HypixelListener.lastIp);
-                    ClientMessage.send("Detected MC version: " + Autotip.MC_VERSION);
+                    ClientMessage.send("Detected MC version: " + Autotip.mcVersion);
                     ClientMessage
                             .send("Current tipqueue: " + StringUtils.join(Tipper.tipQueue, ", "));
                     ClientMessage.separator();

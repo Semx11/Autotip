@@ -36,7 +36,7 @@ public class UniversalUtil {
         SocketAddress address = null;
         try {
             Object networkManager = null;
-            switch (Autotip.MC_VERSION) {
+            switch (Autotip.mcVersion) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -50,6 +50,7 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                 case V1_12:
+                case V1_12_1:
                     networkManager = getMethod(ClientConnectedToServerEvent.class,
                             new String[]{"getManager"}).invoke(event);
                     break;
@@ -67,7 +68,7 @@ public class UniversalUtil {
         String msg = "";
         try {
             Object component = null;
-            switch (Autotip.MC_VERSION) {
+            switch (Autotip.mcVersion) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -80,6 +81,7 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                 case V1_12:
+                case V1_12_1:
                     component = getMethod(ClientChatReceivedEvent.class, new String[]{"getMessage"})
                             .invoke(event);
                     break;
@@ -105,7 +107,7 @@ public class UniversalUtil {
     private static void chatMessage(Object component) {
         EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
         try {
-            switch (Autotip.MC_VERSION) {
+            switch (Autotip.mcVersion) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -130,6 +132,7 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                 case V1_12:
+                case V1_12_1:
                     // Original method name: addChatMessage / sendMessage
                     getMethod(
                             EntityPlayerSP.class,
@@ -145,7 +148,7 @@ public class UniversalUtil {
 
     private static Object createComponent(String text) {
         try {
-            switch (Autotip.MC_VERSION) {
+            switch (Autotip.mcVersion) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -160,6 +163,7 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                 case V1_12:
+                case V1_12_1:
                     return getConstructor(
                             getClazz("net.minecraft.util.text.TextComponentString"),
                             String.class
@@ -176,7 +180,7 @@ public class UniversalUtil {
     // Don't try this at home.
     private static Object createComponent(String text, String url, String hoverText) {
         try {
-            switch (Autotip.MC_VERSION) {
+            switch (Autotip.mcVersion) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -244,6 +248,7 @@ public class UniversalUtil {
                 case V1_11:
                 case V1_11_2:
                 case V1_12:
+                case V1_12_1:
                     Object clickEvent = null;
                     Object hoverEvent = null;
 
