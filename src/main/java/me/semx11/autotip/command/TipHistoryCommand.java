@@ -55,8 +55,8 @@ public class TipHistoryCommand extends AUniversalCommand {
                         .skip((page - 1) * 7)
                         .limit(7)
                         .forEach(tip -> ClientMessage.send(tip.getValue() + ": " + ChatColor.GOLD
-                                + TimeUtil.formatMillis(
-                                System.currentTimeMillis() - tip.getKey()) + "."));
+                                + TimeUtil.formatMillis(System.currentTimeMillis() - tip.getKey())
+                                + "."));
 
                 ClientMessage.separator();
             }

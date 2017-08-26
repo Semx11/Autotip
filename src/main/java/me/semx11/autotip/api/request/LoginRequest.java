@@ -23,7 +23,7 @@ public class LoginRequest extends AbstractRequest {
                 .addParameter("uuid", session.getProfile().getId())
                 .addParameter("tips", tips)
                 .addParameter("v", Autotip.VERSION)
-                .addParameter("mc", Autotip.mcVersion)
+                .addParameter("mc", Autotip.MC_VERSION)
                 .addParameter("os", System.getProperty("os.name"))
                 .addParameter("hash", hash)
                 .build();

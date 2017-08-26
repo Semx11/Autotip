@@ -1,10 +1,11 @@
 package me.semx11.autotip.api.reply;
 
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.util.RequestType;
 
 public class LoginReply extends AbstractReply {
 
-    private String sessionKey;
+    private SessionKey sessionKey;
 
     public LoginReply() {
     }
@@ -13,7 +14,7 @@ public class LoginReply extends AbstractReply {
         super(success);
     }
 
-    public String getSessionKey() {
+    public SessionKey getSessionKey() {
         return sessionKey;
     }
 

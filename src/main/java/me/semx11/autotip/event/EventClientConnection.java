@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
-public class HypixelListener {
+public class EventClientConnection {
 
     private static final Pattern IP_PATTERN = Pattern
             .compile("(^([\\w-]+[.\\u2024])?hypixel[.\\u2024]net|209\\.222\\.115\\.\\d{1,3})");
@@ -20,7 +20,7 @@ public class HypixelListener {
         lastIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
         if (IP_PATTERN.matcher(lastIp).find()) {
             Autotip.onHypixel = true;
-            Tipper.waveCounter = 910;
+            EventClientTick.waveCounter = 910;
             Autotip.THREAD_POOL.submit(new StartLogin());
         } else {
             Autotip.onHypixel = false;

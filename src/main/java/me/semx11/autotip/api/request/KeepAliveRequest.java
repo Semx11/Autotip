@@ -1,6 +1,7 @@
 package me.semx11.autotip.api.request;
 
 import java.util.Optional;
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.reply.KeepAliveReply;
 import me.semx11.autotip.api.util.GetBuilder;
@@ -13,7 +14,7 @@ public class KeepAliveRequest extends AbstractRequest {
     private KeepAliveRequest() {
     }
 
-    public static KeepAliveReply doRequest(String sessionKey) {
+    public static KeepAliveReply doRequest(SessionKey sessionKey) {
         KeepAliveRequest request = new KeepAliveRequest();
 
         HttpUriRequest uri = GetBuilder.of(request)

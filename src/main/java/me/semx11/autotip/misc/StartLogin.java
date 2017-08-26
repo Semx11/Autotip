@@ -1,38 +1,49 @@
 package me.semx11.autotip.misc;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.api.reply.LoginReply;
+import me.semx11.autotip.api.request.LoginRequest;
 import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.ClientMessage;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
+import me.semx11.autotip.util.LoginUtil;
 import me.semx11.autotip.util.VersionInfo;
 import me.semx11.autotip.util.Versions;
-import net.minecraft.client.Minecraft;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.util.Session;
 
 public class StartLogin implements Runnable {
 
-    public static void login() {
-        Versions.updateVersions();
+    // TODO: Make this more elegant because why is this a thing.
+
+    private static void login() {
         Host loginHost = Hosts.getInstance().getHostById("update");
-        Host downloadHost = Hosts.getInstance().getHostById("download");
-        if (loginHost != null && loginHost.isEnabled()) {
-            try {
-                String ignored = IOUtils.toString(new URL(String.format(
-                        loginHost.getUrl(),
-                        Minecraft.getMinecraft().thePlayer.getUniqueID(),
-                        Autotip.VERSION.get(),
-                        Autotip.mcVersion,
-                        Autotip.totalTipsSent,
-                        System.getProperty("os.name")
-                )));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        if (loginHost == null || !loginHost.isEnabled()) {
+            return;
         }
+
+        Session session = Autotip.MC.getSession();
+
+        String uuid = session.getProfile().getId().toString().replace("-", "");
+        String serverHash = LoginUtil.hash(uuid + LoginUtil.getNextSalt());
+
+        LoginUtil.joinServer(session.getToken(), uuid, serverHash);
+
+        // Remove totalTipsSent and calculate instead?
+        LoginReply reply = LoginRequest.doRequest(session, serverHash, Autotip.totalTipsSent);
+
+        if (!reply.isSuccess()) {
+            return;
+        }
+
+    }
+
+    private static void checkVersions() {
+        Versions.updateVersions();
+
+        Host downloadHost = Hosts.getInstance().getHostById("download");
 
         List<VersionInfo> vInfo = Versions.getInstance().getHigherVersionInfo(Autotip.VERSION);
         if (vInfo.size() > 0) {
@@ -57,8 +68,10 @@ public class StartLogin implements Runnable {
     @Override
     public void run() {
         try {
+            // Why.
             Thread.sleep(5000);
             login();
+            checkVersions();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

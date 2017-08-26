@@ -1,6 +1,7 @@
 package me.semx11.autotip.api.request;
 
 import java.util.Optional;
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.reply.LogoutReply;
 import me.semx11.autotip.api.util.GetBuilder;
@@ -13,7 +14,7 @@ public class LogoutRequest extends AbstractRequest {
     private LogoutRequest() {
     }
 
-    public static LogoutReply doRequest(String sessionKey) {
+    public static LogoutReply doRequest(SessionKey sessionKey) {
         LogoutRequest request = new LogoutRequest();
 
         HttpUriRequest uri = GetBuilder.of(request)

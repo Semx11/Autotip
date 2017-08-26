@@ -88,7 +88,6 @@ public class ReflectionUtil {
     }
 
     public static Field getField(Class<?> clazz, String... fieldNames) {
-
         if (!loadedFields.containsKey(clazz)) {
             loadedFields.put(clazz, new HashMap<>());
         }

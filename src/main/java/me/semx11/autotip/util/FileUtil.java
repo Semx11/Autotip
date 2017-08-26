@@ -23,30 +23,6 @@ import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
 
-    /*
-    mods/autotip/
-    -- stats (dir)
-    -- options.at
-    -- tipped.at
-
-    mods/autotip/uuid/
-    -- stats (dir)
-    -- options.at
-    -- tipped.at
-    */
-    /*
-    if (exists(user_dir) && (exists(oldDir + "stats") || exists(oldDir + "options.at") || exists(oldDir + "tipped.at"))) {
-                FileUtils.copyDirectory(Paths.get(user_dir).toFile(), Paths.get("mods/autotip_temp").toFile());
-                FileUtils.deleteDirectory(Paths.get(user_dir).toFile());
-            }
-
-            if (!exists(user_dir)) FileUtils.copyDirectory(Paths.get("mods/autotip").toFile(), Paths.get("mods/autotip/uuid").toFile());
-
-            if (exists(user_dir + "stats")) FileUtils.deleteDirectory(Paths.get(oldDir + "stats").toFile());
-            if (exists(user_dir + "options.at")) Files.deleteIfExists(Paths.get(oldDir + "options.at"));
-            if (exists(user_dir + "tipped.at")) Files.deleteIfExists(Paths.get(oldDir + "tipped.at"));
-     */
-
     public static void getVars() throws IOException {
         try {
             File statsDir = new File(Autotip.USER_DIR + "stats");

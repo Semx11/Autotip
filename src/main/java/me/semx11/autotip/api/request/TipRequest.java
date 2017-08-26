@@ -1,6 +1,7 @@
 package me.semx11.autotip.api.request;
 
 import java.util.Optional;
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.reply.TipReply;
 import me.semx11.autotip.api.util.GetBuilder;
@@ -13,7 +14,7 @@ public class TipRequest extends AbstractRequest {
     private TipRequest() {
     }
 
-    public static TipReply doRequest(String sessionKey) {
+    public static TipReply doRequest(SessionKey sessionKey) {
         TipRequest request = new TipRequest();
 
         HttpUriRequest uri = GetBuilder.of(request)
@@ -23,7 +24,7 @@ public class TipRequest extends AbstractRequest {
         Optional<AbstractReply> optional = RequestHandler.getReply(request, uri);
         return optional
                 .map(reply -> (TipReply) reply)
-                .orElseGet(() -> new TipReply(false));
+                .orElseGet(TipReply::getDefault);
     }
 
     @Override

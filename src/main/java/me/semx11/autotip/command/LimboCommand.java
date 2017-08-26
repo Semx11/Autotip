@@ -30,7 +30,7 @@ public class LimboCommand extends AUniversalCommand {
     public void onCommand(ICommandSender sender, String[] args) {
         if (Autotip.onHypixel) {
             executed = true;
-            Autotip.mc.thePlayer.sendChatMessage(ChatColor.RED.toString());
+            Autotip.MC.thePlayer.sendChatMessage(ChatColor.RED.toString());
         } else {
             ClientMessage.send(ChatColor.RED + "You must be on Hypixel to use this command!");
         }

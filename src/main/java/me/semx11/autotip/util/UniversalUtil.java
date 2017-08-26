@@ -18,17 +18,17 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToSe
 
 public class UniversalUtil {
 
-    public static String getMinecraftVersion() {
+    public static MinecraftVersion getMinecraftVersion() {
         try {
             Field f = getField(ForgeVersion.class, "mcVersion");
             if (f != null) {
-                return (String) f.get(null);
+                return MinecraftVersion.fromString((String) f.get(null));
             } else {
-                return "1.8";
+                return MinecraftVersion.V1_8;
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            return "1.8";
+            return MinecraftVersion.V1_8;
         }
     }
 
@@ -36,7 +36,7 @@ public class UniversalUtil {
         SocketAddress address = null;
         try {
             Object networkManager = null;
-            switch (Autotip.mcVersion) {
+            switch (Autotip.MC_VERSION) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -68,7 +68,7 @@ public class UniversalUtil {
         String msg = "";
         try {
             Object component = null;
-            switch (Autotip.mcVersion) {
+            switch (Autotip.MC_VERSION) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -107,7 +107,7 @@ public class UniversalUtil {
     private static void chatMessage(Object component) {
         EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
         try {
-            switch (Autotip.mcVersion) {
+            switch (Autotip.MC_VERSION) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -148,7 +148,7 @@ public class UniversalUtil {
 
     private static Object createComponent(String text) {
         try {
-            switch (Autotip.mcVersion) {
+            switch (Autotip.MC_VERSION) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:
@@ -180,7 +180,7 @@ public class UniversalUtil {
     // Don't try this at home.
     private static Object createComponent(String text, String url, String hoverText) {
         try {
-            switch (Autotip.mcVersion) {
+            switch (Autotip.MC_VERSION) {
                 case V1_8:
                 case V1_8_8:
                 case V1_8_9:

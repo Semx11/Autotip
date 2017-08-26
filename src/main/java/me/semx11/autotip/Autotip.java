@@ -1,24 +1,26 @@
 package me.semx11.autotip;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.command.AUniversalCommand;
 import me.semx11.autotip.command.AutotipCommand;
 import me.semx11.autotip.command.LimboCommand;
 import me.semx11.autotip.command.TipHistoryCommand;
-import me.semx11.autotip.event.ChatListener;
-import me.semx11.autotip.event.HypixelListener;
-import me.semx11.autotip.event.Tipper;
+import me.semx11.autotip.event.EventChatReceived;
+import me.semx11.autotip.event.EventClientConnection;
+import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.MinecraftVersion;
+import me.semx11.autotip.util.NioWrapper;
 import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Version;
 import net.minecraft.client.Minecraft;
@@ -38,35 +40,44 @@ public class Autotip {
     public static final String VERSION_STRING = "2.1";
     public static final Version VERSION = new Version(VERSION_STRING);
 
+    public static final Minecraft MC = Minecraft.getMinecraft();
+    public static final MinecraftVersion MC_VERSION = UniversalUtil.getMinecraftVersion();
+
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
-    public static final ExecutorService THREAD_POOL = Executors
-            .newCachedThreadPool(
-                    new ThreadFactoryBuilder().setNameFormat("AutotipThread-%d").build());
+    public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
+            new ThreadFactoryBuilder().setNameFormat("AutotipThread-%d").build());
 
-    public static String USER_DIR = "";
-
-    public static MinecraftVersion mcVersion;
-    public static Minecraft mc = Minecraft.getMinecraft();
+    public static final String USER_DIR = NioWrapper
+            .separator("mods/autotip/" + MC.getSession().getProfile().getId() + "/");
 
     public static MessageOption messageOption = MessageOption.SHOWN;
-    public static String playerUUID = "";
     public static boolean onHypixel = false;
     public static boolean toggle = true;
 
     public static int totalTipsSent;
     public static List<String> alreadyTipped = new ArrayList<>();
 
+    private static SessionKey sessionKey;
+
+    public static boolean hasSessionKey() {
+        return sessionKey != null;
+    }
+
+    public static SessionKey getSessionKey() {
+        return sessionKey;
+    }
+
+    public static void setSessionKey(SessionKey sessionKey) {
+        Autotip.sessionKey = sessionKey;
+    }
+
     @EventHandler
     public void init(FMLInitializationEvent event) {
         try {
-            mcVersion = MinecraftVersion.fromString(UniversalUtil.getMinecraftVersion());
-            playerUUID = Minecraft.getMinecraft().getSession().getProfile().getId().toString();
-            USER_DIR = "mods" + File.separator + "autotip" + File.separator + playerUUID
-                    + File.separator;
             this.registerEvents(
-                    new Tipper(),
-                    new HypixelListener(),
-                    new ChatListener()
+                    new EventClientTick(),
+                    new EventClientConnection(),
+                    new EventChatReceived()
             );
             this.registerCommands(
                     new AutotipCommand(),

@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.event.HypixelListener;
-import me.semx11.autotip.event.Tipper;
+import me.semx11.autotip.event.EventClientConnection;
+import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.misc.StartLogin;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
@@ -40,7 +40,7 @@ public class AutotipCommand extends AUniversalCommand {
 
     @Override
     public List<String> getCommandAliases() {
-        if (!Autotip.mcVersion.equals(MinecraftVersion.V1_8)) {
+        if (!Autotip.MC_VERSION.equals(MinecraftVersion.V1_8)) {
             return Collections.singletonList("at");
         } else {
             return Collections.emptyList();
@@ -66,7 +66,7 @@ public class AutotipCommand extends AUniversalCommand {
                             null,
                             ChatColor.GOLD + "2Pi's legacy will live on."
                     );
-                    ClientMessage.send("Running in " + Autotip.mcVersion + "-compatibility mode");
+                    ClientMessage.send("Running in " + Autotip.MC_VERSION + "-compatibility mode");
                     ClientMessage.send(
                             "Autotipper: " + (Autotip.toggle ? ChatColor.GREEN + "En"
                                     : ChatColor.RED + "Dis") + "abled");
@@ -138,11 +138,13 @@ public class AutotipCommand extends AUniversalCommand {
                         if (Autotip.onHypixel) {
                             ClientMessage.separator();
                             ClientMessage.send("Last wave: " +
-                                    ChatColor.GOLD + LocalTime.MIN.plusSeconds(Tipper.waveCounter)
+                                    ChatColor.GOLD + LocalTime.MIN
+                                    .plusSeconds(EventClientTick.waveCounter)
                                     .toString());
                             ClientMessage.send("Next wave: " +
                                     ChatColor.GOLD + LocalTime.MIN.plusSeconds(
-                                    Tipper.waveLength - Tipper.waveCounter).toString());
+                                    EventClientTick.waveLength - EventClientTick.waveCounter)
+                                    .toString());
                             ClientMessage.separator();
                         } else {
                             ClientMessage
@@ -163,15 +165,12 @@ public class AutotipCommand extends AUniversalCommand {
                                     .send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
                     ClientMessage.separator();
                     break;
-                case "update":
-                    StartLogin.login();
-                    break;
                 case "info+":
                     ClientMessage.separator();
-                    ClientMessage.send("Last IP joined: " + HypixelListener.lastIp);
-                    ClientMessage.send("Detected MC version: " + Autotip.mcVersion);
+                    ClientMessage.send("Last IP joined: " + EventClientConnection.lastIp);
+                    ClientMessage.send("Detected MC version: " + Autotip.MC_VERSION);
                     ClientMessage
-                            .send("Current tipqueue: " + StringUtils.join(Tipper.tipQueue, ", "));
+                            .send("Current tipqueue: " + StringUtils.join(EventClientTick.newTipQueue.iterator(), ", "));
                     ClientMessage.separator();
                     break;
                 default:

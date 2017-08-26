@@ -16,7 +16,7 @@ import me.semx11.autotip.util.UniversalUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class ChatListener {
+public class EventChatReceived {
 
     private Pattern xpPattern = Pattern.compile("\\+50 experience \\(Gave a player a /tip\\)");
     private Pattern playerPattern = Pattern.compile("You tipped (?<player>\\w+) in .*");

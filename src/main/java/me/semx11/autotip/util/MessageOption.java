@@ -14,14 +14,17 @@ public enum MessageOption {
             case HIDDEN:
                 return SHOWN;
             default:
-                return SHOWN;
+                return null;
         }
     }
 
     @Override
     public String toString() {
-        ChatColor color = ChatColor.GREEN;
+        ChatColor color = null;
         switch (this) {
+            case SHOWN:
+                color = ChatColor.GREEN;
+                break;
             case COMPACT:
                 color = ChatColor.YELLOW;
                 break;
