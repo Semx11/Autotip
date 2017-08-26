@@ -1,7 +1,10 @@
 package me.semx11.autotip.event;
 
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.api.reply.LogoutReply;
+import me.semx11.autotip.api.request.LogoutRequest;
 import me.semx11.autotip.misc.StartLogin;
 import me.semx11.autotip.util.UniversalUtil;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,6 +33,14 @@ public class EventClientConnection {
     @SubscribeEvent
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
         Autotip.onHypixel = false;
+
+        Autotip.THREAD_POOL.submit(() -> {
+            LogoutReply reply = LogoutRequest.doRequest(Autotip.getSessionKey());
+            if (!reply.isSuccess()) {
+                return;
+            }
+            Autotip.setSessionKey(null);
+        });
     }
 
 }

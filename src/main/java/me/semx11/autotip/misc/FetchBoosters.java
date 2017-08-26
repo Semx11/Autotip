@@ -18,7 +18,7 @@ public class FetchBoosters implements Runnable {
 
         // TODO: Probably do something else regarding no session key.
         if (!tipHost.isEnabled() || !Autotip.hasSessionKey()) {
-            EventClientTick.newTipQueue.addAll(TipReply.getDefault().getTips());
+            EventClientTick.TIP_QUEUE.addAll(TipReply.getDefault().getTips());
             return;
         }
 
@@ -26,12 +26,12 @@ public class FetchBoosters implements Runnable {
 
         // TODO: I hate copying and pasting.
         if (!reply.isSuccess()) {
-            EventClientTick.newTipQueue.addAll(TipReply.getDefault().getTips());
+            EventClientTick.TIP_QUEUE.addAll(TipReply.getDefault().getTips());
             return;
         }
 
-        EventClientTick.newTipQueue.addAll(reply.getTips());
+        EventClientTick.TIP_QUEUE.addAll(reply.getTips());
         Autotip.LOGGER.info("Fetched Boosters: " +
-                StringUtils.join(EventClientTick.newTipQueue.iterator(), ", "));
+                StringUtils.join(EventClientTick.TIP_QUEUE.iterator(), ", "));
     }
 }

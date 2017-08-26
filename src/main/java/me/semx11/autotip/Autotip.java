@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.command.AUniversalCommand;
 import me.semx11.autotip.command.AutotipCommand;
@@ -44,6 +44,7 @@ public class Autotip {
     public static final MinecraftVersion MC_VERSION = UniversalUtil.getMinecraftVersion();
 
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
+    public static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(1);
     public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
             new ThreadFactoryBuilder().setNameFormat("AutotipThread-%d").build());
 

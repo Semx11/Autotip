@@ -10,7 +10,6 @@ import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.event.EventClientTick;
-import me.semx11.autotip.misc.StartLogin;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.ChatColor;
@@ -170,7 +169,8 @@ public class AutotipCommand extends AUniversalCommand {
                     ClientMessage.send("Last IP joined: " + EventClientConnection.lastIp);
                     ClientMessage.send("Detected MC version: " + Autotip.MC_VERSION);
                     ClientMessage
-                            .send("Current tipqueue: " + StringUtils.join(EventClientTick.newTipQueue.iterator(), ", "));
+                            .send("Current tipqueue: " + StringUtils
+                                    .join(EventClientTick.TIP_QUEUE.iterator(), ", "));
                     ClientMessage.separator();
                     break;
                 default:

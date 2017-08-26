@@ -1,8 +1,12 @@
 package me.semx11.autotip.misc;
 
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.api.reply.KeepAliveReply;
 import me.semx11.autotip.api.reply.LoginReply;
+import me.semx11.autotip.api.request.KeepAliveRequest;
 import me.semx11.autotip.api.request.LoginRequest;
 import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.ClientMessage;
@@ -31,12 +35,22 @@ public class StartLogin implements Runnable {
 
         LoginUtil.joinServer(session.getToken(), uuid, serverHash);
 
-        // Remove totalTipsSent and calculate instead?
+        // Remove totalTipsSent and calculate instead
         LoginReply reply = LoginRequest.doRequest(session, serverHash, Autotip.totalTipsSent);
 
         if (!reply.isSuccess()) {
             return;
         }
+
+        Autotip.setSessionKey(reply.getSessionKey());
+
+        ScheduledFuture f = Autotip.EXECUTOR.scheduleWithFixedDelay(() -> {
+            KeepAliveReply r = KeepAliveRequest.doRequest(Autotip.getSessionKey());
+            if (!r.isSuccess()) {
+                return;
+            }
+            // Something
+        }, 0, 5, TimeUnit.MINUTES);
 
     }
 
