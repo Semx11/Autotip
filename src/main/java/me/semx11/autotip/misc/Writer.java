@@ -1,14 +1,11 @@
 package me.semx11.autotip.misc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
@@ -59,24 +56,6 @@ public class Writer implements Runnable {
 
             lastDate = FileUtil.getDate();
 
-            if (new File(Autotip.USER_DIR + "tipped.at").exists()) {
-                try (BufferedReader f = new BufferedReader(
-                        new FileReader(Autotip.USER_DIR + "tipped.at"));) {
-                    List<String> lines = f.lines().collect(Collectors.toList());
-                    if (lines.size() >= 1) {
-                        String date = lines.get(0);
-                        if (!Objects.equals(date, FileUtil.getServerDate())) {
-                            Autotip.alreadyTipped.clear();
-                        }
-                    }
-                }
-            }
-            try (FileWriter tippedNames = new FileWriter(Autotip.USER_DIR + "tipped.at")) {
-                write(tippedNames, FileUtil.getServerDate() + ls);
-                for (String name : Autotip.alreadyTipped) {
-                    write(tippedNames, name + ls);
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -19,7 +19,6 @@ public class TipTracker {
         tipsSentHistory.put(System.currentTimeMillis(), username);
         tipsSent++;
         Autotip.totalTipsSent++;
-        Autotip.alreadyTipped.add(username);
 
         Autotip.LOGGER.info("Tipped: {}", username);
         Writer.execute();
