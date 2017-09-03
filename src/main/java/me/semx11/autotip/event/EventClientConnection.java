@@ -1,6 +1,5 @@
 package me.semx11.autotip.event;
 
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.reply.LogoutReply;
@@ -39,6 +38,7 @@ public class EventClientConnection {
             if (!reply.isSuccess()) {
                 return;
             }
+            Autotip.EXECUTOR.shutdown();
             Autotip.setSessionKey(null);
         });
     }
