@@ -53,10 +53,15 @@ public class TipReply extends AbstractReply {
             return username != null ? username : "";
         }
 
+        public String getAsCommand() {
+            return "/tip " + gamemode + (username != null ? " " + username : "");
+        }
+
         @Override
         public String toString() {
-            return this.getGamemode() + " " + this.getUsername();
+            return getGamemode() + " " + getUsername();
         }
+
     }
 
 }

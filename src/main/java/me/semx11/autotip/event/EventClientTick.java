@@ -33,8 +33,8 @@ public class EventClientTick {
             }
 
             if (!TIP_QUEUE.isEmpty() && (tipDelay % 5 == 0)) {
-                Autotip.LOGGER.info("Attempting to tip: {}", TIP_QUEUE.peek());
-                Autotip.MC.thePlayer.sendChatMessage("/tip " + TIP_QUEUE.poll());
+                Autotip.LOGGER.info("Attempting to tip: {}", TIP_QUEUE.peek().toString());
+                Autotip.MC.thePlayer.sendChatMessage(TIP_QUEUE.poll().getAsCommand());
                 tipDelay = 0;
             }
             waveCounter++;
