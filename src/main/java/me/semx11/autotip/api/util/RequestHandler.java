@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.request.AbstractRequest;
 import org.apache.http.HttpEntity;
@@ -28,12 +29,13 @@ public class RequestHandler {
 
     private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
     private static final HttpClient HTTP_CLIENT = HttpClientBuilder.create().build();
-    private static final Gson GSON = new GsonBuilder().create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(SessionKey.class, new SessionKey.JsonAdapter())
+            .create();
 
     public static Optional<AbstractReply> getReply(AbstractRequest request, HttpUriRequest uri) {
         try {
-
-            HttpEntity entity = execute(uri).get(5, TimeUnit.SECONDS).getEntity();
+            HttpEntity entity = execute(uri).get(10, TimeUnit.SECONDS).getEntity();
             String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
 
             AbstractReply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
