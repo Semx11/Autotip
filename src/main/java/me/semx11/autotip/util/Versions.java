@@ -27,7 +27,8 @@ public class Versions {
                 .disableHtmlEscaping()
                 .create();
         try {
-            String json = IOUtils.toString(new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
+            String json = IOUtils.toString(
+                    new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
             instance = gson.fromJson(json, Versions.class);
             instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
         } catch (IOException e) {

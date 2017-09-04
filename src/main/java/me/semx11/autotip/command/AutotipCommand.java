@@ -59,7 +59,8 @@ public class AutotipCommand extends AUniversalCommand {
                 case "?":
                 case "info":
                     MessageUtil.separator();
-                    MessageUtil.send("&6&lAutotip v" + Autotip.VERSION + " &7by &b[MVP&4+&b] Semx11");
+                    MessageUtil
+                            .send("&6&lAutotip v" + Autotip.VERSION + " &7by &b[MVP&4+&b] Semx11");
                     MessageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
                             null,
                             "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"

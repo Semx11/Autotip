@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 public class EventClientConnection {
 
     // TODO: Don't hard-code header.
-    private static final String HYPIXEL_HEADER = "§r§bYou are playing on §r§e§lMC.HYPIXEL.NET§r";
+    private static final String HYPIXEL_HEADER = "\u00a7r\u00a7bYou are playing on \u00a7r\u00a7e\u00a7lMC.HYPIXEL.NET\u00a7r";
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
 
@@ -74,7 +74,7 @@ public class EventClientConnection {
         });
     }
 
-    private Object getHeader() {
+    public static Object getHeader() {
         try {
             return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
         } catch (IllegalAccessException | NullPointerException e) {
