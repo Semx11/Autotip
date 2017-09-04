@@ -21,18 +21,27 @@ public class ReflectionUtil {
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
     private static Map<Class<?>, Map<String, Enum<?>>> loadedEnums = new HashMap<>();
 
-    public static Class<?> getClazz(String className) {
-        if (loadedClasses.containsKey(className)) {
-            return loadedClasses.get(className);
+
+    public static Class<?> findClazz(String... classNames) {
+        for (String className : classNames) {
+            if (loadedClasses.containsKey(className)) {
+                return loadedClasses.get(className);
+            }
         }
 
-        try {
-            Class clazz = Class.forName(className);
-            loadedClasses.put(className, clazz);
-            return clazz;
-        } catch (ClassNotFoundException e) {
-            throw new UnableToFindClassException(className, e);
+        Exception err = null;
+        for (String className : classNames) {
+            try {
+                Class clazz = Class.forName(className);
+                loadedClasses.put(className, clazz);
+                return clazz;
+            } catch (ClassNotFoundException e) {
+                err = e;
+            }
         }
+
+        throw new UnableToFindClassException(classNames, err);
+
     }
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
@@ -59,7 +68,7 @@ public class ReflectionUtil {
         return constructor;
     }
 
-    public static Method getMethod(Class<?> clazz, String[] methodNames, Class<?>... params) {
+    public static Method findMethod(Class<?> clazz, String[] methodNames, Class<?>... params) {
         if (!loadedMethods.containsKey(clazz)) {
             loadedMethods.put(clazz, new HashMap<>());
         }
@@ -87,7 +96,7 @@ public class ReflectionUtil {
         throw new UnableToFindMethodException(methodNames, err);
     }
 
-    public static Field getField(Class<?> clazz, String... fieldNames) {
+    public static Field findField(Class<?> clazz, String... fieldNames) {
         if (!loadedFields.containsKey(clazz)) {
             loadedFields.put(clazz, new HashMap<>());
         }
@@ -101,7 +110,7 @@ public class ReflectionUtil {
             }
 
             try {
-                Field field = clazz.getField(fieldName);
+                Field field = clazz.getDeclaredField(fieldName);
                 field.setAccessible(true);
 
                 clazzFields.put(fieldName, field);
@@ -161,10 +170,10 @@ public class ReflectionUtil {
 
     public static class UnableToFindClassException extends RuntimeException {
 
-        private static final long serialVersionUID = -8815976596063963392L;
+        private static final long serialVersionUID = 3898634214210207487L;
 
-        UnableToFindClassException(String className, Exception e) {
-            super("Could not find class: " + className, e);
+        UnableToFindClassException(String[] classNames, Exception e) {
+            super("Could not find classes: " + String.join(", ", classNames), e);
         }
 
     }
