@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
+import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.TimeUtil;
 import net.minecraft.command.ICommandSender;
 
@@ -45,23 +45,23 @@ public class TipHistoryCommand extends AUniversalCommand {
             }
 
             if (page < 1 || page > pages) {
-                ClientMessage.send(ChatColor.RED + "Invalid page number.");
+                MessageUtil.send(ChatColor.RED + "Invalid page number.");
             } else {
-                ClientMessage.separator();
-                ClientMessage.send(ChatColor.GOLD + "Tip History " + ChatColor.GRAY
+                MessageUtil.separator();
+                MessageUtil.send(ChatColor.GOLD + "Tip History " + ChatColor.GRAY
                         + "[Page " + page + " of " + pages + "]" + ChatColor.GOLD + ":");
 
                 TipTracker.tipsSentHistory.entrySet().stream()
                         .skip((page - 1) * 7)
                         .limit(7)
-                        .forEach(tip -> ClientMessage.send(tip.getValue() + ": " + ChatColor.GOLD
+                        .forEach(tip -> MessageUtil.send(tip.getValue() + ": " + ChatColor.GOLD
                                 + TimeUtil.formatMillis(System.currentTimeMillis() - tip.getKey())
                                 + "."));
 
-                ClientMessage.separator();
+                MessageUtil.separator();
             }
         } else {
-            ClientMessage.send(ChatColor.RED + "You haven't tipped anyone yet!");
+            MessageUtil.send(ChatColor.RED + "You haven't tipped anyone yet!");
         }
     }
 

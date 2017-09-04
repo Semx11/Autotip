@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
+import me.semx11.autotip.util.MessageUtil;
 import net.minecraft.command.ICommandSender;
 
 public class LimboCommand extends AUniversalCommand {
@@ -32,7 +32,7 @@ public class LimboCommand extends AUniversalCommand {
             executed = true;
             Autotip.MC.thePlayer.sendChatMessage(ChatColor.RED.toString());
         } else {
-            ClientMessage.send(ChatColor.RED + "You must be on Hypixel to use this command!");
+            MessageUtil.send(ChatColor.RED + "You must be on Hypixel to use this command!");
         }
     }
 

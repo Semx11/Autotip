@@ -13,8 +13,8 @@ import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
 import me.semx11.autotip.util.FileUtil;
+import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
@@ -54,30 +54,28 @@ public class AutotipCommand extends AUniversalCommand {
                 case "m":
                 case "messages":
                     Autotip.messageOption = Autotip.messageOption.next();
-                    ClientMessage.send("Tip Messages: " + Autotip.messageOption);
+                    MessageUtil.send("Tip Messages: " + Autotip.messageOption);
                     break;
                 case "?":
                 case "info":
-                    ClientMessage.separator();
-                    ClientMessage.send(
-                            ChatColor.GOLD + "" + ChatColor.BOLD + "Autotip v" + Autotip.VERSION
-                                    + " by Semx11",
+                    MessageUtil.separator();
+                    MessageUtil.send(
+                            "&6&lAutotip v" + Autotip.VERSION + " by Semx11",
                             null,
                             ChatColor.GOLD + "2Pi's legacy will live on."
                     );
-                    ClientMessage.send("Running in " + Autotip.MC_VERSION + "-compatibility mode");
-                    ClientMessage.send(
-                            "Autotipper: " + (Autotip.toggle ? ChatColor.GREEN + "En"
-                                    : ChatColor.RED + "Dis") + "abled");
-                    ClientMessage.send("Tip Messages: " + Autotip.messageOption);
-                    ClientMessage.send("Tips sent today: " + ChatColor.GOLD + TipTracker.tipsSent);
-                    ClientMessage.send("Tips received today: " + ChatColor.GOLD
+                    MessageUtil.send("Running in " + Autotip.MC_VERSION + "-compatibility mode");
+                    MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis") +
+                            "abled");
+                    MessageUtil.send("Tip Messages: " + Autotip.messageOption);
+                    MessageUtil.send("Tips sent today: " + ChatColor.GOLD + TipTracker.tipsSent);
+                    MessageUtil.send("Tips received today: " + ChatColor.GOLD
                             + TipTracker.tipsReceived);
-                    ClientMessage
+                    MessageUtil
                             .send("Lifetime tips sent: " + ChatColor.GOLD + Autotip.totalTipsSent);
-                    ClientMessage.send(ChatColor.GOLD
+                    MessageUtil.send(ChatColor.GOLD
                             + "Type /autotip stats to see what has been earned.");
-                    ClientMessage.separator();
+                    MessageUtil.separator();
                     break;
                 case "s":
                 case "stats":
@@ -116,7 +114,7 @@ public class AutotipCommand extends AUniversalCommand {
                                 Stats.printBetween("25-06-2016", FileUtil.getDate());
                                 break;
                             default:
-                                ClientMessage.send(ChatColor.RED
+                                MessageUtil.send(ChatColor.RED
                                         + "Usage: /autotip stats <day, week, month, year, lifetime>");
                                 break;
                         }
@@ -127,7 +125,7 @@ public class AutotipCommand extends AUniversalCommand {
                 case "t":
                 case "toggle":
                     Autotip.toggle = !Autotip.toggle;
-                    ClientMessage.send(
+                    MessageUtil.send(
                             "Autotipper: " + (Autotip.toggle ? ChatColor.GREEN + "En"
                                     : ChatColor.RED + "Dis") + "abled");
                     break;
@@ -135,50 +133,50 @@ public class AutotipCommand extends AUniversalCommand {
                 case "time":
                     if (Autotip.toggle) {
                         if (Autotip.onHypixel) {
-                            ClientMessage.separator();
-                            ClientMessage.send("Last wave: " +
+                            MessageUtil.separator();
+                            MessageUtil.send("Last wave: " +
                                     ChatColor.GOLD + LocalTime.MIN
                                     .plusSeconds(EventClientTick.waveCounter)
                                     .toString());
-                            ClientMessage.send("Next wave: " +
+                            MessageUtil.send("Next wave: " +
                                     ChatColor.GOLD + LocalTime.MIN.plusSeconds(
                                     EventClientTick.waveLength - EventClientTick.waveCounter)
                                     .toString());
-                            ClientMessage.separator();
+                            MessageUtil.separator();
                         } else {
-                            ClientMessage
+                            MessageUtil
                                     .send("Autotip is disabled as you are not playing on Hypixel.");
                         }
                     } else {
-                        ClientMessage.send("Autotip is disabled. Use " + ChatColor.GOLD
+                        MessageUtil.send("Autotip is disabled. Use " + ChatColor.GOLD
                                 + "/autotip toggle"
                                 + ChatColor.GRAY + " to enable it.");
                     }
                     break;
                 case "whatsnew":
-                    ClientMessage.separator();
-                    ClientMessage.send(ChatColor.GOLD + "What's new in Autotip v" + Autotip.VERSION
+                    MessageUtil.separator();
+                    MessageUtil.send(ChatColor.GOLD + "What's new in Autotip v" + Autotip.VERSION
                             + ":");
                     Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog().forEach(
-                            s -> ClientMessage
+                            s -> MessageUtil
                                     .send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
-                    ClientMessage.separator();
+                    MessageUtil.separator();
                     break;
                 case "info+":
-                    ClientMessage.separator();
-                    ClientMessage.send("Last IP joined: " + EventClientConnection.lastIp);
-                    ClientMessage.send("Detected MC version: " + Autotip.MC_VERSION);
-                    ClientMessage
+                    MessageUtil.separator();
+                    MessageUtil.send("Last IP joined: " + EventClientConnection.lastIp);
+                    MessageUtil.send("Detected MC version: " + Autotip.MC_VERSION);
+                    MessageUtil
                             .send("Current tipqueue: " + StringUtils
                                     .join(EventClientTick.TIP_QUEUE.iterator(), ", "));
-                    ClientMessage.separator();
+                    MessageUtil.separator();
                     break;
                 default:
-                    ClientMessage.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+                    MessageUtil.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
                     break;
             }
         } else {
-            ClientMessage.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+            MessageUtil.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
         }
     }
 
