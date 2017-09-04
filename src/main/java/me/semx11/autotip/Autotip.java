@@ -34,8 +34,11 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = Autotip.MODID, version = Autotip.VERSION_STRING, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12.1]")
 public class Autotip {
 
+    // TODO: Remove upon release
+    public static final boolean BETA = true;
+
     public static final String MODID = "autotip";
-    public static final String VERSION_STRING = "2.1";
+    public static final String VERSION_STRING = "2.1.0.1";
     public static final Version VERSION = new Version(VERSION_STRING);
 
     public static final Minecraft MC = Minecraft.getMinecraft();

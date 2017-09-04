@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import me.semx11.autotip.Autotip;
 import org.apache.commons.io.IOUtils;
 
 public class Versions {
@@ -17,10 +18,6 @@ public class Versions {
     private Version latestBeta;
     private List<VersionInfo> versions = new ArrayList<>();
 
-    private Versions(Version latest) {
-        this.latest = latest;
-    }
-
     public static Versions getInstance() {
         return instance;
     }
@@ -30,18 +27,12 @@ public class Versions {
                 .disableHtmlEscaping()
                 .create();
         try {
-            String json = IOUtils.toString(
-                    new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
+            String json = IOUtils.toString(new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
             instance = gson.fromJson(json, Versions.class);
+            instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
-    }
-
-    public void addVersion(Version version, VersionInfo.Severity severity, boolean isBetaVersion,
-            String... changelog) {
-        versions.add(new VersionInfo(version, severity, isBetaVersion, changelog));
     }
 
     public VersionInfo getInfoByVersion(Version version) {
@@ -52,13 +43,14 @@ public class Versions {
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version) {
-        return getHigherVersionInfo(version, this.latest);
+        return getHigherVersionInfo(version, Autotip.BETA ? this.latestBeta : this.latest);
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version, Version highest) {
         return versions.stream()
-                .filter(vi -> vi.getVersion().compareTo(version) > 0
-                        && vi.getVersion().compareTo(highest) < 1)
+                .filter(info -> Autotip.BETA || !info.isBetaVersion())
+                .filter(info -> info.getVersion().compareTo(version) > 0
+                        && info.getVersion().compareTo(highest) < 1)
                 .collect(Collectors.toList());
     }
 

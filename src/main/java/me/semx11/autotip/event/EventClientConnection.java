@@ -77,7 +77,7 @@ public class EventClientConnection {
     private Object getHeader() {
         try {
             return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | NullPointerException e) {
             e.printStackTrace();
             return null;
         }

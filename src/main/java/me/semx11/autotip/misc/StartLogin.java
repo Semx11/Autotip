@@ -38,6 +38,7 @@ public class StartLogin implements Runnable {
         LoginReply reply = LoginRequest.doRequest(session, serverHash, Autotip.totalTipsSent);
 
         if (!reply.isSuccess()) {
+            MessageUtil.send("&cError during login: {}", reply.getCause());
             return;
         }
 
@@ -46,6 +47,7 @@ public class StartLogin implements Runnable {
         Autotip.EXECUTOR.scheduleAtFixedRate(() -> {
             KeepAliveReply r = KeepAliveRequest.doRequest(Autotip.getSessionKey());
             if (!r.isSuccess()) {
+
                 Autotip.LOGGER.warn("KeepAliveRequest failed: {}", r.getCause());
             }
         }, 300, 300, TimeUnit.SECONDS);
@@ -81,7 +83,7 @@ public class StartLogin implements Runnable {
     public void run() {
         try {
             // Why.
-            Thread.sleep(2000);
+            Thread.sleep(2500);
             login();
             checkVersions();
         } catch (InterruptedException e) {

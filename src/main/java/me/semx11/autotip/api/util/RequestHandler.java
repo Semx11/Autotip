@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.request.AbstractRequest;
@@ -34,15 +35,17 @@ public class RequestHandler {
             .create();
 
     public static Optional<AbstractReply> getReply(AbstractRequest request, HttpUriRequest uri) {
+        String json = null;
         try {
             HttpEntity entity = execute(uri).get(10, TimeUnit.SECONDS).getEntity();
-            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
 
             AbstractReply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
 
             return Optional.of(reply);
         } catch (InterruptedException | ExecutionException | IOException | JsonParseException | TimeoutException e) {
             e.printStackTrace();
+            Autotip.LOGGER.info("JSON: " + json);
             return Optional.empty();
         }
     }

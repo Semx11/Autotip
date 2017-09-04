@@ -59,12 +59,12 @@ public class AutotipCommand extends AUniversalCommand {
                 case "?":
                 case "info":
                     MessageUtil.separator();
-                    MessageUtil.send(
-                            "&6&lAutotip v" + Autotip.VERSION + " by Semx11",
+                    MessageUtil.send("&6&lAutotip v" + Autotip.VERSION + " &7by &b[MVP&4+&b] Semx11");
+                    MessageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
                             null,
-                            ChatColor.GOLD + "2Pi's legacy will live on."
-                    );
-                    MessageUtil.send("Running in " + Autotip.MC_VERSION + "-compatibility mode");
+                            "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"
+                                    + "&b[MVP&3+&b] 2Pi &r&7- Lead API developer, Founder, Creator, PR\n"
+                                    + "&6[YT] Sk1er &r&7- Host, not the creator, PR");
                     MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis") +
                             "abled");
                     MessageUtil.send("Tip Messages: " + Autotip.messageOption);

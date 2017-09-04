@@ -104,51 +104,44 @@ public class Stats {
                 int receivedCoins = receivedStats.getOrDefault(game, 0);
                 if (sentStats.containsKey(game) || receivedStats.containsKey(game)) {
                     MessageUtil.send(
-                            MessageUtil.params("&a{}: &e{}",
+                            MessageUtil.params("&a{}: &e{} coins",
                                     game, format(sentCoins + receivedCoins)),
                             null,
                             MessageUtil.params(
-                                    "&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{}",
+                                    "&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{} coins",
                                     game, format(sentCoins), format(receivedCoins))
                     );
                 }
             });
             MessageUtil.send(
-                    String.format("%sTips: %s", ChatColor.GOLD, format(tips[0] + tips[1])),
+                    MessageUtil.params("&6Tips: {}", format(tips[0] + tips[1])),
                     null,
-                    String.format("%sSent: %s%s tips\n%sReceived: %s%s tips",
-                            ChatColor.RED,
-                            ChatColor.GOLD, format(tips[0]),
-                            ChatColor.BLUE,
-                            ChatColor.GOLD, format(tips[1]))
+                    MessageUtil.params("&cSent: &6{} tips\n&9Received: &6{} tips",
+                            format(tips[0]), format(tips[1]))
             );
             MessageUtil.send(
-                    String.format("%sXP: %s", ChatColor.BLUE, format(xp[0] + xp[1])),
+                    MessageUtil.params("&9XP: {}", format(xp[0] + xp[1])),
                     null,
-                    String.format("%sBy sending: %s%s XP\n%sBy receiving: %s XP",
-                            ChatColor.RED,
-                            ChatColor.BLUE, format(xp[0]),
-                            ChatColor.BLUE, format(xp[1]))
+                    MessageUtil.params("&cBy sending: &9{} XP\n&9By receiving: {} XP",
+                            format(xp[0]), format(xp[1]))
             );
             if (karma > 0) {
                 MessageUtil.send(
-                        String.format("%sKarma: %s", ChatColor.LIGHT_PURPLE, format(karma)),
+                        MessageUtil.params("&dKarma: {}", format(karma)),
                         null,
-                        ChatColor.LIGHT_PURPLE + "Welcome to the veteran club :)"
+                        ChatColor.LIGHT_PURPLE + "I should probably fix this..."
                 );
             }
 
-            MessageUtil.send(String.format("Stats from %s%s",
-                    days[0].replace("-", "/"),
+            MessageUtil.send("Stats from {}{}",
+                    (Object) days[0].replace("-", "/"),
                     days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : ""
-            ));
+            );
             MessageUtil.separator();
         } else {
-            MessageUtil.send(ChatColor.RED + "You have never tipped someone in this period!");
-            MessageUtil.send(String.format("(%s%s)",
-                    days[0].replace("-", "/"),
-                    days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : ""
-            ));
+            MessageUtil.send("&cYou have never tipped someone in this period!");
+            MessageUtil.send("({}{})", (Object) days[0].replace("-", "/"),
+                    days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : "");
         }
     }
 
