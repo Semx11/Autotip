@@ -8,10 +8,10 @@ import me.semx11.autotip.api.reply.LoginReply;
 import me.semx11.autotip.api.request.KeepAliveRequest;
 import me.semx11.autotip.api.request.LoginRequest;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.LoginUtil;
+import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.VersionInfo;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.util.Session;
@@ -59,21 +59,21 @@ public class StartLogin implements Runnable {
 
         List<VersionInfo> vInfo = Versions.getInstance().getHigherVersionInfo(Autotip.VERSION);
         if (vInfo.size() > 0) {
-            ClientMessage.separator();
-            ClientMessage.send(
+            MessageUtil.separator();
+            MessageUtil.send(
                     ChatColor.RED + "Autotip is out of date! Click here to update.",
                     "https://" + downloadHost.getUrl(),
                     ChatColor.GRAY + "Click to visit " + ChatColor.GOLD + downloadHost.getUrl()
                             + ChatColor.GRAY + "!"
             );
-            ClientMessage.send("Update info:");
+            MessageUtil.send("Update info:");
             vInfo.forEach(vi -> {
-                ClientMessage.send(ChatColor.GOLD + "Autotip v" + vi.getVersion());
-                ClientMessage.send("Update severity: " + vi.getSeverity().toColoredString());
+                MessageUtil.send(ChatColor.GOLD + "Autotip v" + vi.getVersion());
+                MessageUtil.send("Update severity: " + vi.getSeverity().toColoredString());
                 vi.getChangelog().forEach(
-                        s -> ClientMessage.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
+                        s -> MessageUtil.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
             });
-            ClientMessage.separator();
+            MessageUtil.separator();
         }
     }
 

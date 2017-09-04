@@ -44,7 +44,7 @@ public class Autotip {
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
     public static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(3);
     public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
-            new ThreadFactoryBuilder().setNameFormat("AutotipThread-%d").build());
+            new ThreadFactoryBuilder().setNameFormat("AutotipThread").build());
 
     public static final String USER_DIR = NioWrapper
             .separator("mods/autotip/" + MC.getSession().getProfile().getId() + "/");

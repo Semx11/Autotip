@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
+import me.semx11.autotip.util.MessageUtil;
 
 public class Stats {
 
@@ -98,27 +98,22 @@ public class Stats {
                 .collect(Collectors.toList());
 
         if (!games.isEmpty()) {
-            ClientMessage.separator();
+            MessageUtil.separator();
             games.forEach(game -> {
                 int sentCoins = sentStats.getOrDefault(game, 0);
                 int receivedCoins = receivedStats.getOrDefault(game, 0);
                 if (sentStats.containsKey(game) || receivedStats.containsKey(game)) {
-                    ClientMessage.send(
-                            String.format("%s%s: %s%s coins",
-                                    ChatColor.GREEN, game,
-                                    ChatColor.YELLOW, format(sentCoins + receivedCoins)),
+                    MessageUtil.send(
+                            MessageUtil.params("&a{}: &e{}",
+                                    game, format(sentCoins + receivedCoins)),
                             null,
-                            String.format(
-                                    "%s%s\n%sBy sending: %s%s coins\n%sBy receiving: %s%s coins",
-                                    ChatColor.GREEN, game,
-                                    ChatColor.RED,
-                                    ChatColor.YELLOW, format(sentCoins),
-                                    ChatColor.BLUE,
-                                    ChatColor.YELLOW, format(receivedCoins))
+                            MessageUtil.params(
+                                    "&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{}",
+                                    game, format(sentCoins), format(receivedCoins))
                     );
                 }
             });
-            ClientMessage.send(
+            MessageUtil.send(
                     String.format("%sTips: %s", ChatColor.GOLD, format(tips[0] + tips[1])),
                     null,
                     String.format("%sSent: %s%s tips\n%sReceived: %s%s tips",
@@ -127,7 +122,7 @@ public class Stats {
                             ChatColor.BLUE,
                             ChatColor.GOLD, format(tips[1]))
             );
-            ClientMessage.send(
+            MessageUtil.send(
                     String.format("%sXP: %s", ChatColor.BLUE, format(xp[0] + xp[1])),
                     null,
                     String.format("%sBy sending: %s%s XP\n%sBy receiving: %s XP",
@@ -136,21 +131,21 @@ public class Stats {
                             ChatColor.BLUE, format(xp[1]))
             );
             if (karma > 0) {
-                ClientMessage.send(
+                MessageUtil.send(
                         String.format("%sKarma: %s", ChatColor.LIGHT_PURPLE, format(karma)),
                         null,
                         ChatColor.LIGHT_PURPLE + "Welcome to the veteran club :)"
                 );
             }
 
-            ClientMessage.send(String.format("Stats from %s%s",
+            MessageUtil.send(String.format("Stats from %s%s",
                     days[0].replace("-", "/"),
                     days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : ""
             ));
-            ClientMessage.separator();
+            MessageUtil.separator();
         } else {
-            ClientMessage.send(ChatColor.RED + "You have never tipped someone in this period!");
-            ClientMessage.send(String.format("(%s%s)",
+            MessageUtil.send(ChatColor.RED + "You have never tipped someone in this period!");
+            MessageUtil.send(String.format("(%s%s)",
                     days[0].replace("-", "/"),
                     days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : ""
             ));

@@ -10,8 +10,8 @@ import me.semx11.autotip.command.LimboCommand;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.misc.Writer;
 import me.semx11.autotip.util.ChatColor;
-import me.semx11.autotip.util.ClientMessage;
 import me.semx11.autotip.util.MessageOption;
+import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.UniversalUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -81,7 +81,7 @@ public class EventChatReceived {
                 Writer.execute();
 
                 if (mOption.equals(COMPACT)) {
-                    ClientMessage.sendRaw(
+                    MessageUtil.sendRaw(
                             String.format("%sEarned %s%d coins%s and %s%d experience%s in %s.",
                                     ChatColor.GREEN, ChatColor.YELLOW, coins,
                                     ChatColor.GREEN, ChatColor.BLUE, xp,

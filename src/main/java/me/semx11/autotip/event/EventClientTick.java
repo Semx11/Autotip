@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.reply.TipReply.Tip;
 import me.semx11.autotip.misc.FetchBoosters;
+import me.semx11.autotip.util.MessageUtil;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
@@ -20,6 +21,8 @@ public class EventClientTick {
 
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event) {
+        MessageUtil.flushQueues();
+
         if (Autotip.onHypixel && Autotip.toggle && (time != System.currentTimeMillis() / 1000L)) {
             if (waveCounter == waveLength) {
                 Autotip.THREAD_POOL.submit(new FetchBoosters());
@@ -34,7 +37,7 @@ public class EventClientTick {
 
             if (!TIP_QUEUE.isEmpty() && (tipDelay % 5 == 0)) {
                 Autotip.LOGGER.info("Attempting to tip: {}", TIP_QUEUE.peek().toString());
-                Autotip.MC.thePlayer.sendChatMessage(TIP_QUEUE.poll().getAsCommand());
+                MessageUtil.sendCommand(TIP_QUEUE.poll().getAsCommand());
                 tipDelay = 0;
             }
             waveCounter++;
