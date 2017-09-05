@@ -16,13 +16,10 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 
 public class EventClientConnection {
 
-    // TODO: Don't hard-code header.
-    private static final String HYPIXEL_HEADER = "\u00a7r\u00a7bYou are playing on \u00a7r\u00a7e\u00a7lMC.HYPIXEL.NET\u00a7r";
+    // TODO: Don't hard-code this.
+    private static final String HYPIXEL_HEADER = "You are playing on MC.HYPIXEL.NET";
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
-
-//    private static final Pattern IP_PATTERN = Pattern
-//            .compile("(^([\\w-]+[.\\u2024])?hypixel[.\\u2024]net|209\\.222\\.115\\.\\d{1,3})");
 
     public static String lastIp;
 
@@ -49,7 +46,7 @@ public class EventClientConnection {
                 attempts++;
             }
 
-            if (UniversalUtil.getFormattedText(header).equals(HYPIXEL_HEADER)) {
+            if (UniversalUtil.getUnformattedText(header).equals(HYPIXEL_HEADER)) {
                 Autotip.onHypixel = true;
                 EventClientTick.waveCounter = 910;
                 Autotip.THREAD_POOL.submit(new StartLogin());
