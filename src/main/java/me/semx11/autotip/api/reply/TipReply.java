@@ -2,7 +2,6 @@ package me.semx11.autotip.api.reply;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import me.semx11.autotip.api.util.RequestType;
 
 public class TipReply extends AbstractReply {
@@ -21,7 +20,7 @@ public class TipReply extends AbstractReply {
     }
 
     public static TipReply getDefault() {
-        return new TipReply(Collections.singletonList(new Tip("all", "")));
+        return new TipReply(Collections.singletonList(new Tip("all", null)));
     }
 
     public List<Tip> getTips() {
@@ -55,13 +54,12 @@ public class TipReply extends AbstractReply {
         }
 
         public String getAsCommand() {
-            return "/tip " + (!Objects.equals(username, "") && username != null
-                    ? username + " " : "") + gamemode;
+            return "/tip " + this.toString();
         }
 
         @Override
         public String toString() {
-            return getUsername() + " " + getGamemode();
+            return (username != null && !username.isEmpty() ? username + " " : "") + gamemode;
         }
 
     }
