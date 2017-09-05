@@ -16,6 +16,7 @@ import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
+import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
 import org.apache.commons.lang3.StringUtils;
@@ -159,17 +160,17 @@ public class AutotipCommand extends AUniversalCommand {
                     MessageUtil.send(ChatColor.GOLD + "What's new in Autotip v" + Autotip.VERSION
                             + ":");
                     Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog().forEach(
-                            s -> MessageUtil
-                                    .send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
+                            s -> MessageUtil.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
                     MessageUtil.separator();
                     break;
                 case "info+":
                     MessageUtil.separator();
                     MessageUtil.send("Last IP joined: " + EventClientConnection.lastIp);
                     MessageUtil.send("Detected MC version: " + Autotip.MC_VERSION);
-                    MessageUtil
-                            .send("Current tipqueue: " + StringUtils
-                                    .join(EventClientTick.TIP_QUEUE.iterator(), ", "));
+                    MessageUtil.send("Current tipqueue: " + StringUtils
+                            .join(EventClientTick.TIP_QUEUE.iterator(), ", "));
+                    MessageUtil.send("Tablist Header: " + UniversalUtil
+                            .getUnformattedText(EventClientConnection.getHeader()));
                     MessageUtil.separator();
                     break;
                 default:
