@@ -62,12 +62,14 @@ public class EventClientConnection {
         Autotip.onHypixel = false;
 
         Autotip.THREAD_POOL.submit(() -> {
-            LogoutReply reply = LogoutRequest.doRequest(Autotip.getSessionKey());
+            LogoutReply reply = LogoutRequest.of(Autotip.getSessionKey()).execute();
             if (!reply.isSuccess()) {
                 return;
             }
-            Autotip.EXECUTOR.shutdown();
+            Autotip.ACTIVE_TASKS.removeIf(future -> future.cancel(true));
             Autotip.setSessionKey(null);
+
+            EventClientTick.TIP_QUEUE.clear();
         });
     }
 

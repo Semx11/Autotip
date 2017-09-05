@@ -9,19 +9,25 @@ import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class KeepAliveRequest extends AbstractRequest {
+public class KeepAliveRequest extends AbstractRequest<KeepAliveReply> {
 
-    private KeepAliveRequest() {
+    private final SessionKey sessionKey;
+
+    private KeepAliveRequest(SessionKey sessionKey) {
+        this.sessionKey = sessionKey;
     }
 
-    public static KeepAliveReply doRequest(SessionKey sessionKey) {
-        KeepAliveRequest request = new KeepAliveRequest();
+    public static KeepAliveRequest of(SessionKey sessionKey) {
+        return new KeepAliveRequest(sessionKey);
+    }
 
-        HttpUriRequest uri = GetBuilder.of(request)
-                .addParameter("key", sessionKey)
+    @Override
+    public KeepAliveReply execute() {
+        HttpUriRequest uri = GetBuilder.of(this)
+                .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(request, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
         return optional
                 .map(reply -> (KeepAliveReply) reply)
                 .orElseGet(() -> new KeepAliveReply(false));

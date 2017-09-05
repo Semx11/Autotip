@@ -22,7 +22,7 @@ public class FetchBoosters implements Runnable {
             return;
         }
 
-        TipReply reply = TipRequest.doRequest(Autotip.getSessionKey());
+        TipReply reply = TipRequest.of(Autotip.getSessionKey()).execute();
 
         // TODO: I hate copying and pasting.
         if (!reply.isSuccess()) {

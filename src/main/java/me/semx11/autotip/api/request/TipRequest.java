@@ -9,19 +9,25 @@ import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class TipRequest extends AbstractRequest {
+public class TipRequest extends AbstractRequest<TipReply> {
 
-    private TipRequest() {
+    private final SessionKey sessionKey;
+
+    private TipRequest(SessionKey sessionKey) {
+        this.sessionKey = sessionKey;
     }
 
-    public static TipReply doRequest(SessionKey sessionKey) {
-        TipRequest request = new TipRequest();
+    public static TipRequest of(SessionKey sessionKey) {
+        return new TipRequest(sessionKey);
+    }
 
-        HttpUriRequest uri = GetBuilder.of(request)
-                .addParameter("key", sessionKey)
+    @Override
+    public TipReply execute() {
+        HttpUriRequest uri = GetBuilder.of(this)
+                .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(request, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
         return optional
                 .map(reply -> (TipReply) reply)
                 .orElseGet(TipReply::getDefault);

@@ -1,10 +1,15 @@
 package me.semx11.autotip;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.command.AUniversalCommand;
@@ -48,6 +53,8 @@ public class Autotip {
     public static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(3);
     public static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool(
             new ThreadFactoryBuilder().setNameFormat("AutotipThread").build());
+
+    public static final List<ScheduledFuture> ACTIVE_TASKS = new ArrayList<>();
 
     public static final String USER_DIR = NioWrapper
             .separator("mods/autotip/" + MC.getSession().getProfile().getId() + "/");

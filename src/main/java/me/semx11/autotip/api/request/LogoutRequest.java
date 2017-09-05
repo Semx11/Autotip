@@ -9,19 +9,25 @@ import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class LogoutRequest extends AbstractRequest {
+public class LogoutRequest extends AbstractRequest<LogoutReply> {
 
-    private LogoutRequest() {
+    private final SessionKey sessionKey;
+
+    private LogoutRequest(SessionKey sessionKey) {
+        this.sessionKey = sessionKey;
     }
 
-    public static LogoutReply doRequest(SessionKey sessionKey) {
-        LogoutRequest request = new LogoutRequest();
+    public static LogoutRequest of(SessionKey sessionKey) {
+        return new LogoutRequest(sessionKey);
+    }
 
-        HttpUriRequest uri = GetBuilder.of(request)
-                .addParameter("key", sessionKey)
+    @Override
+    public LogoutReply execute() {
+        HttpUriRequest uri = GetBuilder.of(this)
+                .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(request, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
         return optional
                 .map(reply -> (LogoutReply) reply)
                 .orElseGet(() -> new LogoutReply(false));
