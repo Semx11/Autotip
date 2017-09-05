@@ -55,7 +55,7 @@ public class TipReply extends AbstractReply {
         }
 
         public String getAsCommand() {
-            return "/tip " + (!Objects.equals(username, "") && username != null
+            return "/tip " + (!username.isEmpty() && username != null
                     ? username + " " : "") + gamemode;
         }
 
