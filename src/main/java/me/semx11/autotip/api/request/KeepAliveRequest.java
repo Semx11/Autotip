@@ -23,11 +23,11 @@ public class KeepAliveRequest extends AbstractRequest<KeepAliveReply> {
 
     @Override
     public KeepAliveReply execute() {
-        HttpUriRequest uri = GetBuilder.of(this)
+        HttpUriRequest request = GetBuilder.of(this)
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (KeepAliveReply) reply)
                 .orElseGet(() -> new KeepAliveReply(false));

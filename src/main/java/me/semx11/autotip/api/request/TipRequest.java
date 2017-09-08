@@ -23,11 +23,11 @@ public class TipRequest extends AbstractRequest<TipReply> {
 
     @Override
     public TipReply execute() {
-        HttpUriRequest uri = GetBuilder.of(this)
+        HttpUriRequest request = GetBuilder.of(this)
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (TipReply) reply)
                 .orElseGet(TipReply::getDefault);

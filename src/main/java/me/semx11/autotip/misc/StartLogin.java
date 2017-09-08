@@ -1,5 +1,6 @@
 package me.semx11.autotip.misc;
 
+import com.mojang.authlib.GameProfile;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,14 +30,15 @@ public class StartLogin implements Runnable {
         }
 
         Session session = Autotip.MC.getSession();
+        GameProfile profile = session.getProfile();
 
-        String uuid = session.getProfile().getId().toString().replace("-", "");
+        String uuid = profile.getId().toString().replace("-", "");
         String serverHash = LoginUtil.hash(uuid + LoginUtil.getNextSalt());
 
         LoginUtil.joinServer(session.getToken(), uuid, serverHash);
 
         // TODO: Remove totalTipsSent and calculate instead
-        LoginReply reply = LoginRequest.of(session, serverHash, Autotip.totalTipsSent).execute();
+        LoginReply reply = LoginRequest.of(profile, serverHash, Autotip.totalTipsSent).execute();
 
         if (!reply.isSuccess()) {
             MessageUtil.send("&cError during login: {}", reply.getCause());

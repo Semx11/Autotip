@@ -1,5 +1,6 @@
 package me.semx11.autotip.api.request;
 
+import com.mojang.authlib.GameProfile;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.reply.AbstractReply;
@@ -7,30 +8,29 @@ import me.semx11.autotip.api.reply.LoginReply;
 import me.semx11.autotip.api.util.GetBuilder;
 import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
-import net.minecraft.util.Session;
 import org.apache.http.client.methods.HttpUriRequest;
 
 public class LoginRequest extends AbstractRequest<LoginReply> {
 
-    private final Session session;
+    private final GameProfile profile;
     private final String hash;
     private final int tips;
 
-    private LoginRequest(Session session, String hash, int tips) {
-        this.session = session;
+    private LoginRequest(GameProfile profile, String hash, int tips) {
+        this.profile = profile;
         this.hash = hash;
         this.tips = tips;
     }
 
-    public static LoginRequest of(Session session, String hash, int tips) {
-        return new LoginRequest(session, hash, tips);
+    public static LoginRequest of(GameProfile profile, String hash, int tips) {
+        return new LoginRequest(profile, hash, tips);
     }
 
     @Override
     public LoginReply execute() {
-        HttpUriRequest uri = GetBuilder.of(this)
-                .addParameter("username", this.session.getProfile().getName())
-                .addParameter("uuid", this.session.getProfile().getId())
+        HttpUriRequest request = GetBuilder.of(this)
+                .addParameter("username", this.profile.getName())
+                .addParameter("uuid", this.profile.getId().toString().replace("-", ""))
                 .addParameter("tips", this.tips)
                 .addParameter("v", Autotip.VERSION)
                 .addParameter("mc", Autotip.MC_VERSION)
@@ -38,7 +38,7 @@ public class LoginRequest extends AbstractRequest<LoginReply> {
                 .addParameter("hash", this.hash)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, uri);
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (LoginReply) reply)
                 .orElseGet(() -> new LoginReply(false));
