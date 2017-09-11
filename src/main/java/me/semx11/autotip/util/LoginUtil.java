@@ -2,21 +2,18 @@ package me.semx11.autotip.util;
 
 import com.google.gson.JsonObject;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import org.apache.http.HttpResponse;
+import me.semx11.autotip.util.ErrorReport;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 
 public class LoginUtil {
-
-    private static final HttpClient HTTP_CLIENT = HttpClientBuilder.create().build();
 
     private static SecureRandom random = new SecureRandom();
 
@@ -41,22 +38,30 @@ public class LoginUtil {
 
     public static int joinServer(String token, String uuid, String serverHash) {
         try {
-            HttpPost request = new HttpPost("https://sessionserver.mojang.com/session/"
-                    + "minecraft/join");
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/join");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
 
             JsonObject obj = new JsonObject();
             obj.addProperty("accessToken", token);
             obj.addProperty("selectedProfile", uuid);
             obj.addProperty("serverId", serverHash);
 
-            request.setEntity(new StringEntity(obj.toString()));
-            request.addHeader("Content-Type", "application/json");
+            byte[] jsonBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
 
-            HttpResponse response = HTTP_CLIENT.execute(request);
+            conn.setFixedLengthStreamingMode(jsonBytes.length);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.connect();
 
-            return response.getStatusLine().getStatusCode();
+            try (OutputStream out = conn.getOutputStream()) {
+                out.write(jsonBytes);
+            }
+
+            return conn.getResponseCode();
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return HttpStatus.SC_BAD_REQUEST;
         }
     }

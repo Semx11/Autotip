@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.core.TaskManager;
+import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
 
 public class Writer implements Runnable {
@@ -17,7 +19,7 @@ public class Writer implements Runnable {
     private static String ls = System.lineSeparator();
 
     public static void execute() {
-        Autotip.THREAD_POOL.submit(new Writer());
+        TaskManager.EXECUTOR.submit(new Writer());
     }
 
     @Override
@@ -57,7 +59,7 @@ public class Writer implements Runnable {
             lastDate = FileUtil.getDate();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 
@@ -65,7 +67,7 @@ public class Writer implements Runnable {
         try {
             writer.write(text);
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 

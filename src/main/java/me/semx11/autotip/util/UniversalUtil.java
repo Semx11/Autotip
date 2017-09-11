@@ -44,7 +44,7 @@ public class UniversalUtil {
                 return MinecraftVersion.V1_8;
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return MinecraftVersion.V1_8;
         }
     }
@@ -63,7 +63,7 @@ public class UniversalUtil {
             ).invoke(networkManager);
 
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
         return address;
     }
@@ -77,7 +77,7 @@ public class UniversalUtil {
 
             return getUnformattedText(component);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return "";
         }
     }
@@ -89,7 +89,7 @@ public class UniversalUtil {
                     new String[]{"func_150260_c", "getUnformattedText"}
             ).invoke(component);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return "";
         }
     }
@@ -101,7 +101,7 @@ public class UniversalUtil {
                     new String[]{"func_150254_d", "getFormattedText"}
             ).invoke(component);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return "";
         }
     }
@@ -113,7 +113,7 @@ public class UniversalUtil {
                     : findMethod(EntityEvent.class, new String[]{"getEntity"}).invoke(event);
             return (Entity) entity;
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return null;
         }
     }
@@ -131,7 +131,7 @@ public class UniversalUtil {
         try {
             addChatMethod.invoke(thePlayer, component);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 
@@ -139,7 +139,7 @@ public class UniversalUtil {
         try {
             return getConstructor(textComponentClass, String.class).newInstance(text);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return null;
         }
     }
@@ -187,7 +187,7 @@ public class UniversalUtil {
             ).invoke(chatComponent, chatStyle);
 
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return null;
         }
     }

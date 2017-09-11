@@ -14,6 +14,7 @@ import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.AbstractReply;
 import me.semx11.autotip.api.request.AbstractRequest;
+import me.semx11.autotip.util.ErrorReport;
 import org.apache.commons.io.IOUtils;
 
 public class RequestHandler {
@@ -41,7 +42,7 @@ public class RequestHandler {
 
             return Optional.of(reply);
         } catch (IOException | JsonParseException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             Autotip.LOGGER.info(request.getType() + " JSON: " + json);
             return Optional.empty();
         }

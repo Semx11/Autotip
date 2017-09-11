@@ -2,9 +2,9 @@ package me.semx11.autotip.event;
 
 import java.lang.reflect.Field;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.api.reply.LogoutReply;
-import me.semx11.autotip.api.request.LogoutRequest;
-import me.semx11.autotip.misc.StartLogin;
+import me.semx11.autotip.core.SessionManager;
+import me.semx11.autotip.core.TaskManager;
+import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.ReflectionUtil;
 import me.semx11.autotip.util.UniversalUtil;
@@ -25,13 +25,14 @@ public class EventClientConnection {
 
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
+        SessionManager manager = Autotip.SESSION_MANAGER;
+
         MessageUtil.clearQueues();
 
         // TODO: Remove this probably.
         lastIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
 
-        // Thanks, Forge, for not having a proper 'packet received' event.
-        Autotip.THREAD_POOL.submit(() -> {
+        TaskManager.EXECUTOR.submit(() -> {
             Object header;
             int attempts = 0;
             while ((header = getHeader()) == null) {
@@ -41,17 +42,17 @@ public class EventClientConnection {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    ErrorReport.reportException(e);
                 }
                 attempts++;
             }
 
             if (UniversalUtil.getUnformattedText(header).equals(HYPIXEL_HEADER)) {
-                Autotip.onHypixel = true;
-                EventClientTick.waveCounter = 910;
-                Autotip.THREAD_POOL.submit(new StartLogin());
+                manager.setOnHypixel(true);
+                manager.checkVersions();
+                manager.login();
             } else {
-                Autotip.onHypixel = false;
+                manager.setOnHypixel(false);
             }
 
         });
@@ -59,25 +60,14 @@ public class EventClientConnection {
 
     @SubscribeEvent
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
-        Autotip.onHypixel = false;
-
-        Autotip.THREAD_POOL.submit(() -> {
-            LogoutReply reply = LogoutRequest.of(Autotip.getSessionKey()).execute();
-            if (!reply.isSuccess()) {
-                return;
-            }
-            Autotip.ACTIVE_TASKS.removeIf(future -> future.cancel(true));
-            Autotip.setSessionKey(null);
-
-            EventClientTick.TIP_QUEUE.clear();
-        });
+        TaskManager.EXECUTOR.submit(Autotip.SESSION_MANAGER::logout);
     }
 
     public static Object getHeader() {
         try {
             return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
         } catch (IllegalAccessException | NullPointerException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return null;
         }
     }

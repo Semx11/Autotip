@@ -3,7 +3,6 @@ package me.semx11.autotip.command;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.MessageUtil;
 import net.minecraft.command.ICommandSender;
 
@@ -28,11 +27,13 @@ public class LimboCommand extends AUniversalCommand {
 
     @Override
     public void onCommand(ICommandSender sender, String[] args) {
-        if (Autotip.onHypixel) {
+        if (Autotip.SESSION_MANAGER.isOnHypixel()) {
             executed = true;
-            Autotip.MC.thePlayer.sendChatMessage(ChatColor.RED.toString());
+            for (int i = 0; i < 10; i++) {
+                MessageUtil.sendCommand("/please_take_me_to_limbo_thanks");
+            }
         } else {
-            MessageUtil.send(ChatColor.RED + "You must be on Hypixel to use this command!");
+            MessageUtil.send("&cYou must be on Hypixel to use this command!");
         }
     }
 

@@ -12,16 +12,17 @@ import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.util.ChatColor;
+import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
-import org.apache.commons.lang3.StringUtils;
 
 public class AutotipCommand extends AUniversalCommand {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("mm:ss");
 
     @Override
     public String getCommandName() {
@@ -61,22 +62,21 @@ public class AutotipCommand extends AUniversalCommand {
                 case "info":
                     MessageUtil.separator();
                     MessageUtil
-                            .send("&6&lAutotip v" + Autotip.VERSION + " &7by &b[MVP&4+&b] Semx11");
+                            .send("&6&lAutotip v" + Autotip.VERSION + " &7by &bSemx11");
                     MessageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
                             null,
-                            "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"
+                            "&6The Autotip Team\n"
+                                    + "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"
                                     + "&b[MVP&3+&b] 2Pi &r&7- Lead API developer, Founder, Creator, PR\n"
                                     + "&6[YT] Sk1er &r&7- Host, not the creator, PR");
                     MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis") +
                             "abled");
                     MessageUtil.send("Tip Messages: " + Autotip.messageOption);
-                    MessageUtil.send("Tips sent today: " + ChatColor.GOLD + TipTracker.tipsSent);
-                    MessageUtil.send("Tips received today: " + ChatColor.GOLD
-                            + TipTracker.tipsReceived);
+                    MessageUtil.send("Tips sent today: &6" + TipTracker.tipsSent);
+                    MessageUtil.send("Tips received today: &6" + TipTracker.tipsReceived);
                     MessageUtil
-                            .send("Lifetime tips sent: " + ChatColor.GOLD + Autotip.totalTipsSent);
-                    MessageUtil.send(ChatColor.GOLD
-                            + "Type /autotip stats to see what has been earned.");
+                            .send("Lifetime tips sent: &6" + Autotip.totalTipsSent);
+                    MessageUtil.send("&6Type /autotip stats to see what has been earned.");
                     MessageUtil.separator();
                     break;
                 case "s":
@@ -116,8 +116,8 @@ public class AutotipCommand extends AUniversalCommand {
                                 Stats.printBetween("25-06-2016", FileUtil.getDate());
                                 break;
                             default:
-                                MessageUtil.send(ChatColor.RED
-                                        + "Usage: /autotip stats <day, week, month, year, lifetime>");
+                                MessageUtil.send("&cUsage: /autotip stats <day, week, month, year,"
+                                        + " lifetime>");
                                 break;
                         }
                     } else {
@@ -127,58 +127,58 @@ public class AutotipCommand extends AUniversalCommand {
                 case "t":
                 case "toggle":
                     Autotip.toggle = !Autotip.toggle;
-                    MessageUtil.send(
-                            "Autotipper: " + (Autotip.toggle ? ChatColor.GREEN + "En"
-                                    : ChatColor.RED + "Dis") + "abled");
+                    MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis")
+                            + "abled");
                     break;
                 case "wave":
                 case "time":
                     if (Autotip.toggle) {
-                        if (Autotip.onHypixel) {
+                        if (Autotip.SESSION_MANAGER.isOnHypixel()) {
                             MessageUtil.separator();
-                            MessageUtil.send("Last wave: " +
-                                    ChatColor.GOLD + LocalTime.MIN
+                            MessageUtil.send("Last wave: &6" + LocalTime.MIN
                                     .plusSeconds(EventClientTick.waveCounter)
-                                    .toString());
-                            MessageUtil.send("Next wave: " +
-                                    ChatColor.GOLD + LocalTime.MIN.plusSeconds(
-                                    EventClientTick.waveLength - EventClientTick.waveCounter)
-                                    .toString());
+                                    .format(FORMATTER));
+                            MessageUtil.send("Next wave: &6" + LocalTime.MIN
+                                    .plusSeconds(EventClientTick.waveLength
+                                            - EventClientTick.waveCounter)
+                                    .format(FORMATTER));
                             MessageUtil.separator();
                         } else {
-                            MessageUtil
-                                    .send("Autotip is disabled as you are not playing on Hypixel.");
+                            MessageUtil.send("Autotip is disabled as you are not playing "
+                                    + "on Hypixel.");
                         }
                     } else {
-                        MessageUtil.send("Autotip is disabled. Use " + ChatColor.GOLD
-                                + "/autotip toggle"
-                                + ChatColor.GRAY + " to enable it.");
+                        MessageUtil.send("Autotip is disabled. Use &6/autotip toggle&7 to "
+                                + "enable it.");
                     }
                     break;
                 case "whatsnew":
                     MessageUtil.separator();
-                    MessageUtil.send(ChatColor.GOLD + "What's new in Autotip v" + Autotip.VERSION
+                    MessageUtil.send("&6What's new in Autotip v" + Autotip.VERSION
                             + ":");
                     Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog().forEach(
-                            s -> MessageUtil.send(ChatColor.DARK_GRAY + "- " + ChatColor.GRAY + s));
+                            s -> MessageUtil.send("&8- &7" + s));
                     MessageUtil.separator();
                     break;
-                case "info+":
+                case "debug":
                     MessageUtil.separator();
                     MessageUtil.send("Last IP joined: " + EventClientConnection.lastIp);
                     MessageUtil.send("Detected MC version: " + Autotip.MC_VERSION);
-                    MessageUtil.send("Current tipqueue: " + StringUtils
-                            .join(EventClientTick.TIP_QUEUE.iterator(), ", "));
                     MessageUtil.send("Tablist Header: " + UniversalUtil
                             .getUnformattedText(EventClientConnection.getHeader()));
                     MessageUtil.separator();
+                    try {
+                        throw new NullPointerException();
+                    } catch (Throwable t) {
+                        ErrorReport.reportException(t);
+                    }
                     break;
                 default:
-                    MessageUtil.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+                    MessageUtil.send("&cUsage: " + getCommandUsage(sender));
                     break;
             }
         } else {
-            MessageUtil.send(ChatColor.RED + "Usage: " + getCommandUsage(sender));
+            MessageUtil.send("&cUsage: " + getCommandUsage(sender));
         }
     }
 

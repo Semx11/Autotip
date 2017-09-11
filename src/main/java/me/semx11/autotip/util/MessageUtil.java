@@ -25,7 +25,7 @@ public class MessageUtil {
     }
 
     public static void separator() {
-        sendRaw("&6&l----------------------------------");
+        sendRaw("&6&m&l----------------------------------");
     }
 
     public static void sendRaw(String msg, Object... params) {

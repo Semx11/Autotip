@@ -9,7 +9,6 @@ import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.LimboCommand;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.misc.Writer;
-import me.semx11.autotip.util.ChatColor;
 import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.UniversalUtil;
@@ -28,7 +27,7 @@ public class EventChatReceived {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
 
-        if (!Autotip.onHypixel) {
+        if (!Autotip.SESSION_MANAGER.isOnHypixel()) {
             return;
         }
 
@@ -81,12 +80,8 @@ public class EventChatReceived {
                 Writer.execute();
 
                 if (mOption.equals(COMPACT)) {
-                    MessageUtil.sendRaw(
-                            String.format("%sEarned %s%d coins%s and %s%d experience%s in %s.",
-                                    ChatColor.GREEN, ChatColor.YELLOW, coins,
-                                    ChatColor.GREEN, ChatColor.BLUE, xp,
-                                    ChatColor.GREEN, game
-                            ));
+                    MessageUtil.sendRaw("&aEarned &e{} coins &aand &9{} experience &ain {}.",
+                            coins, xp, game);
                 }
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
                 Autotip.LOGGER.info("Earned {} coins and {} experience in {}.", coins, xp, game);

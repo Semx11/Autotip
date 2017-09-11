@@ -29,7 +29,7 @@ public class Hosts {
                     new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/hosts.json"));
             instance = gson.fromJson(json, Hosts.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 

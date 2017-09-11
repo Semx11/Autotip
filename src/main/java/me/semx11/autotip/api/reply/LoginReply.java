@@ -6,6 +6,9 @@ import me.semx11.autotip.api.util.RequestType;
 public class LoginReply extends AbstractReply {
 
     private SessionKey sessionKey;
+    private long keepAliveRate;
+    private long tipWaveRate;
+    private long tipCycleRate;
 
     public LoginReply() {
     }
@@ -16,6 +19,18 @@ public class LoginReply extends AbstractReply {
 
     public SessionKey getSessionKey() {
         return sessionKey;
+    }
+
+    public long getKeepAliveRate() {
+        return keepAliveRate;
+    }
+
+    public long getTipWaveRate() {
+        return tipWaveRate;
+    }
+
+    public long getTipCycleRate() {
+        return tipCycleRate;
     }
 
     @Override

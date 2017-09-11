@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.util.ChatColor;
+import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MessageUtil;
 
 public class Stats {
@@ -129,7 +129,7 @@ public class Stats {
                 MessageUtil.send(
                         MessageUtil.params("&dKarma: {}", format(karma)),
                         null,
-                        ChatColor.LIGHT_PURPLE + "I should probably fix this..."
+                        "&dI should probably fix this..."
                 );
             }
 
@@ -173,7 +173,7 @@ public class Stats {
             }
             return Arrays.asList(sentStats, receivedStats);
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return Arrays.asList(Collections.emptyMap(), Collections.emptyMap());
         }
     }

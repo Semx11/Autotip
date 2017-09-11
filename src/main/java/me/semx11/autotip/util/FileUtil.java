@@ -38,7 +38,7 @@ public class FileUtil {
                 try {
                     parsed = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 } catch (DateTimeParseException e) {
-                    e.printStackTrace();
+                    ErrorReport.reportException(e);
                     parsed = LocalDate.now();
                 }
                 Stats.setUpgradeDate(parsed);
@@ -115,7 +115,7 @@ public class FileUtil {
                 Writer.execute();
             }
         } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 

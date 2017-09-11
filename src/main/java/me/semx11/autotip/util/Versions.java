@@ -32,7 +32,7 @@ public class Versions {
             instance = gson.fromJson(json, Versions.class);
             instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
         }
     }
 
