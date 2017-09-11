@@ -35,7 +35,7 @@ public class Autotip {
     public static final boolean BETA = true;
 
     public static final String MODID = "autotip";
-    public static final String VERSION_STRING = "2.1.0.5";
+    public static final String VERSION_STRING = "2.1.0.6";
     public static final Version VERSION = new Version(VERSION_STRING);
 
     public static final Minecraft MC = Minecraft.getMinecraft();
