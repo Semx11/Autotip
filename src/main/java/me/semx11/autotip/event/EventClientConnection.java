@@ -21,7 +21,16 @@ public class EventClientConnection {
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
 
-    public static String lastIp;
+    private static String serverIp;
+    private static long lastLogin;
+
+    public static String getServerIp() {
+        return serverIp;
+    }
+
+    public static long getLastLogin() {
+        return lastLogin;
+    }
 
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
@@ -29,10 +38,10 @@ public class EventClientConnection {
 
         MessageUtil.clearQueues();
 
-        // TODO: Remove this probably.
-        lastIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
+        serverIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
+        lastLogin = System.currentTimeMillis();
 
-        TaskManager.EXECUTOR.submit(() -> {
+        TaskManager.EXECUTOR.execute(() -> {
             Object header;
             int attempts = 0;
             while ((header = getHeader()) == null) {
@@ -50,17 +59,21 @@ public class EventClientConnection {
             if (UniversalUtil.getUnformattedText(header).equals(HYPIXEL_HEADER)) {
                 manager.setOnHypixel(true);
                 manager.checkVersions();
-                manager.login();
+                if (Autotip.toggle) {
+                    manager.login();
+                }
             } else {
                 manager.setOnHypixel(false);
             }
-
         });
     }
 
     @SubscribeEvent
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
-        TaskManager.EXECUTOR.submit(Autotip.SESSION_MANAGER::logout);
+        SessionManager manager = Autotip.SESSION_MANAGER;
+        manager.setOnHypixel(false);
+        TaskManager.EXECUTOR.execute(manager::logout);
+        resetHeader();
     }
 
     public static Object getHeader() {
@@ -69,6 +82,14 @@ public class EventClientConnection {
         } catch (IllegalAccessException | NullPointerException e) {
             ErrorReport.reportException(e);
             return null;
+        }
+    }
+
+    private static void resetHeader() {
+        try {
+            HEADER_FIELD.set(Minecraft.getMinecraft().ingameGUI.getTabList(), null);
+        } catch (IllegalAccessException e) {
+            ErrorReport.reportException(e);
         }
     }
 

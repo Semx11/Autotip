@@ -16,6 +16,7 @@ import me.semx11.autotip.api.request.LoginRequest;
 import me.semx11.autotip.api.request.LogoutRequest;
 import me.semx11.autotip.api.request.TipRequest;
 import me.semx11.autotip.core.TaskManager.TaskType;
+import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.LoginUtil;
@@ -36,6 +37,7 @@ public class SessionManager {
     private boolean loggedIn = false;
 
     private long lastTipWave;
+    private long nextTipWave;
 
     public SessionKey getKey() {
         return sessionKey;
@@ -55,6 +57,14 @@ public class SessionManager {
 
     public boolean isLoggedIn() {
         return loggedIn;
+    }
+
+    public long getLastTipWave() {
+        return lastTipWave;
+    }
+
+    public long getNextTipWave() {
+        return nextTipWave;
     }
 
     public void checkVersions() {
@@ -97,7 +107,10 @@ public class SessionManager {
 
         LoginRequest request = LoginRequest.of(profile, serverHash, Autotip.totalTipsSent);
 
-        this.reply = TaskManager.scheduleAndAwait(request::execute, 5);
+        long delay = EventClientConnection.getLastLogin() + 5000 - System.currentTimeMillis();
+        delay /= 1000;
+
+        this.reply = TaskManager.scheduleAndAwait(request::execute, delay < 0 ? 0 : delay);
         if (!reply.isSuccess()) {
             MessageUtil.send("&cError during login: {}", reply.getCause());
             return;
@@ -127,7 +140,6 @@ public class SessionManager {
 
         tipQueue.clear();
         this.sessionKey = null;
-        this.onHypixel = false;
         this.loggedIn = false;
     }
 
@@ -147,7 +159,8 @@ public class SessionManager {
             return;
         }
 
-
+        this.lastTipWave = System.currentTimeMillis();
+        this.nextTipWave = lastTipWave + reply.getTipWaveRate() * 1000;
 
         TipReply r = TipRequest.of(sessionKey).execute();
         if (!r.isSuccess()) {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.util.VersionInfo.Severity;
 import org.apache.commons.io.IOUtils;
 
 public class Versions {
@@ -40,7 +41,7 @@ public class Versions {
         return versions.stream()
                 .filter(v -> v.getVersion().equals(version))
                 .findFirst()
-                .orElse(null);
+                .orElse(new VersionInfo(version, Severity.OPTIONAL, true, "&cVersion not found."));
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version) {

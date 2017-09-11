@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +35,10 @@ public class TaskManager {
         if (TASKS.containsKey(type)) {
             return;
         }
-        TASKS.put(type, SCHEDULER.scheduleAtFixedRate(command, delay, period, TimeUnit.SECONDS));
+        ScheduledFuture future = SCHEDULER
+                .scheduleAtFixedRate(command, delay, period, TimeUnit.SECONDS);
+        TASKS.put(type, future);
+        catchFutureException(future);
     }
 
     public static void cancelTask(TaskType type) {
@@ -42,6 +46,18 @@ public class TaskManager {
             TASKS.get(type).cancel(true);
             TASKS.remove(type);
         }
+    }
+
+    private static void catchFutureException(ScheduledFuture future) {
+        EXECUTOR.execute(() -> {
+            try {
+                future.get();
+            } catch (CancellationException ignored) {
+                // Manual cancellation of a repeating task.
+            } catch (InterruptedException | ExecutionException e) {
+                ErrorReport.reportException(e);
+            }
+        });
     }
 
     private static ThreadFactory getThreadFactory(String name) {

@@ -8,11 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.core.SessionManager;
+import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.event.EventClientConnection;
-import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
@@ -22,7 +22,9 @@ import net.minecraft.command.ICommandSender;
 
 public class AutotipCommand extends AUniversalCommand {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("mm:ss");
+    private static final DateTimeFormatter SESSION_FORMATTER = DateTimeFormatter
+            .ofPattern("HH:mm:ss");
+    private static final DateTimeFormatter WAVE_FORMATTER = DateTimeFormatter.ofPattern("mm:ss");
 
     @Override
     public String getCommandName() {
@@ -50,6 +52,8 @@ public class AutotipCommand extends AUniversalCommand {
 
     @Override
     public void onCommand(ICommandSender sender, String[] args) {
+
+        SessionManager manager = Autotip.SESSION_MANAGER;
 
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
@@ -127,21 +131,31 @@ public class AutotipCommand extends AUniversalCommand {
                 case "t":
                 case "toggle":
                     Autotip.toggle = !Autotip.toggle;
-                    MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis")
-                            + "abled");
+                    if (Autotip.toggle) {
+                        if (manager.isOnHypixel() && !manager.isLoggedIn()) {
+                            TaskManager.EXECUTOR.execute(manager::login);
+                        }
+                    } else {
+                        TaskManager.EXECUTOR.execute(manager::logout);
+                    }
+                    MessageUtil.send("Autotip: " + (Autotip.toggle ? "&aEn" : "&cDis") + "abled");
                     break;
                 case "wave":
                 case "time":
                     if (Autotip.toggle) {
-                        if (Autotip.SESSION_MANAGER.isOnHypixel()) {
+                        if (manager.isOnHypixel()) {
+                            if (manager.getNextTipWave() == 0) {
+                                MessageUtil.send("The first tip wave hasn't occurred yet.");
+                                return;
+                            }
                             MessageUtil.separator();
+                            long time = System.currentTimeMillis();
                             MessageUtil.send("Last wave: &6" + LocalTime.MIN
-                                    .plusSeconds(EventClientTick.waveCounter)
-                                    .format(FORMATTER));
+                                    .plusSeconds((time - manager.getLastTipWave()) / 1000)
+                                    .format(WAVE_FORMATTER));
                             MessageUtil.send("Next wave: &6" + LocalTime.MIN
-                                    .plusSeconds(EventClientTick.waveLength
-                                            - EventClientTick.waveCounter)
-                                    .format(FORMATTER));
+                                    .plusSeconds((manager.getNextTipWave() - time) / 1000 + 1)
+                                    .format(WAVE_FORMATTER));
                             MessageUtil.separator();
                         } else {
                             MessageUtil.send("Autotip is disabled as you are not playing "
@@ -162,16 +176,12 @@ public class AutotipCommand extends AUniversalCommand {
                     break;
                 case "debug":
                     MessageUtil.separator();
-                    MessageUtil.send("Last IP joined: " + EventClientConnection.lastIp);
+                    MessageUtil.send("Last IP joined: " + EventClientConnection.getServerIp());
                     MessageUtil.send("Detected MC version: " + Autotip.MC_VERSION);
-                    MessageUtil.send("Tablist Header: " + UniversalUtil
-                            .getUnformattedText(EventClientConnection.getHeader()));
+                    Object header = EventClientConnection.getHeader();
+                    MessageUtil.send("Tablist Header: " + (header == null ? "No header."
+                            : UniversalUtil.getUnformattedText(header)));
                     MessageUtil.separator();
-                    try {
-                        throw new NullPointerException();
-                    } catch (Throwable t) {
-                        ErrorReport.reportException(t);
-                    }
                     break;
                 default:
                     MessageUtil.send("&cUsage: " + getCommandUsage(sender));

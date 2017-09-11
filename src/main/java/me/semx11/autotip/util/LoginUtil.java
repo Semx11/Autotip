@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import me.semx11.autotip.util.ErrorReport;
 import org.apache.http.HttpStatus;
 
 public class LoginUtil {

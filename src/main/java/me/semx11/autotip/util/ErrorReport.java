@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.event.EventClientConnection;
 import net.minecraftforge.common.ForgeVersion;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,6 +32,7 @@ public class ErrorReport {
                     .addString("os", System.getProperty("os.name"))
                     .addString("forge", ForgeVersion.getVersion())
                     .addString("sessionKey", Autotip.SESSION_MANAGER.getKey())
+                    .addString("serverIp", EventClientConnection.getServerIp())
                     .addString("stackTrace", ExceptionUtils.getStackTrace(t))
                     .addNumber("time", System.currentTimeMillis())
                     .build();

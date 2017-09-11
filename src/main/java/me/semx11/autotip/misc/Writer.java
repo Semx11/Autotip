@@ -19,7 +19,7 @@ public class Writer implements Runnable {
     private static String ls = System.lineSeparator();
 
     public static void execute() {
-        TaskManager.EXECUTOR.submit(new Writer());
+        TaskManager.EXECUTOR.execute(new Writer());
     }
 
     @Override
