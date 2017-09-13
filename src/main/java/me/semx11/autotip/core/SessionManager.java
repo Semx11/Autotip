@@ -128,7 +128,7 @@ public class SessionManager {
     }
 
     public void logout() {
-        if (sessionKey == null) {
+        if (!loggedIn) {
             return;
         }
         LogoutReply reply = LogoutRequest.of(sessionKey).execute();
@@ -154,7 +154,7 @@ public class SessionManager {
     }
 
     private void tipWave() {
-        if (!onHypixel) {
+        if (!onHypixel || !loggedIn) {
             TaskManager.cancelTask(TaskType.TIP_WAVE);
             return;
         }
