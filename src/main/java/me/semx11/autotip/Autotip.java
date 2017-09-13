@@ -12,7 +12,6 @@ import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.event.EventClientTick;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
-import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.NioWrapper;
@@ -68,7 +67,6 @@ public class Autotip {
                     new LimboCommand()
             );
             FileUtil.getVars();
-            Hosts.updateHosts();
         } catch (IOException e) {
             ErrorReport.reportException(e);
         }

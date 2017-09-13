@@ -5,7 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
@@ -41,18 +43,22 @@ public class Writer implements Runnable {
 
             FileWriter dailyStats = new FileWriter(
                     Autotip.USER_DIR + "stats" + File.separator + FileUtil.getDate() + ".at");
+
             write(dailyStats, TipTracker.tipsSent + ":" + TipTracker.tipsReceived + ls);
             write(dailyStats, "0" + ls);
 
-            List<String> games = Stream.concat(
-                    TipTracker.tipsSentEarnings.keySet().stream(),
-                    TipTracker.tipsReceivedEarnings.keySet().stream()
-            ).distinct().collect(Collectors.toList());
+            // Prevent ConcurrentModificationException until new format.
+            Set<String> sent = new HashSet<>(TipTracker.tipsSentEarnings.keySet());
+            Set<String> received = new HashSet<>(TipTracker.tipsReceivedEarnings.keySet());
+
+            List<String> games = Stream.concat(sent.stream(), received.stream())
+                    .distinct()
+                    .collect(Collectors.toList());
 
             games.forEach(game -> {
-                int sent = TipTracker.tipsSentEarnings.getOrDefault(game, 0);
-                int received = TipTracker.tipsReceivedEarnings.getOrDefault(game, 0);
-                write(dailyStats, game + ":" + sent + ":" + received + ls);
+                int sentCoins = TipTracker.tipsSentEarnings.getOrDefault(game, 0);
+                int receivedCoins = TipTracker.tipsReceivedEarnings.getOrDefault(game, 0);
+                write(dailyStats, game + ":" + sentCoins + ":" + receivedCoins + ls);
             });
             dailyStats.close();
 

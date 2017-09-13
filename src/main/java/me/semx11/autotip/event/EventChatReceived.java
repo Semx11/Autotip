@@ -80,7 +80,7 @@ public class EventChatReceived {
                 Writer.execute();
 
                 if (mOption.equals(COMPACT)) {
-                    MessageUtil.sendRaw("&aEarned &e{} coins &aand &9{} experience &ain {}.",
+                    MessageUtil.sendRaw("&aEarned&e {} coins&a and&9 {} experience&a in {}.",
                             coins, xp, game);
                 }
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));

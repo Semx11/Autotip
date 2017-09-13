@@ -92,7 +92,6 @@ public class SessionManager {
     }
 
     public void login() {
-        // TODO: Add Autotip toggle
         Session session = Autotip.MC.getSession();
         GameProfile profile = session.getProfile();
 
@@ -110,7 +109,7 @@ public class SessionManager {
         long delay = EventClientConnection.getLastLogin() + 5000 - System.currentTimeMillis();
         delay /= 1000;
 
-        this.reply = TaskManager.scheduleAndAwait(request::execute, delay < 0 ? 0 : delay);
+        this.reply = TaskManager.scheduleAndAwait(request::execute, delay < 1 ? 1 : delay);
         if (!reply.isSuccess()) {
             MessageUtil.send("&cError during login: {}", reply.getCause());
             return;
@@ -118,13 +117,14 @@ public class SessionManager {
 
         this.sessionKey = reply.getSessionKey();
 
+        this.loggedIn = true;
+
         long keepAlive = reply.getKeepAliveRate();
         long tipWave = reply.getTipWaveRate();
 
         TaskManager.addRepeatingTask(TaskType.KEEP_ALIVE, this::keepAlive, keepAlive, keepAlive);
         TaskManager.addRepeatingTask(TaskType.TIP_WAVE, this::tipWave, 0, tipWave);
 
-        this.loggedIn = true;
     }
 
     public void logout() {
@@ -136,11 +136,11 @@ public class SessionManager {
             Autotip.LOGGER.warn("Error during logout: {}", reply.getCause());
         }
 
-        TaskManager.cancelTask(TaskType.KEEP_ALIVE);
-
-        tipQueue.clear();
-        this.sessionKey = null;
         this.loggedIn = false;
+        this.sessionKey = null;
+
+        TaskManager.cancelTask(TaskType.KEEP_ALIVE);
+        tipQueue.clear();
     }
 
     private void keepAlive() {
@@ -163,13 +163,13 @@ public class SessionManager {
         this.nextTipWave = lastTipWave + reply.getTipWaveRate() * 1000;
 
         TipReply r = TipRequest.of(sessionKey).execute();
-        if (!r.isSuccess()) {
+        if (r.isSuccess()) {
+            tipQueue.addAll(r.getTips());
+            Autotip.LOGGER.info("Fetched Boosters: " + StringUtils.join(tipQueue.iterator(), ", "));
+        } else {
             tipQueue.addAll(TipReply.getDefault().getTips());
-            return;
+            Autotip.LOGGER.info("Failed to fetch boosters, tipping 'all' instead.");
         }
-
-        tipQueue.addAll(r.getTips());
-        Autotip.LOGGER.info("Fetched Boosters: " + StringUtils.join(tipQueue.iterator(), ", "));
 
         long tipCycle = reply.getTipCycleRate();
         TaskManager.addRepeatingTask(TaskType.TIP_CYCLE, this::tipCycle, 0, tipCycle);

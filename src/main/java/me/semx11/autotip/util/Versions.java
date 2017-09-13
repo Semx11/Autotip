@@ -1,7 +1,6 @@
 package me.semx11.autotip.util;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,24 +12,29 @@ import org.apache.commons.io.IOUtils;
 
 public class Versions {
 
+    private static final Gson GSON = new Gson();
+
     private static Versions instance;
 
     private Version latest;
     private Version latestBeta;
     private List<VersionInfo> versions = new ArrayList<>();
 
+    private Versions() {
+    }
+
     public static Versions getInstance() {
+        if (instance == null) {
+            updateVersions();
+        }
         return instance;
     }
 
     public static void updateVersions() {
-        Gson gson = new GsonBuilder().setPrettyPrinting()
-                .disableHtmlEscaping()
-                .create();
         try {
-            String json = IOUtils.toString(
-                    new URL("https://gist.githubusercontent.com/Semx11/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
-            instance = gson.fromJson(json, Versions.class);
+            String json = IOUtils.toString(new URL("https://gist.githubusercontent.com/Semx11"
+                    + "/35d6b58783ef8d0527f82782f6555834/raw/versions.json"));
+            instance = GSON.fromJson(json, Versions.class);
             instance.versions.sort((v1, v2) -> v2.getVersion().compareTo(v1.getVersion()));
         } catch (IOException e) {
             ErrorReport.reportException(e);
