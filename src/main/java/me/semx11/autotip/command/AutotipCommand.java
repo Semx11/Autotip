@@ -88,7 +88,7 @@ public class AutotipCommand extends AUniversalCommand {
                     LocalDate now = LocalDate.now();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-                    if (args.length == 2) {
+                    if (args.length > 1) {
                         switch (args[1].toLowerCase()) {
                             case "day":
                             case "daily":
