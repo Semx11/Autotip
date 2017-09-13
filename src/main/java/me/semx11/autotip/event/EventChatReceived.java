@@ -89,11 +89,12 @@ public class EventChatReceived {
             }
         }
 
-        if (LimboCommand.executed) {
-            if (msg.startsWith("A kick occurred in your connection")
-                    || msg.startsWith("Illegal characters in chat")) {
+        if (LimboCommand.hasExecuted()) {
+            if (msg.startsWith("A kick occurred in your connection")) {
                 event.setCanceled(true);
-                LimboCommand.executed = false;
+            } else if (msg.startsWith("Illegal characters in chat")) {
+                event.setCanceled(true);
+                LimboCommand.setExecuted(false);
             }
         }
 

@@ -8,7 +8,15 @@ import net.minecraft.command.ICommandSender;
 
 public class LimboCommand extends AUniversalCommand {
 
-    public static boolean executed;
+    private static boolean executed;
+
+    public static boolean hasExecuted() {
+        return executed;
+    }
+
+    public static void setExecuted(boolean executed) {
+        LimboCommand.executed = executed;
+    }
 
     @Override
     public String getCommandName() {
@@ -29,9 +37,7 @@ public class LimboCommand extends AUniversalCommand {
     public void onCommand(ICommandSender sender, String[] args) {
         if (Autotip.SESSION_MANAGER.isOnHypixel()) {
             executed = true;
-            for (int i = 0; i < 10; i++) {
-                MessageUtil.sendCommand("/please_take_me_to_limbo_thanks");
-            }
+            MessageUtil.sendCommand("/achat \u00a7c");
         } else {
             MessageUtil.send("&cYou must be on Hypixel to use this command!");
         }
