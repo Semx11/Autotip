@@ -16,7 +16,7 @@ Many of the components that make Autotip work take place on the autotip.pro serv
 #### Contributors
 - [Semx11](https://hypixel.net/members/semx11.20123) - Developer of mod, developer of API, PR. 
 - [2Pi](https://hypixel.net/members/2pi.22108) - Developer of API, developer of mod from April 2016 to August 2016, PR.
-- [Sk1er](https://hypixel.net/members/sk1er.199731) - Host, PR.
+- [Sk1er](https://hypixel.net/members/sk1er.199731) - Host, PR, Creator of Autotip.
 
 #### Distribution
 If you would like to distribute Autotip in either your own client or a larger Forge mod, we ask that you contact us for permission so we can make sure you're not doing anything malicious with the code. You can PM us at any of the above Hypixel Forums user pages or DM us on twitter at [@HypixelAutotip](https://twitter.com/HypixelAutotip). If you plan on making your own client, we will only allow you to use the code if the client is an injectable instead of an actual variation of the Minecraft client itself. In other words, you must not be distributing the Minecraft client for download, which is against Mojang's EULA, rather modifying one that is already on a user's computer.
