@@ -159,7 +159,7 @@ public class UniversalUtil {
 
                 findMethod(
                         chatStyleClass,
-                        new String[]{"func_150241_a", "setChatClickEvent"}, // 1.8 - 1.12.1
+                        new String[]{"func_150241_a", "setChatClickEvent"}, // 1.8 - 1.12.2
                         clickEventClass
                 ).invoke(chatStyle, clickEvent);
             }
@@ -173,7 +173,7 @@ public class UniversalUtil {
 
                 findMethod(
                         chatStyleClass,
-                        new String[]{"func_150209_a", "setChatHoverEvent"}, // 1.8 - 1.12.1
+                        new String[]{"func_150209_a", "setChatHoverEvent"}, // 1.8 - 1.12.2
                         hoverEventClass
                 ).invoke(chatStyle, hoverEvent);
             }
@@ -182,7 +182,7 @@ public class UniversalUtil {
 
             return findMethod(
                     textComponentClass,
-                    new String[]{"func_150255_a", "setChatStyle"}, // 1.8 - 1.12.1
+                    new String[]{"func_150255_a", "setChatStyle"}, // 1.8 - 1.12.2
                     chatStyleClass
             ).invoke(chatComponent, chatStyle);
 
@@ -206,6 +206,7 @@ public class UniversalUtil {
             case V1_11_2:
             case V1_12:
             case V1_12_1:
+            case V1_12_2:
                 return false;
             default:
                 return false;
@@ -215,42 +216,42 @@ public class UniversalUtil {
     static {
         componentClass = findClazz(
                 "net.minecraft.util.IChatComponent", // 1.8 - 1.8.9
-                "net.minecraft.util.text.ITextComponent" // 1.9 - 1.12.1
+                "net.minecraft.util.text.ITextComponent" // 1.9 - 1.12.2
         );
         textComponentClass = findClazz(
                 "net.minecraft.util.ChatComponentText", // 1.8 - 1.8.9
-                "net.minecraft.util.text.TextComponentString" // 1.9 - 1.12.1
+                "net.minecraft.util.text.TextComponentString" // 1.9 - 1.12.2
         );
         addChatMethod = findMethod(
                 EntityPlayerSP.class,
                 new String[]{
-                        "func_145747_a", // 1.8  - 1.8.9  | 1.11 - 1.12.1
+                        "func_145747_a", // 1.8  - 1.8.9  | 1.11 - 1.12.2
                         "func_146105_b", // 1.9  - 1.10.2
-                        "addChatMessage", // 1.8  - 1.8.9  | 1.11 - 1.12.1
+                        "addChatMessage", // 1.8  - 1.8.9  | 1.11 - 1.12.2
                         "addChatComponentMessage", // 1.9  - 1.10.2
-                        "sendMessage" // 1.11 - 1.12.1
+                        "sendMessage" // 1.11 - 1.12.2
                 },
                 componentClass
         );
         chatStyleClass = findClazz(
                 "net.minecraft.util.ChatStyle", // 1.8 - 1.8.9
-                "net.minecraft.util.text.Style" // 1.9 - 1.12.1
+                "net.minecraft.util.text.Style" // 1.9 - 1.12.2
         );
         clickEventClass = findClazz(
                 "net.minecraft.event.ClickEvent", // 1.8 - 1.8.9
-                "net.minecraft.util.text.event.ClickEvent" // 1.9 - 1.12.1
+                "net.minecraft.util.text.event.ClickEvent" // 1.9 - 1.12.2
         );
         clickEventActionClass = findClazz(
                 "net.minecraft.event.ClickEvent$Action", // 1.8 - 1.8.9
-                "net.minecraft.util.text.event.ClickEvent$Action" // 1.9 - 1.12.1
+                "net.minecraft.util.text.event.ClickEvent$Action" // 1.9 - 1.12.2
         );
         hoverEventClass = findClazz(
                 "net.minecraft.event.HoverEvent", // 1.8 - 1.8.9
-                "net.minecraft.util.text.event.HoverEvent" // 1.9 - 1.12.1
+                "net.minecraft.util.text.event.HoverEvent" // 1.9 - 1.12.2
         );
         hoverEventActionClass = findClazz(
                 "net.minecraft.event.HoverEvent$Action", // 1.8 - 1.8.9
-                "net.minecraft.util.text.event.HoverEvent$Action" // 1.9 - 1.12.1
+                "net.minecraft.util.text.event.HoverEvent$Action" // 1.9 - 1.12.2
         );
     }
 
