@@ -27,7 +27,7 @@ public class TipRequest extends AbstractRequest<TipReply> {
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply<AbstractReply>> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (TipReply) reply)
                 .orElseGet(TipReply::getDefault);

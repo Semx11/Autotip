@@ -23,7 +23,7 @@ public class RequestHandler {
             .registerTypeAdapter(SessionKey.class, new SessionKey.JsonAdapter())
             .create();
 
-    public static Optional<AbstractReply<AbstractReply>> getReply(AbstractRequest request, URI uri) {
+    public static Optional<AbstractReply> getReply(AbstractRequest request, URI uri) {
         String json = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
@@ -38,7 +38,7 @@ public class RequestHandler {
             json = IOUtils.toString(input, StandardCharsets.UTF_8);
             Autotip.LOGGER.info(request.getType() + " JSON: " + json);
 
-            AbstractReply<AbstractReply> reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
+            AbstractReply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
 
             return Optional.of(reply);
         } catch (IOException | JsonParseException e) {

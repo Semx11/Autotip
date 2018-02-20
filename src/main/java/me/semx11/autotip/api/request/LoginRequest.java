@@ -38,7 +38,7 @@ public class LoginRequest extends AbstractRequest<LoginReply> {
                 .addParameter("hash", this.hash)
                 .build();
 
-        Optional<AbstractReply<AbstractReply>> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (LoginReply) reply)
                 .orElseGet(() -> new LoginReply(false));
