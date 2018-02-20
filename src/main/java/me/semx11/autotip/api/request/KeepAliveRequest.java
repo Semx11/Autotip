@@ -27,7 +27,7 @@ public class KeepAliveRequest extends AbstractRequest<KeepAliveReply> {
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<AbstractReply<AbstractReply>> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (KeepAliveReply) reply)
                 .orElseGet(() -> new KeepAliveReply(false));

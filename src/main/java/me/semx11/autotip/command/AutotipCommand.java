@@ -10,6 +10,7 @@ import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
+import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
@@ -133,10 +134,10 @@ public class AutotipCommand extends AUniversalCommand {
                     Autotip.toggle = !Autotip.toggle;
                     if (Autotip.toggle) {
                         if (manager.isOnHypixel() && !manager.isLoggedIn()) {
-                            TaskManager.EXECUTOR.execute(manager::login);
+                            TaskManager.executeTask(TaskType.LOGIN, manager::login);
                         }
                     } else {
-                        TaskManager.EXECUTOR.execute(manager::logout);
+                        TaskManager.executeTask(TaskType.LOGOUT, manager::logout);
                     }
                     MessageUtil.send("Autotip: " + (Autotip.toggle ? "&aEn" : "&cDis") + "abled");
                     break;

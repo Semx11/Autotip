@@ -9,6 +9,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
@@ -20,7 +21,7 @@ public class TaskManager {
     public static final ExecutorService EXECUTOR;
     public static final ScheduledExecutorService SCHEDULER;
 
-    private static final Map<TaskType, ScheduledFuture> TASKS;
+    private static final Map<TaskType, Future> TASKS;
 
     public static <T> T scheduleAndAwait(Callable<T> callable, long delay) {
         try {
@@ -29,6 +30,16 @@ public class TaskManager {
             ErrorReport.reportException(e);
             return null;
         }
+    }
+
+    public static void executeTask(TaskType type, Runnable command) {
+        if (TASKS.containsKey(type)) {
+            return;
+        }
+        Future<?> future = EXECUTOR.submit(command);
+        TASKS.put(type, future);
+        catchFutureException(future);
+        TASKS.remove(type);
     }
 
     public static void addRepeatingTask(TaskType type, Runnable command, long delay, long period) {
@@ -48,7 +59,7 @@ public class TaskManager {
         }
     }
 
-    private static void catchFutureException(ScheduledFuture future) {
+    private static void catchFutureException(Future future) {
         EXECUTOR.execute(() -> {
             try {
                 future.get();
@@ -68,7 +79,7 @@ public class TaskManager {
     }
 
     public enum TaskType {
-        KEEP_ALIVE, TIP_WAVE, TIP_CYCLE
+        LOGIN, KEEP_ALIVE, TIP_WAVE, TIP_CYCLE, LOGOUT
     }
 
     static {

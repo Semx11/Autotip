@@ -27,7 +27,7 @@ public class LogoutRequest extends AbstractRequest<LogoutReply> {
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<AbstractReply<AbstractReply>> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (LogoutReply) reply)
                 .orElseGet(() -> new LogoutReply(false));

@@ -109,9 +109,9 @@ public class SessionManager {
         long delay = EventClientConnection.getLastLogin() + 5000 - System.currentTimeMillis();
         delay /= 1000;
 
-        this.reply = TaskManager.scheduleAndAwait(request::execute, delay < 1 ? 1 : delay);
-        if (!reply.isSuccess()) {
-            MessageUtil.send("&cError during login: {}", reply.getCause());
+        this.reply = TaskManager.scheduleAndAwait(request::execute, (delay < 1) ? 1 : delay);
+        if (reply == null || !reply.isSuccess()) {
+            MessageUtil.send("&cError during login: {}", reply == null ? "null" : reply.getCause());
             return;
         }
 
@@ -124,7 +124,6 @@ public class SessionManager {
 
         TaskManager.addRepeatingTask(TaskType.KEEP_ALIVE, this::keepAlive, keepAlive, keepAlive);
         TaskManager.addRepeatingTask(TaskType.TIP_WAVE, this::tipWave, 0, tipWave);
-
     }
 
     public void logout() {

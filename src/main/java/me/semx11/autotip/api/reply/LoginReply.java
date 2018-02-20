@@ -3,7 +3,7 @@ package me.semx11.autotip.api.reply;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.util.RequestType;
 
-public class LoginReply extends AbstractReply {
+public class LoginReply extends AbstractReply<AbstractReply> {
 
     private SessionKey sessionKey;
     private long keepAliveRate;

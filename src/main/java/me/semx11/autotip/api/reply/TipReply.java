@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.api.util.RequestType;
 
-public class TipReply extends AbstractReply {
+public class TipReply extends AbstractReply<AbstractReply> {
 
     private List<Tip> tips;
 

@@ -2,7 +2,7 @@ package me.semx11.autotip.api.reply;
 
 import me.semx11.autotip.api.util.RequestType;
 
-public abstract class AbstractReply {
+public abstract class AbstractReply<T extends AbstractReply> {
 
     private boolean success;
     private String cause;

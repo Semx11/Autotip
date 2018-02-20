@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
+import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.ReflectionUtil;
@@ -60,7 +61,7 @@ public class EventClientConnection {
                 manager.setOnHypixel(true);
                 manager.checkVersions();
                 if (Autotip.toggle) {
-                    manager.login();
+                    TaskManager.executeTask(TaskType.LOGIN, manager::login);
                 }
             } else {
                 manager.setOnHypixel(false);
@@ -72,7 +73,7 @@ public class EventClientConnection {
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
         SessionManager manager = Autotip.SESSION_MANAGER;
         manager.setOnHypixel(false);
-        TaskManager.EXECUTOR.execute(manager::logout);
+        TaskManager.executeTask(TaskType.LOGOUT, manager::logout);
         resetHeader();
     }
 

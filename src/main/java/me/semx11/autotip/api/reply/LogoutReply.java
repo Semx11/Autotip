@@ -2,7 +2,7 @@ package me.semx11.autotip.api.reply;
 
 import me.semx11.autotip.api.util.RequestType;
 
-public class LogoutReply extends AbstractReply {
+public class LogoutReply extends AbstractReply<AbstractReply> {
 
     public LogoutReply() {
     }

@@ -2,7 +2,7 @@ package me.semx11.autotip.api.reply;
 
 import me.semx11.autotip.api.util.RequestType;
 
-public class KeepAliveReply extends AbstractReply {
+public class KeepAliveReply extends AbstractReply<AbstractReply> {
 
     private long time;
 
