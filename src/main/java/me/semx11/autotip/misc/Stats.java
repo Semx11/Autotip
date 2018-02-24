@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MessageUtil;
+import me.semx11.autotip.util.NioWrapper;
 
 public class Stats {
 
@@ -42,6 +43,7 @@ public class Stats {
     }
 
     public static void printStats(String... days) {
+        MessageUtil messageUtil = Autotip.getInstance().getMessageUtil();
 
         Map<String, Integer> totalStats = new HashMap<>();
         Map<String, Integer> sentStats = new HashMap<>();
@@ -51,7 +53,7 @@ public class Stats {
         int[] tips = {0, 0};
 
         for (String date : days) {
-            File f = new File(Autotip.USER_DIR + "stats" + File.separator + date + ".at");
+            File f = NioWrapper.getAutotipFile("stats/" + date + ".at");
             if (!f.exists()) {
                 continue;
             }
@@ -98,49 +100,49 @@ public class Stats {
                 .collect(Collectors.toList());
 
         if (!games.isEmpty()) {
-            MessageUtil.separator();
+            messageUtil.separator();
             games.forEach(game -> {
                 int sentCoins = sentStats.getOrDefault(game, 0);
                 int receivedCoins = receivedStats.getOrDefault(game, 0);
                 if (sentStats.containsKey(game) || receivedStats.containsKey(game)) {
-                    MessageUtil.send(
-                            MessageUtil.params("&a{}: &e{} coins",
+                    messageUtil.send(
+                            messageUtil.params("&a{}: &e{} coins",
                                     game, format(sentCoins + receivedCoins)),
                             null,
-                            MessageUtil.params(
+                            messageUtil.params(
                                     "&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{} coins",
                                     game, format(sentCoins), format(receivedCoins))
                     );
                 }
             });
-            MessageUtil.send(
-                    MessageUtil.params("&6Tips: {}", format(tips[0] + tips[1])),
+            messageUtil.send(
+                    messageUtil.params("&6Tips: {}", format(tips[0] + tips[1])),
                     null,
-                    MessageUtil.params("&cSent: &6{} tips\n&9Received: &6{} tips",
+                    messageUtil.params("&cSent: &6{} tips\n&9Received: &6{} tips",
                             format(tips[0]), format(tips[1]))
             );
-            MessageUtil.send(
-                    MessageUtil.params("&9XP: {}", format(xp[0] + xp[1])),
+            messageUtil.send(
+                    messageUtil.params("&9XP: {}", format(xp[0] + xp[1])),
                     null,
-                    MessageUtil.params("&cBy sending: &9{} XP\n&9By receiving: {} XP",
+                    messageUtil.params("&cBy sending: &9{} XP\n&9By receiving: {} XP",
                             format(xp[0]), format(xp[1]))
             );
             if (karma > 0) {
-                MessageUtil.send(
-                        MessageUtil.params("&dKarma: {}", format(karma)),
+                messageUtil.send(
+                        messageUtil.params("&dKarma: {}", format(karma)),
                         null,
                         "&dI should probably fix this..."
                 );
             }
 
-            MessageUtil.send("Stats from {}{}",
+            messageUtil.send("Stats from {}{}",
                     (Object) days[0].replace("-", "/"),
                     days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : ""
             );
-            MessageUtil.separator();
+            messageUtil.separator();
         } else {
-            MessageUtil.send("&cYou have never tipped someone in this period!");
-            MessageUtil.send("({}{})", (Object) days[0].replace("-", "/"),
+            messageUtil.send("&cYou have never tipped someone in this period!");
+            messageUtil.send("({}{})", (Object) days[0].replace("-", "/"),
                     days.length > 1 ? " - " + days[days.length - 1].replace("-", "/") : "");
         }
     }

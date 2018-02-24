@@ -1,122 +1,58 @@
 package me.semx11.autotip.util;
 
-import static me.semx11.autotip.util.NioWrapper.exists;
-import static me.semx11.autotip.util.NioWrapper.getFile;
-import static me.semx11.autotip.util.NioWrapper.getPath;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.nio.file.Paths;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.misc.Stats;
-import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.misc.Writer;
-import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
 
-    public static void getVars() throws IOException {
-        try {
-            File statsDir = getFile(Autotip.USER_DIR + "stats");
+    private final Path userDir;
+    private final Path statsDir;
 
-            if (!statsDir.exists()) {
-                statsDir.mkdirs();
-            }
+    public FileUtil(Autotip autotip) {
+        this.userDir = this.getRawPath("mods/autotip/" + autotip.getGameProfile().getId());
+        this.statsDir = this.getPath("stats");
+    }
 
-            Path upgrade = NioWrapper.getPath(Autotip.USER_DIR + "upgrade-date.at");
-            if (exists(upgrade)) {
-                String date = FileUtils.readFileToString(upgrade.toFile());
-                LocalDate parsed;
-                try {
-                    parsed = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                } catch (DateTimeParseException e) {
-                    ErrorReport.reportException(e);
-                    parsed = LocalDate.now();
-                }
-                Stats.setUpgradeDate(parsed);
-            } else {
-                LocalDate date = LocalDate.now().plusDays(1);
-                String dateString = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(date);
-                FileUtils.writeStringToFile(upgrade.toFile(), dateString);
-                Stats.setUpgradeDate(date);
-            }
-
-            boolean executeWriter = false;
-
-            Path options = NioWrapper.getPath(Autotip.USER_DIR + "options.at");
-            if (exists(options)) {
-                List<String> lines = Files.lines(options).collect(Collectors.toList());
-                if (lines.size() >= 4) {
-                    Autotip.toggle = Boolean.parseBoolean(lines.get(0));
-                    String chatSetting = lines.get(1);
-                    switch (chatSetting) {
-                        case "true":
-                        case "false":
-                            Autotip.messageOption = Boolean.parseBoolean(chatSetting)
-                                    ? MessageOption.SHOWN
-                                    : MessageOption.COMPACT;
-                            break;
-                        case "SHOWN":
-                        case "COMPACT":
-                        case "HIDDEN":
-                            Autotip.messageOption = MessageOption.valueOf(chatSetting);
-                            break;
-                        default:
-                            Autotip.messageOption = MessageOption.SHOWN;
-                    }
-                    try {
-                        Autotip.totalTipsSent = Integer.parseInt(lines.get(3));
-                    } catch (NumberFormatException e) {
-                        Autotip.totalTipsSent = 0;
-                        executeWriter = true;
-                    }
-                } else {
-                    executeWriter = true;
-                }
-            } else {
-                executeWriter = true;
-            }
-
-            Path today = getPath(Autotip.USER_DIR + "stats/" + getDate() + ".at");
-            if (exists(today)) {
-                List<String> lines = Files.lines(today).collect(Collectors.toList());
-                if (lines.size() >= 2) {
-                    String[] tipStats = lines.get(0).split(":");
-                    TipTracker.tipsSent = Integer.parseInt(tipStats[0]);
-                    TipTracker.tipsReceived =
-                            tipStats.length > 1 ? Integer.parseInt(tipStats[1]) : 0;
-                    TipTracker.karmaCount = Integer.parseInt(lines.get(1));
-                    lines.stream().skip(2).forEach(line -> {
-                        String[] stats = line.split(":");
-                        TipTracker.tipsSentEarnings.put(stats[0], Integer.parseInt(stats[1]));
-                        if (stats.length > 2) {
-                            TipTracker.tipsReceivedEarnings
-                                    .put(stats[0], Integer.parseInt(stats[2]));
-                        }
-                    });
-                }
-            } else {
-                executeWriter = true;
-            }
-
-            if (executeWriter) {
-                Writer.execute();
-            }
-        } catch (IOException | IllegalArgumentException e) {
-            ErrorReport.reportException(e);
+    public void createDirectories() throws IOException {
+        if (!Files.exists(statsDir)) {
+            Files.createDirectories(statsDir);
         }
     }
 
-    public static String getDate() {
-        return new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+    public Path getUserDir() {
+        return userDir;
+    }
+
+    public Path getStatsDir() {
+        return statsDir;
+    }
+
+    public boolean exists(String path) {
+        return Files.exists(this.getPath(path));
+    }
+
+    /*public boolean existsRaw(Path path) {
+        return Files.exists(path);
+    }*/
+
+    public File getFile(String path) {
+        return this.getPath(path).toFile();
+    }
+
+    public Path getPath(String path) {
+        return this.userDir.resolve(this.separator(path));
+    }
+
+    private Path getRawPath(String path) {
+        return Paths.get(this.separator(path));
+    }
+
+    private String separator(String s) {
+        return s.replaceAll("///", File.separator);
     }
 
 }

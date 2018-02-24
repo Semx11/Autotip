@@ -6,7 +6,6 @@ import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.ReflectionUtil;
 import me.semx11.autotip.util.UniversalUtil;
 import net.minecraft.client.Minecraft;
@@ -17,35 +16,63 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 
 public class EventClientConnection {
 
+    private static final EventClientConnection INSTANCE = new EventClientConnection();
+
     // TODO: Don't hard-code this.
     private static final String HYPIXEL_HEADER = "You are playing on MC.HYPIXEL.NET";
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
 
-    private static String serverIp;
-    private static long lastLogin;
+    private String serverIp;
+    private long lastLogin;
 
-    public static String getServerIp() {
+    private EventClientConnection() {
+    }
+
+    public static EventClientConnection getInstance() {
+        return INSTANCE;
+    }
+
+    public String getServerIp() {
         return serverIp;
     }
 
-    public static long getLastLogin() {
+    public long getLastLogin() {
         return lastLogin;
+    }
+
+    public Object getHeader() {
+        try {
+            return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
+        } catch (IllegalAccessException | NullPointerException e) {
+            ErrorReport.reportException(e);
+            return null;
+        }
+    }
+
+    private void resetHeader() {
+        try {
+            HEADER_FIELD.set(Minecraft.getMinecraft().ingameGUI.getTabList(), null);
+        } catch (IllegalAccessException e) {
+            ErrorReport.reportException(e);
+        }
     }
 
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
-        SessionManager manager = Autotip.SESSION_MANAGER;
+        Autotip autotip = Autotip.getInstance();
+        TaskManager taskManager = autotip.getTaskManager();
+        SessionManager manager = autotip.getSessionManager();
 
-        MessageUtil.clearQueues();
+        autotip.getMessageUtil().clearQueues();
 
-        serverIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
-        lastLogin = System.currentTimeMillis();
+        this.serverIp = UniversalUtil.getRemoteAddress(event).toString().toLowerCase();
+        this.lastLogin = System.currentTimeMillis();
 
-        TaskManager.EXECUTOR.execute(() -> {
+        taskManager.getExecutor().execute(() -> {
             Object header;
             int attempts = 0;
-            while ((header = getHeader()) == null) {
+            while ((header = this.getHeader()) == null) {
                 if (attempts > 15) {
                     return;
                 }
@@ -60,8 +87,8 @@ public class EventClientConnection {
             if (UniversalUtil.getUnformattedText(header).equals(HYPIXEL_HEADER)) {
                 manager.setOnHypixel(true);
                 manager.checkVersions();
-                if (Autotip.toggle) {
-                    TaskManager.executeTask(TaskType.LOGIN, manager::login);
+                if (autotip.getConfig().isEnabled()) {
+                    taskManager.executeTask(TaskType.LOGIN, manager::login);
                 }
             } else {
                 manager.setOnHypixel(false);
@@ -71,27 +98,12 @@ public class EventClientConnection {
 
     @SubscribeEvent
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
-        SessionManager manager = Autotip.SESSION_MANAGER;
+        Autotip autotip = Autotip.getInstance();
+        TaskManager taskManager = autotip.getTaskManager();
+        SessionManager manager = autotip.getSessionManager();
         manager.setOnHypixel(false);
-        TaskManager.executeTask(TaskType.LOGOUT, manager::logout);
-        resetHeader();
-    }
-
-    public static Object getHeader() {
-        try {
-            return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
-        } catch (IllegalAccessException | NullPointerException e) {
-            ErrorReport.reportException(e);
-            return null;
-        }
-    }
-
-    private static void resetHeader() {
-        try {
-            HEADER_FIELD.set(Minecraft.getMinecraft().ingameGUI.getTabList(), null);
-        } catch (IllegalAccessException e) {
-            ErrorReport.reportException(e);
-        }
+        taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+        this.resetHeader();
     }
 
 }

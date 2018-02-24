@@ -1,4 +1,4 @@
-package me.semx11.autotip.command;
+package me.semx11.autotip.command.impl;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -8,24 +8,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.EventClientConnection;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.util.FileUtil;
+import me.semx11.autotip.util.Config;
+import me.semx11.autotip.util.LegacyFileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
 
-public class AutotipCommand extends AUniversalCommand {
+public class CommandAutotip extends CommandAbstract {
 
-    private static final DateTimeFormatter SESSION_FORMATTER = DateTimeFormatter
-            .ofPattern("HH:mm:ss");
-    private static final DateTimeFormatter WAVE_FORMATTER = DateTimeFormatter.ofPattern("mm:ss");
+    private static final CommandAutotip INSTANCE = new CommandAutotip();
+
+    private static final DateTimeFormatter SESSION_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static final DateTimeFormatter WAVE_FORMAT = DateTimeFormatter.ofPattern("mm:ss");
+
+    private CommandAutotip() {
+    }
+
+    public static CommandAutotip getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public String getCommandName() {
@@ -44,7 +54,7 @@ public class AutotipCommand extends AUniversalCommand {
 
     @Override
     public List<String> getCommandAliases() {
-        if (!Autotip.MC_VERSION.equals(MinecraftVersion.V1_8)) {
+        if (!Autotip.getInstance().getMcVersion().equals(MinecraftVersion.V1_8)) {
             return Collections.singletonList("at");
         } else {
             return Collections.emptyList();
@@ -52,37 +62,37 @@ public class AutotipCommand extends AUniversalCommand {
     }
 
     @Override
-    public void onCommand(ICommandSender sender, String[] args) {
-
-        SessionManager manager = Autotip.SESSION_MANAGER;
+    public void onCommand(Autotip autotip, ICommandSender sender, String[] args) {
+        Config config = autotip.getConfig();
+        MessageUtil messageUtil = autotip.getMessageUtil();
+        TaskManager taskManager = autotip.getTaskManager();
+        SessionManager manager = autotip.getSessionManager();
 
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
                 case "m":
                 case "messages":
-                    Autotip.messageOption = Autotip.messageOption.next();
-                    MessageUtil.send("Tip Messages: " + Autotip.messageOption);
+                    config.nextMessageOption().save();
+                    messageUtil.send("Tip Messages: " + config.getMessageOption());
                     break;
                 case "?":
                 case "info":
-                    MessageUtil.separator();
-                    MessageUtil
-                            .send("&6&lAutotip v" + Autotip.VERSION + " &7by &bSemx11");
-                    MessageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
+                    messageUtil.separator();
+                    messageUtil.send("&6&lAutotip v" + autotip.getVersion() + " &7by &bSemx11");
+                    messageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
                             null,
                             "&6The Autotip Team\n"
                                     + "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"
                                     + "&b[MVP&3+&b] 2Pi &r&7- Lead API developer, Founder, Creator, PR\n"
                                     + "&6[YT] Sk1er &r&7- Host, not the creator, PR");
-                    MessageUtil.send("Autotipper: " + (Autotip.toggle ? "&aEn" : "&cDis") +
+                    messageUtil.send("Autotipper: " + (config.isEnabled() ? "&aEn" : "&cDis") +
                             "abled");
-                    MessageUtil.send("Tip Messages: " + Autotip.messageOption);
-                    MessageUtil.send("Tips sent today: &6" + TipTracker.tipsSent);
-                    MessageUtil.send("Tips received today: &6" + TipTracker.tipsReceived);
-                    MessageUtil
-                            .send("Lifetime tips sent: &6" + Autotip.totalTipsSent);
-                    MessageUtil.send("&6Type /autotip stats to see what has been earned.");
-                    MessageUtil.separator();
+                    messageUtil.send("Tip Messages: " + config.getMessageOption());
+                    messageUtil.send("Tips sent today: &6" + TipTracker.tipsSent);
+                    messageUtil.send("Tips received today: &6" + TipTracker.tipsReceived);
+                    messageUtil.send("Lifetime tips sent: &6" + "a lotta tips");
+                    messageUtil.send("&6Type /autotip stats to see what has been earned.");
+                    messageUtil.separator();
                     break;
                 case "s":
                 case "stats":
@@ -94,7 +104,7 @@ public class AutotipCommand extends AUniversalCommand {
                             case "day":
                             case "daily":
                             case "today":
-                                Stats.printStats(FileUtil.getDate());
+                                Stats.printStats(LegacyFileUtil.getDate());
                                 break;
                             case "yesterday":
                                 Stats.printStats(now.minusDays(1).format(formatter));
@@ -118,78 +128,81 @@ public class AutotipCommand extends AUniversalCommand {
                             case "total":
                             case "life":
                             case "lifetime":
-                                Stats.printBetween("25-06-2016", FileUtil.getDate());
+                                Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
                                 break;
                             default:
-                                MessageUtil.send("&cUsage: /autotip stats <day, week, month, year,"
+                                messageUtil.send("&cUsage: /autotip stats <day, week, month, year,"
                                         + " lifetime>");
                                 break;
                         }
                     } else {
-                        Stats.printStats(FileUtil.getDate());
+                        Stats.printStats(LegacyFileUtil.getDate());
                     }
                     break;
                 case "t":
                 case "toggle":
-                    Autotip.toggle = !Autotip.toggle;
-                    if (Autotip.toggle) {
+                    config.toggleEnabled().save();
+                    if (config.isEnabled()) {
                         if (manager.isOnHypixel() && !manager.isLoggedIn()) {
-                            TaskManager.executeTask(TaskType.LOGIN, manager::login);
+                            taskManager.executeTask(TaskType.LOGIN, manager::login);
                         }
                     } else {
-                        TaskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                        taskManager.executeTask(TaskType.LOGOUT, manager::logout);
                     }
-                    MessageUtil.send("Autotip: " + (Autotip.toggle ? "&aEn" : "&cDis") + "abled");
+                    messageUtil.send("Autotip: "
+                            + (config.isEnabled() ? "&aEn" : "&cDis") + "abled");
                     break;
                 case "wave":
                 case "time":
-                    if (Autotip.toggle) {
+                    if (config.isEnabled()) {
                         if (manager.isOnHypixel()) {
                             if (manager.getNextTipWave() == 0) {
-                                MessageUtil.send("The first tip wave hasn't occurred yet.");
+                                messageUtil.send("The first tip wave hasn't occurred yet.");
                                 return;
                             }
-                            MessageUtil.separator();
+                            messageUtil.separator();
                             long time = System.currentTimeMillis();
-                            MessageUtil.send("Last wave: &6" + LocalTime.MIN
+                            messageUtil.send("Last wave: &6" + LocalTime.MIN
                                     .plusSeconds((time - manager.getLastTipWave()) / 1000)
-                                    .format(WAVE_FORMATTER));
-                            MessageUtil.send("Next wave: &6" + LocalTime.MIN
+                                    .format(WAVE_FORMAT));
+                            messageUtil.send("Next wave: &6" + LocalTime.MIN
                                     .plusSeconds((manager.getNextTipWave() - time) / 1000 + 1)
-                                    .format(WAVE_FORMATTER));
-                            MessageUtil.separator();
+                                    .format(WAVE_FORMAT));
+                            messageUtil.separator();
                         } else {
-                            MessageUtil.send("Autotip is disabled as you are not playing "
+                            messageUtil.send("Autotip is disabled as you are not playing "
                                     + "on Hypixel.");
                         }
                     } else {
-                        MessageUtil.send("Autotip is disabled. Use &6/autotip toggle&7 to "
+                        messageUtil.send("Autotip is disabled. Use &6/autotip toggle&7 to "
                                 + "enable it.");
                     }
                     break;
                 case "whatsnew":
-                    MessageUtil.separator();
-                    MessageUtil.send("&6What's new in Autotip v" + Autotip.VERSION
+                    messageUtil.separator();
+                    messageUtil.send("&6What's new in Autotip v" + autotip.getVersion()
                             + ":");
-                    Versions.getInstance().getInfoByVersion(Autotip.VERSION).getChangelog().forEach(
-                            s -> MessageUtil.send("&8- &7" + s));
-                    MessageUtil.separator();
+                    Versions.getInstance().getInfoByVersion(autotip.getVersion()).getChangelog()
+                            .forEach(
+                                    s -> messageUtil.send("&8- &7" + s));
+                    messageUtil.separator();
                     break;
                 case "debug":
-                    MessageUtil.separator();
-                    MessageUtil.send("Last IP joined: " + EventClientConnection.getServerIp());
-                    MessageUtil.send("Detected MC version: " + Autotip.MC_VERSION);
-                    Object header = EventClientConnection.getHeader();
-                    MessageUtil.send("Tablist Header: " + (header == null ? "No header."
+                    messageUtil.separator();
+                    messageUtil.send("Last IP joined: " + EventClientConnection.getInstance()
+                            .getServerIp());
+                    messageUtil.send("Detected MC version: " + autotip.getMcVersion());
+                    Object header = EventClientConnection.getInstance().getHeader();
+                    messageUtil.send("Tablist Header: " + (header == null ? "No header."
                             : UniversalUtil.getUnformattedText(header)));
-                    MessageUtil.separator();
+                    messageUtil.separator();
                     break;
                 default:
-                    MessageUtil.send("&cUsage: " + getCommandUsage(sender));
+                    messageUtil.send("&cUsage: " + getCommandUsage(sender));
                     break;
             }
         } else {
-            MessageUtil.send("&cUsage: " + getCommandUsage(sender));
+            messageUtil.send("&cUsage: " + getCommandUsage(sender));
         }
     }
 
@@ -208,4 +221,5 @@ public class AutotipCommand extends AUniversalCommand {
         }
         return Collections.emptyList();
     }
+
 }

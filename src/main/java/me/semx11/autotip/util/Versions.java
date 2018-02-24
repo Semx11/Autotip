@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.VersionInfo.Severity;
 import org.apache.commons.io.IOUtils;
 
@@ -49,12 +48,11 @@ public class Versions {
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version) {
-        return getHigherVersionInfo(version, Autotip.BETA ? this.latestBeta : this.latest);
+        return getHigherVersionInfo(version, this.latest);
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version, Version highest) {
         return versions.stream()
-                .filter(info -> Autotip.BETA || !info.isBetaVersion())
                 .filter(info -> info.getVersion().compareTo(version) > 0
                         && info.getVersion().compareTo(highest) < 1)
                 .collect(Collectors.toList());

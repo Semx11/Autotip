@@ -12,17 +12,28 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "2.1.0.7"
-group = "me.semx11.autotip"
-archivesBaseName = "Autotip"
+version = modVersion
+group = modGroup + "." + modId
+archivesBaseName = modBaseName
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 minecraft {
-    version = "1.8.9-11.15.1.1902-1.8.9"
+    version = project.forgeVersion
     runDir = "run"
-    mappings = "stable_20"
+    mappings = project.mcpVersion
+}
+
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
+dependencies {
+
 }
 
 processResources {
@@ -31,12 +42,17 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version': project.version, 'mcversion': project.minecraft.version
+        expand 'modId': project.modId, 'modBaseName': project.modBaseName,
+                'version': project.version, 'mcversion': project.minecraft.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+jar {
+    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 idea {

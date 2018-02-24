@@ -6,9 +6,10 @@ import static me.semx11.autotip.util.MessageOption.HIDDEN;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.command.LimboCommand;
+import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.misc.Writer;
+import me.semx11.autotip.util.Config;
 import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.UniversalUtil;
@@ -17,6 +18,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EventChatReceived {
 
+    private static final EventChatReceived INSTANCE = new EventChatReceived();
+
     private Pattern xpPattern = Pattern.compile("\\+50 experience \\(Gave a player a /tip\\)");
     private Pattern playerPattern = Pattern.compile("You tipped (?<player>\\w+) in .*");
     private Pattern coinPattern = Pattern.compile(
@@ -24,17 +27,29 @@ public class EventChatReceived {
     private Pattern earnedPattern = Pattern.compile(
             "You earned (?<coins>\\d+) coins and (?<xp>\\d+) experience from (?<game>.+) tips in the last minute!");
 
+    private EventChatReceived() {
+    }
+
+    public static EventChatReceived getInstance() {
+        return INSTANCE;
+    }
+
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
+        Autotip autotip = Autotip.getInstance();
+        Config config = autotip.getConfig();
+        MessageUtil messageUtil = autotip.getMessageUtil();
 
-        if (!Autotip.SESSION_MANAGER.isOnHypixel()) {
+        if (!autotip.getSessionManager().isOnHypixel()) {
             return;
         }
 
         String msg = UniversalUtil.getUnformattedText(event);
-        MessageOption mOption = Autotip.messageOption;
+        MessageOption mOption = config.getMessageOption();
 
-        if (Autotip.toggle) {
+        // TODO: You already tipped everyone that has boosters active, so there isn't anybody to be tipped right now!
+
+        if (config.isEnabled()) {
             if (msg.equals("Slow down! You can only use /tip every few seconds.")
                     || msg.equals("Still processing your most recent request!")
                     || msg.equals("You are not allowed to use commands as a spectator!")
@@ -80,7 +95,7 @@ public class EventChatReceived {
                 Writer.execute();
 
                 if (mOption.equals(COMPACT)) {
-                    MessageUtil.sendRaw("&aEarned&e {} coins&a and&9 {} experience&a in {}.",
+                    messageUtil.sendRaw("&aEarned&e {} coins&a and&9 {} experience&a in {}.",
                             coins, xp, game);
                 }
                 event.setCanceled(mOption.equals(COMPACT) || mOption.equals(HIDDEN));
@@ -89,12 +104,12 @@ public class EventChatReceived {
             }
         }
 
-        if (LimboCommand.hasExecuted()) {
+        if (CommandLimbo.getInstance().hasExecuted()) {
             if (msg.startsWith("A kick occurred in your connection")) {
                 event.setCanceled(true);
             } else if (msg.startsWith("Illegal characters in chat")) {
                 event.setCanceled(true);
-                LimboCommand.setExecuted(false);
+                CommandLimbo.getInstance().setExecuted(false);
             }
         }
 

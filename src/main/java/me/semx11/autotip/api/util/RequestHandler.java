@@ -27,7 +27,8 @@ public class RequestHandler {
         String json = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-            conn.setRequestProperty("User-Agent", "Autotip v" + Autotip.VERSION);
+            Autotip autotip = Autotip.getInstance();
+            conn.setRequestProperty("User-Agent", "Autotip v" + autotip.getVersion());
 
             InputStream input;
             if (conn.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {

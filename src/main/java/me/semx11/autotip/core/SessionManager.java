@@ -28,6 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SessionManager {
 
+    private final Autotip autotip;
+    private final MessageUtil messageUtil;
+    private final TaskManager taskManager;
+
     private final Queue<Tip> tipQueue = new ConcurrentLinkedQueue<>();
 
     private LoginReply reply;
@@ -38,6 +42,12 @@ public class SessionManager {
 
     private long lastTipWave;
     private long nextTipWave;
+
+    public SessionManager(Autotip autotip) {
+        this.autotip = autotip;
+        this.messageUtil = autotip.getMessageUtil();
+        this.taskManager = autotip.getTaskManager();
+    }
 
     public SessionKey getKey() {
         return sessionKey;
@@ -72,27 +82,27 @@ public class SessionManager {
 
         Host downloadHost = Hosts.getInstance().getHostById("download");
 
-        List<VersionInfo> vInfo = Versions.getInstance().getHigherVersionInfo(Autotip.VERSION);
+        List<VersionInfo> vInfo = Versions.getInstance().getHigherVersionInfo(autotip.getVersion());
         if (vInfo.size() > 0) {
-            MessageUtil.separator();
-            MessageUtil.send(
+            messageUtil.separator();
+            messageUtil.send(
                     "&cAutotip is out of date! Click here to update.",
                     "https://" + downloadHost.getUrl(),
                     "&7Click to visit &6" + downloadHost.getUrl() + "&7!"
             );
-            MessageUtil.send("Update info:");
+            messageUtil.send("Update info:");
             vInfo.forEach(vi -> {
-                MessageUtil.send("&6Autotip v" + vi.getVersion());
-                MessageUtil.send("Update severity: " + vi.getSeverity().toColoredString());
+                messageUtil.send("&6Autotip v" + vi.getVersion());
+                messageUtil.send("Update severity: " + vi.getSeverity().toColoredString());
                 vi.getChangelog().forEach(
-                        s -> MessageUtil.send("&8- &7" + s));
+                        s -> messageUtil.send("&8- &7" + s));
             });
-            MessageUtil.separator();
+            messageUtil.separator();
         }
     }
 
     public void login() {
-        Session session = Autotip.MC.getSession();
+        Session session = autotip.getMinecraft().getSession();
         GameProfile profile = session.getProfile();
 
         String uuid = profile.getId().toString().replace("-", "");
@@ -100,18 +110,20 @@ public class SessionManager {
 
         int statusCode = LoginUtil.joinServer(session.getToken(), uuid, serverHash);
         if (statusCode != 204) {
-            MessageUtil.send("&cError {} during authentication: Session servers down?", statusCode);
+            messageUtil.send("&cError {} during authentication: Session servers down?", statusCode);
             return;
         }
 
-        LoginRequest request = LoginRequest.of(profile, serverHash, Autotip.totalTipsSent);
+        // TODO: Calculate total tips
+        LoginRequest request = LoginRequest.of(profile, serverHash, 1337/*Autotip.totalTipsSent*/);
 
-        long delay = EventClientConnection.getLastLogin() + 5000 - System.currentTimeMillis();
+        long delay = EventClientConnection.getInstance().getLastLogin() + 5000 - System
+                .currentTimeMillis();
         delay /= 1000;
 
-        this.reply = TaskManager.scheduleAndAwait(request::execute, (delay < 1) ? 1 : delay);
+        this.reply = taskManager.scheduleAndAwait(request::execute, (delay < 1) ? 1 : delay);
         if (reply == null || !reply.isSuccess()) {
-            MessageUtil.send("&cError during login: {}", reply == null ? "null" : reply.getCause());
+            messageUtil.send("&cError during login: {}", reply == null ? "null" : reply.getCause());
             return;
         }
 
@@ -122,8 +134,8 @@ public class SessionManager {
         long keepAlive = reply.getKeepAliveRate();
         long tipWave = reply.getTipWaveRate();
 
-        TaskManager.addRepeatingTask(TaskType.KEEP_ALIVE, this::keepAlive, keepAlive, keepAlive);
-        TaskManager.addRepeatingTask(TaskType.TIP_WAVE, this::tipWave, 0, tipWave);
+        taskManager.addRepeatingTask(TaskType.KEEP_ALIVE, this::keepAlive, keepAlive, keepAlive);
+        taskManager.addRepeatingTask(TaskType.TIP_WAVE, this::tipWave, 0, tipWave);
     }
 
     public void logout() {
@@ -138,13 +150,14 @@ public class SessionManager {
         this.loggedIn = false;
         this.sessionKey = null;
 
-        TaskManager.cancelTask(TaskType.KEEP_ALIVE);
+        taskManager.cancelTask(TaskType.KEEP_ALIVE);
         tipQueue.clear();
     }
 
     private void keepAlive() {
         if (!onHypixel || !loggedIn) {
-            TaskManager.cancelTask(TaskType.KEEP_ALIVE);
+            taskManager.cancelTask(TaskType.KEEP_ALIVE);
+            return;
         }
         KeepAliveReply r = KeepAliveRequest.of(sessionKey).execute();
         if (!r.isSuccess()) {
@@ -154,7 +167,7 @@ public class SessionManager {
 
     private void tipWave() {
         if (!onHypixel || !loggedIn) {
-            TaskManager.cancelTask(TaskType.TIP_WAVE);
+            taskManager.cancelTask(TaskType.TIP_WAVE);
             return;
         }
 
@@ -171,16 +184,17 @@ public class SessionManager {
         }
 
         long tipCycle = reply.getTipCycleRate();
-        TaskManager.addRepeatingTask(TaskType.TIP_CYCLE, this::tipCycle, 0, tipCycle);
+        taskManager.addRepeatingTask(TaskType.TIP_CYCLE, this::tipCycle, 0, tipCycle);
     }
 
     private void tipCycle() {
         if (tipQueue.isEmpty() || !onHypixel) {
-            TaskManager.cancelTask(TaskType.TIP_CYCLE);
+            taskManager.cancelTask(TaskType.TIP_CYCLE);
+            return;
         }
 
         Autotip.LOGGER.info("Attempting to tip: {}", tipQueue.peek().toString());
-        MessageUtil.sendCommand(tipQueue.poll().getAsCommand());
+        messageUtil.sendCommand(tipQueue.poll().getAsCommand());
     }
 
 }

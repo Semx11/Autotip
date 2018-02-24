@@ -1,11 +1,10 @@
 package me.semx11.autotip.core;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,49 +17,59 @@ import me.semx11.autotip.util.ErrorReport;
 
 public class TaskManager {
 
-    public static final ExecutorService EXECUTOR;
-    public static final ScheduledExecutorService SCHEDULER;
+    private final ExecutorService executor;
+    private final ScheduledExecutorService scheduler;
 
-    private static final Map<TaskType, Future> TASKS;
+    private final Map<TaskType, Future> tasks;
 
-    public static <T> T scheduleAndAwait(Callable<T> callable, long delay) {
+    public TaskManager() {
+        this.executor = Executors.newCachedThreadPool(this.getFactory("AutotipThread"));
+        this.scheduler = Executors.newScheduledThreadPool(3, this.getFactory("AutotipScheduler"));
+        this.tasks = new ConcurrentHashMap<>();
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public <T> T scheduleAndAwait(Callable<T> callable, long delay) {
         try {
-            return SCHEDULER.schedule(callable, delay, TimeUnit.SECONDS).get();
+            return scheduler.schedule(callable, delay, TimeUnit.SECONDS).get();
         } catch (InterruptedException | ExecutionException e) {
             ErrorReport.reportException(e);
             return null;
         }
     }
 
-    public static void executeTask(TaskType type, Runnable command) {
-        if (TASKS.containsKey(type)) {
+    public void executeTask(TaskType type, Runnable command) {
+        if (tasks.containsKey(type)) {
             return;
         }
-        Future<?> future = EXECUTOR.submit(command);
-        TASKS.put(type, future);
+        Future<?> future = executor.submit(command);
+        tasks.put(type, future);
         catchFutureException(future);
-        TASKS.remove(type);
+        tasks.remove(type);
     }
 
-    public static void addRepeatingTask(TaskType type, Runnable command, long delay, long period) {
-        if (TASKS.containsKey(type)) {
+    public void addRepeatingTask(TaskType type, Runnable command, long delay, long period) {
+        if (tasks.containsKey(type)) {
             return;
         }
-        ScheduledFuture future = SCHEDULER
+        ScheduledFuture future = scheduler
                 .scheduleAtFixedRate(command, delay, period, TimeUnit.SECONDS);
-        TASKS.put(type, future);
+        tasks.put(type, future);
         catchFutureException(future);
     }
 
-    public static void cancelTask(TaskType type) {
-        if (TASKS.containsKey(type)) {
-            TASKS.get(type).cancel(true);
-            TASKS.remove(type);
+    public void cancelTask(TaskType type) {
+        if (tasks.containsKey(type)) {
+            tasks.get(type).cancel(true);
+            tasks.remove(type);
         }
     }
 
-    private static void catchFutureException(Future future) {
-        EXECUTOR.execute(() -> {
+    private void catchFutureException(Future future) {
+        this.executor.execute(() -> {
             try {
                 future.get();
             } catch (CancellationException ignored) {
@@ -71,7 +80,7 @@ public class TaskManager {
         });
     }
 
-    private static ThreadFactory getThreadFactory(String name) {
+    private ThreadFactory getFactory(String name) {
         return new ThreadFactoryBuilder()
                 .setNameFormat(name)
                 .setUncaughtExceptionHandler((t, e) -> ErrorReport.reportException(e))
@@ -80,12 +89,6 @@ public class TaskManager {
 
     public enum TaskType {
         LOGIN, KEEP_ALIVE, TIP_WAVE, TIP_CYCLE, LOGOUT
-    }
-
-    static {
-        EXECUTOR = Executors.newCachedThreadPool(getThreadFactory("AutotipThread"));
-        SCHEDULER = Executors.newScheduledThreadPool(3, getThreadFactory("AutotipScheduler"));
-        TASKS = Collections.synchronizedMap(new HashMap<>());
     }
 
 }

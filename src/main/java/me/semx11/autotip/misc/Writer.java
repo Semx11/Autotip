@@ -1,6 +1,5 @@
 package me.semx11.autotip.misc;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -11,9 +10,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.FileUtil;
+import me.semx11.autotip.util.LegacyFileUtil;
+import me.semx11.autotip.util.MessageOption;
+import me.semx11.autotip.util.NioWrapper;
 
 public class Writer implements Runnable {
 
@@ -21,28 +21,31 @@ public class Writer implements Runnable {
     private static String ls = System.lineSeparator();
 
     public static void execute() {
-        TaskManager.EXECUTOR.execute(new Writer());
+        Autotip.getInstance().getTaskManager().getExecutor().execute(new Writer());
     }
 
     @Override
     public void run() {
+        Autotip autotip = Autotip.getInstance();
         try {
-            try (FileWriter writeOptions = new FileWriter(Autotip.USER_DIR + "options.at")) {
-                write(writeOptions, Autotip.toggle + ls);
-                write(writeOptions, Autotip.messageOption.name() + ls);
+            try (FileWriter writeOptions = new FileWriter(
+                    autotip.getUserDirString() + "options.at")) {
+                write(writeOptions, true + ls);
+                write(writeOptions, MessageOption.SHOWN.name() + ls);
                 write(writeOptions, "true" + ls);
-                write(writeOptions, Autotip.totalTipsSent + ls);
+                write(writeOptions, 1337/*Autotip.totalTipsSent*/ + ls);
             }
 
-            if (!lastDate.equals(FileUtil.getDate())) {
+            if (!lastDate.equals(LegacyFileUtil.getDate())) {
                 TipTracker.tipsSent = 0;
                 TipTracker.tipsReceived = 0;
                 TipTracker.tipsSentEarnings.clear();
                 TipTracker.tipsReceivedEarnings.clear();
             }
 
-            FileWriter dailyStats = new FileWriter(
-                    Autotip.USER_DIR + "stats" + File.separator + FileUtil.getDate() + ".at");
+            FileWriter dailyStats = new FileWriter(NioWrapper
+                    .separator(autotip.getUserDirString() + "stats/" + LegacyFileUtil.getDate()
+                            + ".at"));
 
             write(dailyStats, TipTracker.tipsSent + ":" + TipTracker.tipsReceived + ls);
             write(dailyStats, "0" + ls);
@@ -62,7 +65,7 @@ public class Writer implements Runnable {
             });
             dailyStats.close();
 
-            lastDate = FileUtil.getDate();
+            lastDate = LegacyFileUtil.getDate();
 
         } catch (IOException e) {
             ErrorReport.reportException(e);

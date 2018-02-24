@@ -17,6 +17,7 @@ public class ErrorReport {
 
     public static void reportException(Throwable t) {
         Autotip.LOGGER.error(t.getMessage(), t);
+        Autotip autotip = Autotip.getInstance();
         try {
             URL url = new URL("https://api.autotip.pro/error_report.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -25,14 +26,14 @@ public class ErrorReport {
             conn.setDoOutput(true);
 
             JsonObject obj = JsonObjectBuilder.newBuilder()
-                    .addString("username", Autotip.MC.getSession().getProfile().getName())
-                    .addString("uuid", Autotip.MC.getSession().getProfile().getId())
-                    .addString("v", Autotip.VERSION)
-                    .addString("mc", Autotip.MC_VERSION)
+                    .addString("username", autotip.getGameProfile().getName())
+                    .addString("uuid", autotip.getGameProfile().getId())
+                    .addString("v", autotip.getVersion())
+                    .addString("mc", autotip.getMcVersion())
                     .addString("os", System.getProperty("os.name"))
                     .addString("forge", ForgeVersion.getVersion())
-                    .addString("sessionKey", Autotip.SESSION_MANAGER.getKey())
-                    .addString("serverIp", EventClientConnection.getServerIp())
+                    .addString("sessionKey", autotip.getSessionManager().getKey())
+                    .addString("serverIp", EventClientConnection.getInstance().getServerIp())
                     .addString("stackTrace", ExceptionUtils.getStackTrace(t))
                     .addNumber("time", System.currentTimeMillis())
                     .build();
@@ -41,6 +42,7 @@ public class ErrorReport {
 
             conn.setFixedLengthStreamingMode(jsonBytes.length);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("User-Agent", "Autotip v" + autotip.getVersion());
             conn.connect();
 
             try (OutputStream out = conn.getOutputStream()) {

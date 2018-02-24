@@ -28,12 +28,13 @@ public class LoginRequest extends AbstractRequest<LoginReply> {
 
     @Override
     public LoginReply execute() {
+        Autotip autotip = Autotip.getInstance();
         HttpUriRequest request = GetBuilder.of(this)
                 .addParameter("username", this.profile.getName())
                 .addParameter("uuid", this.profile.getId().toString().replace("-", ""))
                 .addParameter("tips", this.tips)
-                .addParameter("v", Autotip.VERSION)
-                .addParameter("mc", Autotip.MC_VERSION)
+                .addParameter("v", autotip.getVersion())
+                .addParameter("mc", autotip.getMcVersion())
                 .addParameter("os", System.getProperty("os.name"))
                 .addParameter("hash", this.hash)
                 .build();

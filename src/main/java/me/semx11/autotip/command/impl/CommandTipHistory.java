@@ -1,13 +1,24 @@
-package me.semx11.autotip.command;
+package me.semx11.autotip.command.impl;
 
 import java.util.Collections;
 import java.util.List;
+import me.semx11.autotip.Autotip;
+import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.TimeUtil;
 import net.minecraft.command.ICommandSender;
 
-public class TipHistoryCommand extends AUniversalCommand {
+public class CommandTipHistory extends CommandAbstract {
+
+    private static final CommandTipHistory INSTANCE = new CommandTipHistory();
+
+    private CommandTipHistory() {
+    }
+
+    public static CommandTipHistory getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public String getCommandName() {
@@ -30,7 +41,9 @@ public class TipHistoryCommand extends AUniversalCommand {
     }
 
     @Override
-    public void onCommand(ICommandSender sender, String[] args) {
+    public void onCommand(Autotip autotip, ICommandSender sender, String[] args) {
+        MessageUtil messageUtil = autotip.getMessageUtil();
+
         if (TipTracker.tipsSentHistory.size() > 0) {
             int page = 1;
             int pages = (int) Math.ceil((double) TipTracker.tipsSentHistory.size() / 7.0);
@@ -44,21 +57,21 @@ public class TipHistoryCommand extends AUniversalCommand {
             }
 
             if (page < 1 || page > pages) {
-                MessageUtil.send("&cInvalid page number.");
+                messageUtil.send("&cInvalid page number.");
             } else {
-                MessageUtil.separator();
-                MessageUtil.send("&6Tip History &7" + "[Page " + page + " of " + pages + "]&6:");
+                messageUtil.separator();
+                messageUtil.send("&6Tip History &7" + "[Page " + page + " of " + pages + "]&6:");
 
                 TipTracker.tipsSentHistory.entrySet().stream()
                         .skip((page - 1) * 7)
                         .limit(7)
-                        .forEach(tip -> MessageUtil.send(tip.getValue() + ": &6" + TimeUtil
+                        .forEach(tip -> messageUtil.send(tip.getValue() + ": &6" + TimeUtil
                                 .formatMillis(System.currentTimeMillis() - tip.getKey()) + "."));
 
-                MessageUtil.separator();
+                messageUtil.separator();
             }
         } else {
-            MessageUtil.send("&cYou haven't tipped anyone yet!");
+            messageUtil.send("&cYou haven't tipped anyone yet!");
         }
     }
 
@@ -66,4 +79,5 @@ public class TipHistoryCommand extends AUniversalCommand {
     public List<String> onTabComplete(ICommandSender sender, String[] args) {
         return Collections.emptyList();
     }
+
 }

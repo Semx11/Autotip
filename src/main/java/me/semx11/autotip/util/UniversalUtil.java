@@ -127,7 +127,7 @@ public class UniversalUtil {
     }
 
     private static void addChatMessage(Object component) {
-        EntityPlayerSP thePlayer = Autotip.MC.thePlayer;
+        EntityPlayerSP thePlayer = Autotip.getInstance().getMinecraft().thePlayer;
         try {
             addChatMethod.invoke(thePlayer, component);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -193,7 +193,7 @@ public class UniversalUtil {
     }
 
     private static boolean isLegacy() {
-        switch (Autotip.MC_VERSION) {
+        switch (Autotip.getInstance().getMcVersion()) {
             case V1_8:
             case V1_8_8:
             case V1_8_9:
