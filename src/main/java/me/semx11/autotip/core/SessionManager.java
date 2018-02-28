@@ -16,7 +16,7 @@ import me.semx11.autotip.api.request.LoginRequest;
 import me.semx11.autotip.api.request.LogoutRequest;
 import me.semx11.autotip.api.request.TipRequest;
 import me.semx11.autotip.core.TaskManager.TaskType;
-import me.semx11.autotip.event.EventClientConnection;
+import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.LoginUtil;
@@ -117,8 +117,8 @@ public class SessionManager {
         // TODO: Calculate total tips
         LoginRequest request = LoginRequest.of(profile, serverHash, 1337/*Autotip.totalTipsSent*/);
 
-        long delay = EventClientConnection.getInstance().getLastLogin() + 5000 - System
-                .currentTimeMillis();
+        long lastLogin = autotip.getEvent(EventClientConnection.class).getLastLogin();
+        long delay = lastLogin + 5000 - System.currentTimeMillis();
         delay /= 1000;
 
         this.reply = taskManager.scheduleAndAwait(request::execute, (delay < 1) ? 1 : delay);

@@ -12,7 +12,7 @@ import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
-import me.semx11.autotip.event.EventClientConnection;
+import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.util.Config;
@@ -188,15 +188,26 @@ public class CommandAutotip extends CommandAbstract {
                     messageUtil.separator();
                     break;
                 case "debug":
+                    EventClientConnection event = autotip.getEvent(EventClientConnection.class);
                     messageUtil.separator();
-                    messageUtil.send("Last IP joined: " + EventClientConnection.getInstance()
-                            .getServerIp());
-                    messageUtil.send("Detected MC version: " + autotip.getMcVersion());
-                    Object header = EventClientConnection.getInstance().getHeader();
-                    messageUtil.send("Tablist Header: " + (header == null ? "No header."
+                    messageUtil.send("Last IP joined: {}", event.getServerIp());
+                    messageUtil.send("Detected MC version: {}", autotip.getMcVersion());
+                    Object header = event.getHeader();
+                    messageUtil.send("Tablist Header: {}", (header == null ? "No header."
                             : UniversalUtil.getUnformattedText(header)));
                     messageUtil.separator();
                     break;
+                // TODO: REMOVE THIS AT RELEASE
+//                case "hahayes":
+//                    messageUtil.sendRaw("&aYou were tipped by 1337 players in the last minute!");
+//                    messageUtil.sendRaw("&3+80220 Hypixel Experience");
+//                    messageUtil.sendRaw("&6+2865 Speed UHC Coins");
+//                    messageUtil.sendRaw("&6+2865 UHC Champions Coins");
+//                    messageUtil.sendRaw("&6+2865 Arena Brawl (Classic Games) Coins");
+//                    messageUtil.sendRaw("&6+2865 The Walls (Classic Games) Coins");
+//                    messageUtil.sendRaw("&6+2865 Warlords Coins");
+//                    messageUtil.sendRaw("&6+7258 Arcade Games Coins");
+//                    break;
                 default:
                     messageUtil.send("&cUsage: " + getCommandUsage(sender));
                     break;

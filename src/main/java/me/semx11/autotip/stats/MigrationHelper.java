@@ -1,68 +1,91 @@
 package me.semx11.autotip.stats;
 
-import com.google.common.collect.Sets;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.util.NioWrapper;
+import me.semx11.autotip.util.Config;
+import me.semx11.autotip.util.FileUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
+/**
+ * This class is a collection of all the hacky stuff that has to be accounted for during migration.
+ * TRIGGER WARNING: Hardcoded values
+ */
 public class MigrationHelper {
 
-    private static final Pattern STATS_PATTERN = Pattern.compile("\\d{2}-\\d{2}-\\d{4}\\.at");
+    private static final DateTimeFormatter OLD_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final LocalDate XP_CHANGE_DATE = LocalDate.of(2016, 11, 29);
 
-    public static void loadFiles() {
-        Autotip autotip = Autotip.getInstance();
-        Path playerPath = NioWrapper.getAutotipPath("stats");
-        try {
-            if (!NioWrapper.exists(playerPath)) {
-                Files.createDirectories(playerPath);
-            }
-            if (NioWrapper.exists("mods/autotip/options.at")) {
-                new MigrationHelper().migrateStats();
-            }
-        } catch (IOException e) {
-            Autotip.LOGGER.error("Could not create directory " + playerPath + "!", e);
-            autotip.getConfig().setEnabled(false).save();
-        }
+    private final FileUtil fileUtil;
+
+    private final Config config;
+    private final File legacyConfigFile;
+    private final File upgradeDateFile;
+
+    public MigrationHelper(Autotip autotip) {
+        this.fileUtil = autotip.getFileUtil();
+        this.config = autotip.getConfig();
+        this.legacyConfigFile = fileUtil.getFile("options.at");
+        this.upgradeDateFile = fileUtil.getFile("upgrade-date.at");
+    }
+
+    public boolean hasLegacyFiles() {
+        return legacyConfigFile.exists();
+    }
+
+    public void migrateLegacyFiles() {
+        this.config.migrate();
+        this.migrateStats();
     }
 
     private void migrateStats() {
-        Path autotipPath = NioWrapper.getAutotipPath("");
-        this.getOldStats(autotipPath).forEach(path -> {
-            DailyStatistic stats = DailyStatistic.fromOldFormat(path);
-            if (stats != null) {
-                stats.save();
-            }
-        });
-    }
-
-    private Set<Path> getOldStats(Path p) {
         try {
-            return Files.walk(p, 1)
+            Files.walk(fileUtil.getStatsDir(), 1)
                     .filter(path -> !path.toFile().isDirectory())
-                    .filter(path -> STATS_PATTERN.matcher(path.getFileName().toString()).matches())
-                    .collect(Collectors.toSet());
+                    .map(path -> FilenameUtils.removeExtension(path.getFileName().toString()))
+                    .map(filename -> {
+                        try {
+                            return Optional.of(LocalDate.parse(filename, OLD_FORMAT));
+                        } catch (DateTimeParseException e) {
+                            return Optional.empty();
+                        }
+                    })
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(date -> new DailyStatistic((LocalDate) date).migrate(this));
         } catch (IOException e) {
-            Autotip.LOGGER.error("Could not fetch old stats for directory " + p, e);
+            Autotip.LOGGER.error("Could not migrate stats files", e);
         }
-        return Sets.newHashSet();
     }
 
-    public static void main(String[] args) {
-        MigrationHelper helper = new MigrationHelper();
-        Path p = NioWrapper.getPath("run/mods/autotip/bf9ee915-aaf5-4c7f-8be0-cc93bba0c187/stats");
-        System.out.println(p.toFile().exists());
-        helper.getOldStats(p).forEach(path -> {
-            DailyStatistic stats = DailyStatistic.fromOldFormat(path);
-            if (stats != null) {
-                stats.save();
-                System.out.println("Saved " + stats.getFileName());
-            }
-        });
+    public LegacyState getLegacyState(LocalDate date) {
+        if (date.isBefore(XP_CHANGE_DATE)) {
+            return LegacyState.BEFORE;
+        } else if (date.isBefore(this.getUpgradeDate())) {
+            return LegacyState.BACKTRACK;
+        } else {
+            return LegacyState.AFTER;
+        }
+    }
+
+    private LocalDate getUpgradeDate() {
+        try {
+            String date = FileUtils.readFileToString(upgradeDateFile, StandardCharsets.UTF_8);
+            return LocalDate.parse(date, OLD_FORMAT);
+        } catch (IOException | DateTimeParseException | NullPointerException e) {
+            return XP_CHANGE_DATE;
+        }
+    }
+
+    public enum LegacyState {
+        BEFORE, BACKTRACK, AFTER
     }
 
 }

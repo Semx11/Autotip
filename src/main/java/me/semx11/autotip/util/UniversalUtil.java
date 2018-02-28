@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
+// TODO: Static == bad
 public class UniversalUtil {
 
     private static Class<?> componentClass;
@@ -74,7 +75,6 @@ public class UniversalUtil {
                     ? findField(ClientChatReceivedEvent.class, "message").get(event)
                     : findMethod(ClientChatReceivedEvent.class, new String[]{"getMessage"})
                             .invoke(event);
-
             return getUnformattedText(component);
         } catch (InvocationTargetException | IllegalAccessException e) {
             ErrorReport.reportException(e);

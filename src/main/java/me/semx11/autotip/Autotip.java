@@ -4,17 +4,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.command.impl.CommandAutotip;
 import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.command.impl.CommandTipHistory;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
-import me.semx11.autotip.event.EventChatReceived;
-import me.semx11.autotip.event.EventClientConnection;
-import me.semx11.autotip.event.EventClientTick;
+import me.semx11.autotip.event.Event;
+import me.semx11.autotip.event.impl.EventChatReceived;
+import me.semx11.autotip.event.impl.EventClientConnection;
+import me.semx11.autotip.event.impl.EventClientTick;
 import me.semx11.autotip.gson.AnnotationExclusionStrategy;
+import me.semx11.autotip.gson.ConfigInstanceCreator;
+import me.semx11.autotip.stats.MigrationHelper;
+import me.semx11.autotip.stats.StatsManager;
 import me.semx11.autotip.util.Config;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
@@ -46,6 +51,9 @@ public class Autotip {
     @Instance
     private static Autotip instance;
 
+    private final List<Event> events = new ArrayList<>();
+    private final List<CommandAbstract> commands = new ArrayList<>();
+
     private Minecraft minecraft;
     private MinecraftVersion mcVersion;
     private Version version;
@@ -59,6 +67,8 @@ public class Autotip {
     private Config config;
     private TaskManager taskManager;
     private SessionManager sessionManager;
+    private MigrationHelper migrationHelper;
+    private StatsManager statsManager;
 
     public static Autotip getInstance() {
         return instance;
@@ -108,6 +118,14 @@ public class Autotip {
         return sessionManager;
     }
 
+    public MigrationHelper getMigrationHelper() {
+        return migrationHelper;
+    }
+
+    public StatsManager getStatsManager() {
+        return statsManager;
+    }
+
     @EventHandler
     public void init(FMLInitializationEvent event) {
         this.minecraft = Minecraft.getMinecraft();
@@ -115,6 +133,7 @@ public class Autotip {
         this.version = new Version(VERSION);
 
         this.gson = new GsonBuilder()
+                .registerTypeAdapter(Config.class, new ConfigInstanceCreator(this))
                 .setExclusionStrategies(new AnnotationExclusionStrategy())
                 .setPrettyPrinting()
                 .create();
@@ -123,6 +142,7 @@ public class Autotip {
         this.userDirString = NioWrapper.separator("mods/autotip/" + getGameProfile().getId() + "/");
 
         this.messageUtil = new MessageUtil();
+        this.registerEvents(new EventClientTick(this));
 
         try {
             this.fileUtil = new FileUtil(this);
@@ -131,11 +151,16 @@ public class Autotip {
             this.config = new Config(this).load();
             this.taskManager = new TaskManager();
             this.sessionManager = new SessionManager(this);
+            this.migrationHelper = new MigrationHelper(this);
+            this.statsManager = new StatsManager();
+
+            if (migrationHelper.hasLegacyFiles()) {
+                migrationHelper.migrateLegacyFiles();
+            }
 
             this.registerEvents(
-                    EventClientTick.getInstance(),
-                    EventClientConnection.getInstance(),
-                    EventChatReceived.getInstance()
+                    new EventClientConnection(this),
+                    new EventChatReceived(this)
             );
             this.registerCommands(
                     CommandAutotip.getInstance(),
@@ -145,21 +170,40 @@ public class Autotip {
             LegacyFileUtil.getVars();
         } catch (IOException e) {
             messageUtil.send("Autotip is disabled because it couldn't create the required files.");
-            this.registerEvents(EventClientTick.getInstance());
             ErrorReport.reportException(e);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(sessionManager::logout));
     }
 
-    private void registerEvents(Object... events) {
-        Arrays.asList(events).forEach((event) -> {
+    @SuppressWarnings("unchecked")
+    public <T extends Event> T getEvent(Class<T> clazz) {
+        return (T) events.stream()
+                .filter(event -> event.getClass().equals(clazz))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends CommandAbstract> T getCommand(Class<T> clazz) {
+        return (T) commands.stream()
+                .filter(command -> command.getClass().equals(clazz))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void registerEvents(Event... events) {
+        for (Event event : events) {
             MinecraftForge.EVENT_BUS.register(event);
             FMLCommonHandler.instance().bus().register(event);
-        });
+            this.events.add(event);
+        }
     }
 
     private void registerCommands(CommandAbstract... commands) {
-        Arrays.asList(commands).forEach(ClientCommandHandler.instance::registerCommand);
+        for (CommandAbstract command : commands) {
+            ClientCommandHandler.instance.registerCommand(command);
+            this.commands.add(command);
+        }
     }
 
 }

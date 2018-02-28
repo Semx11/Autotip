@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.event.EventClientConnection;
+import me.semx11.autotip.event.impl.EventClientConnection;
 import net.minecraftforge.common.ForgeVersion;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -25,6 +25,8 @@ public class ErrorReport {
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
 
+            String serverIp = autotip.getEvent(EventClientConnection.class).getServerIp();
+
             JsonObject obj = JsonObjectBuilder.newBuilder()
                     .addString("username", autotip.getGameProfile().getName())
                     .addString("uuid", autotip.getGameProfile().getId())
@@ -33,7 +35,7 @@ public class ErrorReport {
                     .addString("os", System.getProperty("os.name"))
                     .addString("forge", ForgeVersion.getVersion())
                     .addString("sessionKey", autotip.getSessionManager().getKey())
-                    .addString("serverIp", EventClientConnection.getInstance().getServerIp())
+                    .addString("serverIp", serverIp)
                     .addString("stackTrace", ExceptionUtils.getStackTrace(t))
                     .addNumber("time", System.currentTimeMillis())
                     .build();
@@ -77,7 +79,7 @@ public class ErrorReport {
         }
 
         public JsonObjectBuilder addString(String property, Object value) {
-            obj.addProperty(property, value != null ? value.toString() : "null");
+            obj.addProperty(property, String.valueOf(value));
             return this;
         }
 

@@ -1,10 +1,11 @@
-package me.semx11.autotip.event;
+package me.semx11.autotip.event.impl;
 
 import java.lang.reflect.Field;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
+import me.semx11.autotip.event.Event;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.ReflectionUtil;
 import me.semx11.autotip.util.UniversalUtil;
@@ -14,23 +15,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
-public class EventClientConnection {
-
-    private static final EventClientConnection INSTANCE = new EventClientConnection();
+public class EventClientConnection implements Event {
 
     // TODO: Don't hard-code this.
     private static final String HYPIXEL_HEADER = "You are playing on MC.HYPIXEL.NET";
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
 
+    private final Autotip autotip;
+
     private String serverIp;
     private long lastLogin;
 
-    private EventClientConnection() {
-    }
-
-    public static EventClientConnection getInstance() {
-        return INSTANCE;
+    public EventClientConnection(Autotip autotip) {
+        this.autotip = autotip;
     }
 
     public String getServerIp() {
@@ -60,7 +58,6 @@ public class EventClientConnection {
 
     @SubscribeEvent
     public void playerLoggedIn(ClientConnectedToServerEvent event) {
-        Autotip autotip = Autotip.getInstance();
         TaskManager taskManager = autotip.getTaskManager();
         SessionManager manager = autotip.getSessionManager();
 
@@ -98,7 +95,6 @@ public class EventClientConnection {
 
     @SubscribeEvent
     public void playerLoggedOut(ClientDisconnectionFromServerEvent event) {
-        Autotip autotip = Autotip.getInstance();
         TaskManager taskManager = autotip.getTaskManager();
         SessionManager manager = autotip.getSessionManager();
         manager.setOnHypixel(false);
