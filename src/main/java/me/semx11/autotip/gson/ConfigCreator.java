@@ -5,11 +5,11 @@ import java.lang.reflect.Type;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.Config;
 
-public class ConfigInstanceCreator implements InstanceCreator<Config> {
+public class ConfigCreator implements InstanceCreator<Config> {
 
     private final Autotip autotip;
 
-    public ConfigInstanceCreator(Autotip autotip) {
+    public ConfigCreator(Autotip autotip) {
         this.autotip = autotip;
     }
 

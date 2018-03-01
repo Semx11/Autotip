@@ -1,13 +1,11 @@
 package me.semx11.autotip.util;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.CheckReturnValue;
 import me.semx11.autotip.Autotip;
@@ -16,11 +14,8 @@ import org.apache.commons.io.FileUtils;
 
 public class Config {
 
-    private static final Gson GSON = Autotip.getInstance().getGson();
-    private static final FileUtil FILE_UTIL = Autotip.getInstance().getFileUtil();
-
     @Exclude
-    private final Path configPath;
+    private final Autotip autotip;
     @Exclude
     private final File configFile;
 
@@ -28,8 +23,8 @@ public class Config {
     private MessageOption messageOption = MessageOption.SHOWN;
 
     public Config(Autotip autotip) {
-        this.configPath = autotip.getFileUtil().getPath("config.at");
-        this.configFile = configPath.toFile();
+        this.autotip = autotip;
+        this.configFile = autotip.getFileUtil().getFile("config.at");
     }
 
     public boolean isEnabled() {
@@ -60,7 +55,8 @@ public class Config {
 
     public Config save() {
         try {
-            FileUtils.writeStringToFile(configFile, GSON.toJson(this), StandardCharsets.UTF_8);
+            String json = autotip.getGson().toJson(this);
+            FileUtils.writeStringToFile(configFile, json, StandardCharsets.UTF_8);
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not write config to " + configFile, e);
         }
@@ -70,7 +66,7 @@ public class Config {
     public Config load() {
         try {
             String json = FileUtils.readFileToString(configFile);
-            return this.merge(GSON.fromJson(json, Config.class));
+            return this.merge(autotip.getGson().fromJson(json, Config.class));
         } catch (FileNotFoundException e) {
             Autotip.LOGGER.info("config.at does not exist, creating...");
         } catch (JsonSyntaxException e) {
@@ -82,14 +78,16 @@ public class Config {
     }
 
     public Config migrate() {
+        FileUtil fileUtil = autotip.getFileUtil();
+
         // Check if legacy config file exists
-        File legacyFile = FILE_UTIL.getFile("options.at");
+        File legacyFile = fileUtil.getFile("options.at");
         if (!legacyFile.exists()) {
             return this;
         }
 
         try {
-            List<String> lines = Files.readAllLines(configPath.resolveSibling("options.at"));
+            List<String> lines = Files.readAllLines(fileUtil.getPath("options.at"));
             if (lines.size() < 2) {
                 return this;
             }

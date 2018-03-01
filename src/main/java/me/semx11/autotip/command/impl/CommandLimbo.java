@@ -9,15 +9,10 @@ import net.minecraft.command.ICommandSender;
 
 public class CommandLimbo extends CommandAbstract {
 
-    private static final CommandLimbo INSTANCE = new CommandLimbo();
-
     private boolean executed;
 
-    private CommandLimbo() {
-    }
-
-    public static CommandLimbo getInstance() {
-        return INSTANCE;
+    public CommandLimbo(Autotip autotip) {
+        super(autotip);
     }
 
     public boolean hasExecuted() {
@@ -44,11 +39,11 @@ public class CommandLimbo extends CommandAbstract {
     }
 
     @Override
-    public void onCommand(Autotip autotip, ICommandSender sender, String[] args) {
+    public void onCommand(ICommandSender sender, String[] args) {
         MessageUtil messageUtil = autotip.getMessageUtil();
 
         if (autotip.getSessionManager().isOnHypixel()) {
-            this.setExecuted(true);
+            this.executed = true;
             messageUtil.sendCommand("/achat \u00a7c");
         } else {
             messageUtil.send("&cYou must be on Hypixel to use this command!");

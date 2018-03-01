@@ -11,13 +11,8 @@ import net.minecraft.command.ICommandSender;
 
 public class CommandTipHistory extends CommandAbstract {
 
-    private static final CommandTipHistory INSTANCE = new CommandTipHistory();
-
-    private CommandTipHistory() {
-    }
-
-    public static CommandTipHistory getInstance() {
-        return INSTANCE;
+    public CommandTipHistory(Autotip autotip) {
+        super(autotip);
     }
 
     @Override
@@ -41,7 +36,7 @@ public class CommandTipHistory extends CommandAbstract {
     }
 
     @Override
-    public void onCommand(Autotip autotip, ICommandSender sender, String[] args) {
+    public void onCommand(ICommandSender sender, String[] args) {
         MessageUtil messageUtil = autotip.getMessageUtil();
 
         if (TipTracker.tipsSentHistory.size() > 0) {

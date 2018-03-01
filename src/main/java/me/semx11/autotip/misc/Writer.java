@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.LegacyFileUtil;
-import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.NioWrapper;
 
 public class Writer implements Runnable {
@@ -28,14 +27,6 @@ public class Writer implements Runnable {
     public void run() {
         Autotip autotip = Autotip.getInstance();
         try {
-            try (FileWriter writeOptions = new FileWriter(
-                    autotip.getUserDirString() + "options.at")) {
-                write(writeOptions, true + ls);
-                write(writeOptions, MessageOption.SHOWN.name() + ls);
-                write(writeOptions, "true" + ls);
-                write(writeOptions, 1337/*Autotip.totalTipsSent*/ + ls);
-            }
-
             if (!lastDate.equals(LegacyFileUtil.getDate())) {
                 TipTracker.tipsSent = 0;
                 TipTracker.tipsReceived = 0;

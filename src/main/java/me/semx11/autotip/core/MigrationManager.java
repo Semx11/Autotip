@@ -1,4 +1,4 @@
-package me.semx11.autotip.stats;
+package me.semx11.autotip.core;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,39 +9,34 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.stats.DailyStatistic;
 import me.semx11.autotip.util.Config;
 import me.semx11.autotip.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-/**
- * This class is a collection of all the hacky stuff that has to be accounted for during migration.
- * TRIGGER WARNING: Hardcoded values
- */
-public class MigrationHelper {
+public class MigrationManager {
 
     private static final DateTimeFormatter OLD_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final LocalDate XP_CHANGE_DATE = LocalDate.of(2016, 11, 29);
 
+    private final Autotip autotip;
     private final FileUtil fileUtil;
 
     private final Config config;
-    private final File legacyConfigFile;
     private final File upgradeDateFile;
 
-    public MigrationHelper(Autotip autotip) {
+    public MigrationManager(Autotip autotip) {
+        this.autotip = autotip;
         this.fileUtil = autotip.getFileUtil();
         this.config = autotip.getConfig();
-        this.legacyConfigFile = fileUtil.getFile("options.at");
         this.upgradeDateFile = fileUtil.getFile("upgrade-date.at");
     }
 
-    public boolean hasLegacyFiles() {
-        return legacyConfigFile.exists();
-    }
-
     public void migrateLegacyFiles() {
-        this.config.migrate();
+        if (fileUtil.exists("options.at")) {
+            config.migrate();
+        }
         this.migrateStats();
     }
 
@@ -59,7 +54,7 @@ public class MigrationHelper {
                     })
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .forEach(date -> new DailyStatistic((LocalDate) date).migrate(this));
+                    .forEach(date -> new DailyStatistic(autotip, (LocalDate) date).migrate(this));
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not migrate stats files", e);
         }

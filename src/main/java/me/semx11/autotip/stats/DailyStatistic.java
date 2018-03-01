@@ -1,6 +1,5 @@
 package me.semx11.autotip.stats;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,22 +14,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.stats.MigrationHelper.LegacyState;
-import me.semx11.autotip.util.FileUtil;
+import me.semx11.autotip.core.MigrationManager;
+import me.semx11.autotip.core.MigrationManager.LegacyState;
+import me.semx11.autotip.gson.Exclude;
 import org.apache.commons.io.FileUtils;
 
 public class DailyStatistic {
-
-    private static final Gson GSON = Autotip.getInstance().getGson();
-    private static final FileUtil FILE_UTIL = Autotip.getInstance().getFileUtil();
 
     private static final Pattern TIPS_PATTERN = Pattern
             .compile("^(?<sent>\\d+)(:(?<received>\\d+))?$");
     private static final Pattern GAME_PATTERN = Pattern
             .compile("^(?<game>[\\w\\s]+):(?<sent>\\d+)(:(?<received>\\d+))?$");
 
-    private final LocalDate date;
+    @Exclude
+    private final Autotip autotip;
 
+    private LocalDate date;
     private int tipsSent = 0;
     private int tipsReceived = 0;
     private int xpSent = 0;
@@ -38,7 +37,12 @@ public class DailyStatistic {
 
     private Map<String, CoinStatistic> gameStatistics = new ConcurrentHashMap<>();
 
-    public DailyStatistic(LocalDate date) {
+    public DailyStatistic(Autotip autotip) {
+        this.autotip = autotip;
+    }
+
+    public DailyStatistic(Autotip autotip, LocalDate date) {
+        this.autotip = autotip;
         this.date = date;
     }
 
@@ -99,7 +103,7 @@ public class DailyStatistic {
     }
 
     private File getFile() {
-        return FILE_UTIL.getStatsFile(date);
+        return autotip.getFileUtil().getStatsFile(date);
     }
 
     public DailyStatistic merge(final DailyStatistic that) {
@@ -117,7 +121,8 @@ public class DailyStatistic {
     public DailyStatistic save() {
         File file = this.getFile();
         try {
-            FileUtils.writeStringToFile(file, GSON.toJson(this), StandardCharsets.UTF_8);
+            String json = autotip.getGson().toJson(this);
+            FileUtils.writeStringToFile(file, json, StandardCharsets.UTF_8);
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not write to " + file, e);
         }
@@ -128,7 +133,7 @@ public class DailyStatistic {
         File file = this.getFile();
         try {
             String json = FileUtils.readFileToString(file);
-            return this.merge(GSON.fromJson(json, DailyStatistic.class));
+            return this.merge(autotip.getGson().fromJson(json, DailyStatistic.class));
         } catch (FileNotFoundException e) {
             Autotip.LOGGER.info(file.getName() + " does not exist, creating...");
         } catch (JsonSyntaxException e) {
@@ -139,15 +144,14 @@ public class DailyStatistic {
         return this.save();
     }
 
-    // TRIGGER WARNING: Legacy code, Hardcoded values, Spaghetti code
-    public DailyStatistic migrate(MigrationHelper migrationHelper) {
+    public DailyStatistic migrate(MigrationManager migrationManager) {
         // Check if legacy stats file exists
-        File file = FILE_UTIL.getLegacyStatsFile(date);
+        File file = autotip.getFileUtil().getLegacyStatsFile(date);
         if (!file.exists()) {
             return this;
         }
 
-        LegacyState state = migrationHelper.getLegacyState(date);
+        LegacyState state = migrationManager.getLegacyState(date);
 
         try {
             // Reads the contents of the file. If the file has less than 2 lines, ignore file.
@@ -195,6 +199,7 @@ public class DailyStatistic {
             if (!file.delete()) {
                 Autotip.LOGGER.warn("Could not delete legacy stats file " + file.getName());
             }
+            Autotip.LOGGER.info("Migrated legacy stats file " + file.getName());
             return this.save();
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not read file " + file.getName(), e);

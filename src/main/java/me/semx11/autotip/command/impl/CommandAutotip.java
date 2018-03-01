@@ -25,16 +25,11 @@ import net.minecraft.command.ICommandSender;
 
 public class CommandAutotip extends CommandAbstract {
 
-    private static final CommandAutotip INSTANCE = new CommandAutotip();
-
     private static final DateTimeFormatter SESSION_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter WAVE_FORMAT = DateTimeFormatter.ofPattern("mm:ss");
 
-    private CommandAutotip() {
-    }
-
-    public static CommandAutotip getInstance() {
-        return INSTANCE;
+    public CommandAutotip(Autotip autotip) {
+        super(autotip);
     }
 
     @Override
@@ -54,7 +49,7 @@ public class CommandAutotip extends CommandAbstract {
 
     @Override
     public List<String> getCommandAliases() {
-        if (!Autotip.getInstance().getMcVersion().equals(MinecraftVersion.V1_8)) {
+        if (!autotip.getMcVersion().equals(MinecraftVersion.V1_8)) {
             return Collections.singletonList("at");
         } else {
             return Collections.emptyList();
@@ -62,7 +57,7 @@ public class CommandAutotip extends CommandAbstract {
     }
 
     @Override
-    public void onCommand(Autotip autotip, ICommandSender sender, String[] args) {
+    public void onCommand(ICommandSender sender, String[] args) {
         Config config = autotip.getConfig();
         MessageUtil messageUtil = autotip.getMessageUtil();
         TaskManager taskManager = autotip.getTaskManager();

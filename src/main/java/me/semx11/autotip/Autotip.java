@@ -17,9 +17,11 @@ import me.semx11.autotip.event.impl.EventChatReceived;
 import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.event.impl.EventClientTick;
 import me.semx11.autotip.gson.AnnotationExclusionStrategy;
-import me.semx11.autotip.gson.ConfigInstanceCreator;
-import me.semx11.autotip.stats.MigrationHelper;
-import me.semx11.autotip.stats.StatsManager;
+import me.semx11.autotip.gson.ConfigCreator;
+import me.semx11.autotip.gson.DailyStatisticCreator;
+import me.semx11.autotip.stats.DailyStatistic;
+import me.semx11.autotip.core.MigrationManager;
+import me.semx11.autotip.core.StatsManager;
 import me.semx11.autotip.util.Config;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
@@ -67,7 +69,7 @@ public class Autotip {
     private Config config;
     private TaskManager taskManager;
     private SessionManager sessionManager;
-    private MigrationHelper migrationHelper;
+    private MigrationManager migrationManager;
     private StatsManager statsManager;
 
     public static Autotip getInstance() {
@@ -118,8 +120,8 @@ public class Autotip {
         return sessionManager;
     }
 
-    public MigrationHelper getMigrationHelper() {
-        return migrationHelper;
+    public MigrationManager getMigrationManager() {
+        return migrationManager;
     }
 
     public StatsManager getStatsManager() {
@@ -132,12 +134,6 @@ public class Autotip {
         this.mcVersion = UniversalUtil.getMinecraftVersion();
         this.version = new Version(VERSION);
 
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(Config.class, new ConfigInstanceCreator(this))
-                .setExclusionStrategies(new AnnotationExclusionStrategy())
-                .setPrettyPrinting()
-                .create();
-
         // TODO: Remove because it's legacy
         this.userDirString = NioWrapper.separator("mods/autotip/" + getGameProfile().getId() + "/");
 
@@ -146,26 +142,32 @@ public class Autotip {
 
         try {
             this.fileUtil = new FileUtil(this);
-            this.fileUtil.createDirectories();
+            this.gson = new GsonBuilder()
+                    .registerTypeAdapter(Config.class, new ConfigCreator(this))
+                    .registerTypeAdapter(DailyStatistic.class, new DailyStatisticCreator(this))
+                    .setExclusionStrategies(new AnnotationExclusionStrategy())
+                    .setPrettyPrinting()
+                    .create();
 
-            this.config = new Config(this).load();
+            this.config = new Config(this);
+
             this.taskManager = new TaskManager();
             this.sessionManager = new SessionManager(this);
-            this.migrationHelper = new MigrationHelper(this);
-            this.statsManager = new StatsManager();
+            this.statsManager = new StatsManager(this);
+            this.migrationManager = new MigrationManager(this);
 
-            if (migrationHelper.hasLegacyFiles()) {
-                migrationHelper.migrateLegacyFiles();
-            }
+            this.fileUtil.createDirectories();
+            this.config.load();
+            this.migrationManager.migrateLegacyFiles();
 
             this.registerEvents(
                     new EventClientConnection(this),
                     new EventChatReceived(this)
             );
             this.registerCommands(
-                    CommandAutotip.getInstance(),
-                    CommandTipHistory.getInstance(),
-                    CommandLimbo.getInstance()
+                    new CommandAutotip(this),
+                    new CommandTipHistory(this),
+                    new CommandLimbo(this)
             );
             LegacyFileUtil.getVars();
         } catch (IOException e) {

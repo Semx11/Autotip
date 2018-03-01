@@ -93,7 +93,7 @@ public class EventChatReceived implements Event {
         +15 Quakecraft Coins
          */
 
-        CommandLimbo limboCommand = CommandLimbo.getInstance();
+        CommandLimbo limboCommand = autotip.getCommand(CommandLimbo.class);
         if (limboCommand.hasExecuted()) {
             if (msg.startsWith("A kick occurred in your connection")) {
                 event.setCanceled(true);
