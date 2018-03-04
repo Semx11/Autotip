@@ -72,61 +72,6 @@ public class Autotip {
     private MigrationManager migrationManager;
     private StatsManager statsManager;
 
-    public static Autotip getInstance() {
-        return instance;
-    }
-
-    public Minecraft getMinecraft() {
-        return minecraft;
-    }
-
-    public GameProfile getGameProfile() {
-        return getMinecraft().getSession().getProfile();
-    }
-
-    public MinecraftVersion getMcVersion() {
-        return mcVersion;
-    }
-
-    public Version getVersion() {
-        return version;
-    }
-
-    public Gson getGson() {
-        return gson;
-    }
-
-    public String getUserDirString() {
-        return userDirString;
-    }
-
-    public FileUtil getFileUtil() {
-        return fileUtil;
-    }
-
-    public MessageUtil getMessageUtil() {
-        return messageUtil;
-    }
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public TaskManager getTaskManager() {
-        return taskManager;
-    }
-
-    public SessionManager getSessionManager() {
-        return sessionManager;
-    }
-
-    public MigrationManager getMigrationManager() {
-        return migrationManager;
-    }
-
-    public StatsManager getStatsManager() {
-        return statsManager;
-    }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
@@ -206,6 +151,62 @@ public class Autotip {
             ClientCommandHandler.instance.registerCommand(command);
             this.commands.add(command);
         }
+    }
+    
+    public static Autotip getInstance() {
+        return instance;
+    }
+
+    public Minecraft getMinecraft() {
+        return minecraft;
+    }
+
+    public GameProfile getGameProfile() {
+        return getMinecraft().getSession().getProfile();
+    }
+
+    public MinecraftVersion getMcVersion() {
+        return mcVersion;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+
+    public String getUserDirString() {
+        return userDirString;
+    }
+
+    public FileUtil getFileUtil() {
+        return fileUtil;
+    }
+
+    public MessageUtil getMessageUtil() {
+        return messageUtil;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
+    public SessionManager getSessionManager() {
+        return sessionManager;
+    }
+
+    public MigrationManager getMigrationManager() {
+        return migrationManager;
+    }
+
+    public StatsManager getStatsManager() {
+        return statsManager;
     }
 
 }
