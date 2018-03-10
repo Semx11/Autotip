@@ -29,7 +29,7 @@ import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
-import me.semx11.autotip.util.LegacyFileUtil;
+import me.semx11.autotip.legacy.LegacyFileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.NioWrapper;

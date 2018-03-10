@@ -1,4 +1,4 @@
-package me.semx11.autotip.misc;
+package me.semx11.autotip.legacy;
 
 import java.io.BufferedReader;
 import java.io.File;

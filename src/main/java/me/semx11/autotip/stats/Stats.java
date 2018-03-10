@@ -90,4 +90,8 @@ public abstract class Stats {
         return this;
     }
 
+    public void print() {
+
+    }
+
 }

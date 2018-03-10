@@ -1,4 +1,4 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.legacy;
 
 import static me.semx11.autotip.util.NioWrapper.exists;
 import static me.semx11.autotip.util.NioWrapper.getAutotipFile;
@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.misc.Writer;
+import me.semx11.autotip.util.ErrorReport;
 
 public class LegacyFileUtil {
 

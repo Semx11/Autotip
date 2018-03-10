@@ -1,4 +1,4 @@
-package me.semx11.autotip.misc;
+package me.semx11.autotip.legacy;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.LegacyFileUtil;
 import me.semx11.autotip.util.NioWrapper;
 
 public class Writer implements Runnable {
