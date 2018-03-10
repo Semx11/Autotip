@@ -6,30 +6,33 @@ import com.mojang.authlib.GameProfile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import me.semx11.autotip.api.reply.impl.SettingsReply;
+import me.semx11.autotip.api.request.impl.SettingsRequest;
 import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.command.impl.CommandAutotip;
 import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.command.impl.CommandTipHistory;
+import me.semx11.autotip.config.Config;
+import me.semx11.autotip.config.GlobalSettings;
+import me.semx11.autotip.core.MigrationManager;
 import me.semx11.autotip.core.SessionManager;
+import me.semx11.autotip.core.StatsManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.event.Event;
 import me.semx11.autotip.event.impl.EventChatReceived;
 import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.event.impl.EventClientTick;
-import me.semx11.autotip.gson.AnnotationExclusionStrategy;
-import me.semx11.autotip.gson.ConfigCreator;
-import me.semx11.autotip.gson.DailyStatisticCreator;
-import me.semx11.autotip.stats.DailyStatistic;
-import me.semx11.autotip.core.MigrationManager;
-import me.semx11.autotip.core.StatsManager;
-import me.semx11.autotip.util.Config;
+import me.semx11.autotip.gson.creator.ConfigCreator;
+import me.semx11.autotip.gson.creator.StatsDailyCreator;
+import me.semx11.autotip.gson.exclusion.AnnotationExclusionStrategy;
+import me.semx11.autotip.stats.StatsDaily;
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
 import me.semx11.autotip.util.LegacyFileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.NioWrapper;
-import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Version;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -48,13 +51,15 @@ public class Autotip {
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
 
     static final String MOD_ID = "autotip";
-    static final String VERSION = "2.1.0.7";
+    static final String VERSION = "2.1";
 
     @Instance
     private static Autotip instance;
 
     private final List<Event> events = new ArrayList<>();
     private final List<CommandAbstract> commands = new ArrayList<>();
+
+    private boolean initialized = false;
 
     private Minecraft minecraft;
     private MinecraftVersion mcVersion;
@@ -66,7 +71,9 @@ public class Autotip {
     private FileUtil fileUtil;
     private MessageUtil messageUtil;
 
+    private GlobalSettings globalSettings;
     private Config config;
+
     private TaskManager taskManager;
     private SessionManager sessionManager;
     private MigrationManager migrationManager;
@@ -74,6 +81,10 @@ public class Autotip {
 
     public static Autotip getInstance() {
         return instance;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 
     public Minecraft getMinecraft() {
@@ -106,6 +117,10 @@ public class Autotip {
 
     public MessageUtil getMessageUtil() {
         return messageUtil;
+    }
+
+    public GlobalSettings getGlobalSettings() {
+        return globalSettings;
     }
 
     public Config getConfig() {
@@ -144,11 +159,16 @@ public class Autotip {
             this.fileUtil = new FileUtil(this);
             this.gson = new GsonBuilder()
                     .registerTypeAdapter(Config.class, new ConfigCreator(this))
-                    .registerTypeAdapter(DailyStatistic.class, new DailyStatisticCreator(this))
+                    .registerTypeAdapter(StatsDaily.class, new StatsDailyCreator(this))
                     .setExclusionStrategies(new AnnotationExclusionStrategy())
                     .setPrettyPrinting()
                     .create();
 
+            SettingsReply reply = SettingsRequest.of(this).execute();
+            if (!reply.isSuccess()) {
+                throw new IllegalStateException("Could not fetch global settings");
+            }
+            this.globalSettings = reply.getSettings();
             this.config = new Config(this);
 
             this.taskManager = new TaskManager();
@@ -158,7 +178,9 @@ public class Autotip {
 
             this.fileUtil.createDirectories();
             this.config.load();
-            this.migrationManager.migrateLegacyFiles();
+            this.taskManager.getExecutor().execute(() -> {
+                this.migrationManager.migrateLegacyFiles();
+            });
 
             this.registerEvents(
                     new EventClientConnection(this),
@@ -170,11 +192,15 @@ public class Autotip {
                     new CommandLimbo(this)
             );
             LegacyFileUtil.getVars();
+            Runtime.getRuntime().addShutdownHook(new Thread(sessionManager::logout));
+            this.initialized = true;
         } catch (IOException e) {
             messageUtil.send("Autotip is disabled because it couldn't create the required files.");
             ErrorReport.reportException(e);
+        } catch (IllegalStateException e) {
+            messageUtil.send("Autotip is disabled because it couldn't fetch the global settings.");
+            ErrorReport.reportException(e);
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(sessionManager::logout));
     }
 
     @SuppressWarnings("unchecked")
@@ -182,7 +208,7 @@ public class Autotip {
         return (T) events.stream()
                 .filter(event -> event.getClass().equals(clazz))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElse(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -190,7 +216,7 @@ public class Autotip {
         return (T) commands.stream()
                 .filter(command -> command.getClass().equals(clazz))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElse(null);
     }
 
     private void registerEvents(Event... events) {

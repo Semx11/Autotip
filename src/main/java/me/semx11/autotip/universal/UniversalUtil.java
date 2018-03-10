@@ -1,16 +1,18 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.universal;
 
-import static me.semx11.autotip.util.ReflectionUtil.findClazz;
-import static me.semx11.autotip.util.ReflectionUtil.findField;
-import static me.semx11.autotip.util.ReflectionUtil.findMethod;
-import static me.semx11.autotip.util.ReflectionUtil.getConstructor;
-import static me.semx11.autotip.util.ReflectionUtil.getEnum;
+import static me.semx11.autotip.universal.ReflectionUtil.findClazz;
+import static me.semx11.autotip.universal.ReflectionUtil.findField;
+import static me.semx11.autotip.universal.ReflectionUtil.findMethod;
+import static me.semx11.autotip.universal.ReflectionUtil.getConstructor;
+import static me.semx11.autotip.universal.ReflectionUtil.getEnum;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketAddress;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.util.ErrorReport;
+import me.semx11.autotip.util.MinecraftVersion;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;

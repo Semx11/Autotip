@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.universal.UniversalUtil;
 import net.minecraft.client.Minecraft;
 
 public class MessageUtil {

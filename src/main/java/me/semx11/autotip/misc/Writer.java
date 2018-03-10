@@ -17,7 +17,6 @@ import me.semx11.autotip.util.NioWrapper;
 public class Writer implements Runnable {
 
     private static String lastDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-    private static String ls = System.lineSeparator();
 
     public static void execute() {
         Autotip.getInstance().getTaskManager().getExecutor().execute(new Writer());
@@ -38,8 +37,8 @@ public class Writer implements Runnable {
                     .separator(autotip.getUserDirString() + "stats/" + LegacyFileUtil.getDate()
                             + ".at"));
 
-            write(dailyStats, TipTracker.tipsSent + ":" + TipTracker.tipsReceived + ls);
-            write(dailyStats, "0" + ls);
+            write(dailyStats, TipTracker.tipsSent + ":" + TipTracker.tipsReceived);
+            write(dailyStats, "0");
 
             // Prevent ConcurrentModificationException until new format.
             Set<String> sent = new HashSet<>(TipTracker.tipsSentEarnings.keySet());
@@ -52,7 +51,7 @@ public class Writer implements Runnable {
             games.forEach(game -> {
                 int sentCoins = TipTracker.tipsSentEarnings.getOrDefault(game, 0);
                 int receivedCoins = TipTracker.tipsReceivedEarnings.getOrDefault(game, 0);
-                write(dailyStats, game + ":" + sentCoins + ":" + receivedCoins + ls);
+                write(dailyStats, game + ":" + sentCoins + ":" + receivedCoins);
             });
             dailyStats.close();
 
@@ -65,7 +64,7 @@ public class Writer implements Runnable {
 
     private void write(FileWriter writer, String text) {
         try {
-            writer.write(text);
+            writer.write(text + System.lineSeparator());
         } catch (IOException e) {
             ErrorReport.reportException(e);
         }

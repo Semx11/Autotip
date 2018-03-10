@@ -16,6 +16,7 @@ public class EventClientTick implements Event {
     @SubscribeEvent
     public void onClientTick(ClientTickEvent event) {
         autotip.getMessageUtil().flushQueues();
+        autotip.getStatsManager().saveCycle();
     }
 
 }

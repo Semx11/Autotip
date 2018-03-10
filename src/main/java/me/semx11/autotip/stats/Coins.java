@@ -1,11 +1,11 @@
 package me.semx11.autotip.stats;
 
-public class CoinStatistic {
+public class Coins {
 
     private int coinsBySending;
     private int coinsByReceiving;
 
-    public CoinStatistic(int coinsBySending, int coinsByReceiving) {
+    public Coins(int coinsBySending, int coinsByReceiving) {
         this.coinsBySending = coinsBySending;
         this.coinsByReceiving = coinsByReceiving;
     }
@@ -26,7 +26,7 @@ public class CoinStatistic {
         coinsByReceiving += coins;
     }
 
-    public CoinStatistic merge(final CoinStatistic that) {
+    public Coins merge(final Coins that) {
         this.coinsBySending += that.coinsBySending;
         this.coinsByReceiving += that.coinsByReceiving;
         return this;

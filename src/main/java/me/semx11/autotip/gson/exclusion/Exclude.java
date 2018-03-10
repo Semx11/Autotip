@@ -1,4 +1,4 @@
-package me.semx11.autotip.gson;
+package me.semx11.autotip.gson.exclusion;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -9,16 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.misc.Writer;
-import org.apache.commons.io.FileUtils;
 
 public class LegacyFileUtil {
 
@@ -29,60 +24,7 @@ public class LegacyFileUtil {
                 throw new IOException("Could not make required directories");
             }
 
-            Path upgrade = getAutotipPath("upgrade-date.at");
-            File file = getAutotipFile("upgrade-date.at");
-            if (exists(upgrade)) {
-                String date = FileUtils.readFileToString(upgrade.toFile());
-                LocalDate parsed;
-                try {
-                    parsed = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                } catch (DateTimeParseException e) {
-                    ErrorReport.reportException(e);
-                    parsed = LocalDate.now();
-                }
-                Stats.setUpgradeDate(parsed);
-            } else {
-                LocalDate date = LocalDate.now().plusDays(1);
-                String dateString = DateTimeFormatter.ofPattern("dd-MM-yyyy").format(date);
-                FileUtils.writeStringToFile(upgrade.toFile(), dateString);
-                Stats.setUpgradeDate(date);
-            }
-
             boolean executeWriter = false;
-
-            Path options = getAutotipPath("options.at");
-            if (exists(options)) {
-                List<String> lines = Files.lines(options).collect(Collectors.toList());
-                if (lines.size() >= 4) {
-                    //Autotip.toggle = Boolean.parseBoolean(lines.get(0));
-                    String chatSetting = lines.get(1);
-                    switch (chatSetting) {
-                        case "true":
-                        case "false":
-                            /*Autotip.messageOption = Boolean.parseBoolean(chatSetting)
-                                    ? MessageOption.SHOWN
-                                    : MessageOption.COMPACT;*/
-                            break;
-                        case "SHOWN":
-                        case "COMPACT":
-                        case "HIDDEN":
-                            //Autotip.messageOption = MessageOption.valueOf(chatSetting);
-                            break;
-                        default:
-                            //Autotip.messageOption = MessageOption.SHOWN;
-                    }
-                    try {
-                        //Autotip.totalTipsSent = Integer.parseInt(lines.get(3));
-                    } catch (NumberFormatException e) {
-                        //Autotip.totalTipsSent = 0;
-                        executeWriter = true;
-                    }
-                } else {
-                    executeWriter = true;
-                }
-            } else {
-                executeWriter = true;
-            }
 
             Path today = getAutotipPath("stats/" + getDate() + ".at");
             if (exists(today)) {

@@ -1,15 +1,16 @@
-package me.semx11.autotip.api.request;
+package me.semx11.autotip.api.request.impl;
 
 import java.util.Optional;
 import me.semx11.autotip.api.SessionKey;
-import me.semx11.autotip.api.reply.AbstractReply;
-import me.semx11.autotip.api.reply.LogoutReply;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.reply.impl.LogoutReply;
+import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.util.GetBuilder;
 import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class LogoutRequest extends AbstractRequest<LogoutReply> {
+public class LogoutRequest extends Request<LogoutReply> {
 
     private final SessionKey sessionKey;
 
@@ -27,7 +28,7 @@ public class LogoutRequest extends AbstractRequest<LogoutReply> {
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<Reply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (LogoutReply) reply)
                 .orElseGet(() -> new LogoutReply(false));

@@ -6,9 +6,9 @@ import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.Event;
+import me.semx11.autotip.universal.ReflectionUtil;
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.ReflectionUtil;
-import me.semx11.autotip.util.UniversalUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -17,18 +17,18 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 
 public class EventClientConnection implements Event {
 
-    // TODO: Don't hard-code this.
-    private static final String HYPIXEL_HEADER = "You are playing on MC.HYPIXEL.NET";
     private static final Field HEADER_FIELD = ReflectionUtil
             .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
 
     private final Autotip autotip;
+    private final String hypixelHeader;
 
     private String serverIp;
     private long lastLogin;
 
     public EventClientConnection(Autotip autotip) {
         this.autotip = autotip;
+        this.hypixelHeader = autotip.getGlobalSettings().getHypixelHeader();
     }
 
     public String getServerIp() {
@@ -75,13 +75,12 @@ public class EventClientConnection implements Event {
                 }
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    ErrorReport.reportException(e);
+                } catch (InterruptedException ignored) {
                 }
                 attempts++;
             }
 
-            if (UniversalUtil.getUnformattedText(header).equals(HYPIXEL_HEADER)) {
+            if (UniversalUtil.getUnformattedText(header).equals(hypixelHeader)) {
                 manager.setOnHypixel(true);
                 manager.checkVersions();
                 if (autotip.getConfig().isEnabled()) {

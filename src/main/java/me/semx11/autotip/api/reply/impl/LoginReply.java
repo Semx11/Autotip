@@ -1,9 +1,10 @@
-package me.semx11.autotip.api.reply;
+package me.semx11.autotip.api.reply.impl;
 
 import me.semx11.autotip.api.SessionKey;
+import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.util.RequestType;
 
-public class LoginReply extends AbstractReply {
+public class LoginReply extends Reply {
 
     private SessionKey sessionKey;
     private long keepAliveRate;

@@ -1,5 +1,7 @@
 package me.semx11.autotip.core;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -12,7 +14,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import me.semx11.autotip.util.ErrorReport;
 
 public class TaskManager {
@@ -34,31 +35,29 @@ public class TaskManager {
 
     public <T> T scheduleAndAwait(Callable<T> callable, long delay) {
         try {
-            return scheduler.schedule(callable, delay, TimeUnit.SECONDS).get();
+            return scheduler.schedule(callable, delay, SECONDS).get();
         } catch (InterruptedException | ExecutionException e) {
             ErrorReport.reportException(e);
             return null;
         }
     }
 
-    public void executeTask(TaskType type, Runnable command) {
+    public void executeTask(TaskType type, Runnable task) {
         if (tasks.containsKey(type)) {
             return;
         }
-        Future<?> future = executor.submit(command);
+        Future<?> future = executor.submit(task);
         tasks.put(type, future);
-        catchFutureException(future);
-        tasks.remove(type);
+        this.catchFutureException(type, future);
     }
 
     public void addRepeatingTask(TaskType type, Runnable command, long delay, long period) {
         if (tasks.containsKey(type)) {
             return;
         }
-        ScheduledFuture future = scheduler
-                .scheduleAtFixedRate(command, delay, period, TimeUnit.SECONDS);
+        ScheduledFuture future = scheduler.scheduleAtFixedRate(command, delay, period, SECONDS);
         tasks.put(type, future);
-        catchFutureException(future);
+        this.catchFutureException(type, future);
     }
 
     public void cancelTask(TaskType type) {
@@ -68,7 +67,7 @@ public class TaskManager {
         }
     }
 
-    private void catchFutureException(Future future) {
+    private void catchFutureException(TaskType type, Future future) {
         this.executor.execute(() -> {
             try {
                 future.get();
@@ -76,6 +75,8 @@ public class TaskManager {
                 // Manual cancellation of a repeating task.
             } catch (InterruptedException | ExecutionException e) {
                 ErrorReport.reportException(e);
+            } finally {
+                tasks.remove(type);
             }
         });
     }

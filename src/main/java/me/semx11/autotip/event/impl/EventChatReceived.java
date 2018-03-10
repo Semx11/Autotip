@@ -7,14 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.impl.CommandLimbo;
+import me.semx11.autotip.config.Config;
 import me.semx11.autotip.event.Event;
 import me.semx11.autotip.misc.TipTracker;
 import me.semx11.autotip.misc.Writer;
-import me.semx11.autotip.stats.DailyStatistic;
-import me.semx11.autotip.util.Config;
+import me.semx11.autotip.stats.StatsDaily;
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.MessageOption;
 import me.semx11.autotip.util.MessageUtil;
-import me.semx11.autotip.util.UniversalUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -57,6 +57,17 @@ public class EventChatReceived implements Event {
         You earned 100 coins and 0 experience from Turbo Kart Racers tips in the last minute!
         You earned 100 coins and 0 experience from Arena Brawl tips in the last minute!
         You earned 100 coins and 60 experience from Walls tips in the last minute!
+         */
+
+        /*
+        You tipped Semx11 in Classic Games
+        +50 Hypixel Experience
+        +15 VampireZ Coins
+        +15 Quakecraft Coins
+        +15 Paintball Coins
+        +15 Turbo Kart Racers Coins
+        +15 Arena Brawl Coins
+        +15 Walls Coins
          */
 
         /*
@@ -109,7 +120,7 @@ public class EventChatReceived implements Event {
 
         MessageUtil messageUtil = autotip.getMessageUtil();
         MessageOption option = config.getMessageOption();
-        DailyStatistic statistic = autotip.getStatsManager().getToday();
+        StatsDaily statistic = autotip.getStatsManager().getToday();
 
         // TODO: Move to config (on autotip.pro)?
         if (msg.equals("Slow down! You can only use /tip every few seconds.")

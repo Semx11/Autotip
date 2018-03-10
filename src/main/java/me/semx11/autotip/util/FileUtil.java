@@ -41,9 +41,21 @@ public class FileUtil {
         return Files.exists(this.getPath(path));
     }
 
-    /*public boolean existsRaw(Path path) {
-        return Files.exists(path);
-    }*/
+    public void delete(String path) {
+        this.delete(this.getPath(path));
+    }
+
+    public void delete(File file) {
+        this.delete(file.toPath());
+    }
+
+    public void delete(Path path) {
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            Autotip.LOGGER.error("Could not delete file " + path);
+        }
+    }
 
     public File getLegacyStatsFile(LocalDate localDate) {
         return this.getFile(this.statsDir, localDate.format(OLD_FORMAT) + ".at");

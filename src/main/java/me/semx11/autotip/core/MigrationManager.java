@@ -9,8 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.stats.DailyStatistic;
-import me.semx11.autotip.util.Config;
+import me.semx11.autotip.config.Config;
+import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -18,26 +18,33 @@ import org.apache.commons.io.FilenameUtils;
 public class MigrationManager {
 
     private static final DateTimeFormatter OLD_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    private static final LocalDate XP_CHANGE_DATE = LocalDate.of(2016, 11, 29);
 
     private final Autotip autotip;
     private final FileUtil fileUtil;
-
     private final Config config;
+
     private final File upgradeDateFile;
+    private final LocalDate xpChangeDate;
 
     public MigrationManager(Autotip autotip) {
         this.autotip = autotip;
         this.fileUtil = autotip.getFileUtil();
         this.config = autotip.getConfig();
         this.upgradeDateFile = fileUtil.getFile("upgrade-date.at");
+        this.xpChangeDate = autotip.getGlobalSettings().getXpChangeDate();
     }
 
     public void migrateLegacyFiles() {
         if (fileUtil.exists("options.at")) {
             config.migrate();
         }
+        if (fileUtil.exists("tipped.at")) {
+            fileUtil.delete("tipped.at");
+        }
         this.migrateStats();
+        if (fileUtil.exists("upgrade-date.at")) {
+            fileUtil.delete("upgrade-date.at");
+        }
     }
 
     private void migrateStats() {
@@ -54,14 +61,14 @@ public class MigrationManager {
                     })
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .forEach(date -> new DailyStatistic(autotip, (LocalDate) date).migrate(this));
+                    .forEach(date -> new StatsDaily(autotip, (LocalDate) date).migrate());
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not migrate stats files", e);
         }
     }
 
     public LegacyState getLegacyState(LocalDate date) {
-        if (date.isBefore(XP_CHANGE_DATE)) {
+        if (date.isBefore(xpChangeDate)) {
             return LegacyState.BEFORE;
         } else if (date.isBefore(this.getUpgradeDate())) {
             return LegacyState.BACKTRACK;
@@ -71,11 +78,14 @@ public class MigrationManager {
     }
 
     private LocalDate getUpgradeDate() {
+        if (!upgradeDateFile.exists()) {
+            return xpChangeDate;
+        }
         try {
             String date = FileUtils.readFileToString(upgradeDateFile, StandardCharsets.UTF_8);
             return LocalDate.parse(date, OLD_FORMAT);
         } catch (IOException | DateTimeParseException | NullPointerException e) {
-            return XP_CHANGE_DATE;
+            return xpChangeDate;
         }
     }
 

@@ -12,18 +12,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.SessionKey;
-import me.semx11.autotip.api.reply.AbstractReply;
-import me.semx11.autotip.api.request.AbstractRequest;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.request.Request;
+import me.semx11.autotip.gson.adapter.impl.SessionKeyAdapter;
 import me.semx11.autotip.util.ErrorReport;
 import org.apache.commons.io.IOUtils;
 
 public class RequestHandler {
 
     private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(SessionKey.class, new SessionKey.JsonAdapter())
+            .registerTypeAdapter(SessionKey.class, new SessionKeyAdapter())
             .create();
 
-    public static Optional<AbstractReply> getReply(AbstractRequest request, URI uri) {
+    public static Optional<Reply> getReply(Request request, URI uri) {
         String json = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
@@ -39,7 +40,7 @@ public class RequestHandler {
             json = IOUtils.toString(input, StandardCharsets.UTF_8);
             Autotip.LOGGER.info(request.getType() + " JSON: " + json);
 
-            AbstractReply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
+            Reply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
 
             return Optional.of(reply);
         } catch (IOException | JsonParseException e) {

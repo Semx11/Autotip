@@ -1,15 +1,16 @@
-package me.semx11.autotip.api.request;
+package me.semx11.autotip.api.request.impl;
 
 import java.util.Optional;
 import me.semx11.autotip.api.SessionKey;
-import me.semx11.autotip.api.reply.AbstractReply;
-import me.semx11.autotip.api.reply.TipReply;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.reply.impl.TipReply;
+import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.util.GetBuilder;
 import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class TipRequest extends AbstractRequest<TipReply> {
+public class TipRequest extends Request<TipReply> {
 
     private final SessionKey sessionKey;
 
@@ -27,7 +28,7 @@ public class TipRequest extends AbstractRequest<TipReply> {
                 .addParameter("key", this.sessionKey)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<Reply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (TipReply) reply)
                 .orElseGet(TipReply::getDefault);

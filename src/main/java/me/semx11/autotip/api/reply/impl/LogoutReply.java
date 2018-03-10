@@ -1,8 +1,9 @@
-package me.semx11.autotip.api.reply;
+package me.semx11.autotip.api.reply.impl;
 
+import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.util.RequestType;
 
-public class LogoutReply extends AbstractReply {
+public class LogoutReply extends Reply {
 
     public LogoutReply() {
     }

@@ -25,22 +25,23 @@ public class ErrorReport {
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);
 
-            String serverIp = autotip.getEvent(EventClientConnection.class).getServerIp();
-
-            JsonObject obj = JsonObjectBuilder.newBuilder()
+            JsonObjectBuilder builder = JsonObjectBuilder.newBuilder()
                     .addString("username", autotip.getGameProfile().getName())
                     .addString("uuid", autotip.getGameProfile().getId())
                     .addString("v", autotip.getVersion())
                     .addString("mc", autotip.getMcVersion())
                     .addString("os", System.getProperty("os.name"))
                     .addString("forge", ForgeVersion.getVersion())
-                    .addString("sessionKey", autotip.getSessionManager().getKey())
-                    .addString("serverIp", serverIp)
                     .addString("stackTrace", ExceptionUtils.getStackTrace(t))
-                    .addNumber("time", System.currentTimeMillis())
-                    .build();
+                    .addNumber("time", System.currentTimeMillis());
 
-            byte[] jsonBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
+            if (autotip.isInitialized()) {
+                EventClientConnection event = autotip.getEvent(EventClientConnection.class);
+                builder.addString("sessionKey", autotip.getSessionManager().getKey())
+                        .addString("serverIp", event.getServerIp());
+            }
+
+            byte[] jsonBytes = builder.build().toString().getBytes(StandardCharsets.UTF_8);
 
             conn.setFixedLengthStreamingMode(jsonBytes.length);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

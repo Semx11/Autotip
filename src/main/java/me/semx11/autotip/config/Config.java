@@ -1,4 +1,4 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.config;
 
 import com.google.gson.JsonSyntaxException;
 import java.io.File;
@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.util.List;
 import javax.annotation.CheckReturnValue;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.gson.Exclude;
+import me.semx11.autotip.gson.exclusion.Exclude;
+import me.semx11.autotip.util.FileUtil;
+import me.semx11.autotip.util.MessageOption;
 import org.apache.commons.io.FileUtils;
 
 public class Config {
@@ -100,9 +102,8 @@ public class Config {
             }
 
             // Deletes old file to complete migration
-            if (!legacyFile.delete()) {
-                Autotip.LOGGER.warn("Could not delete legacy options.at file!");
-            }
+            fileUtil.delete(legacyFile);
+
             return this.save();
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not read legacy options.at file!");

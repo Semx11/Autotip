@@ -1,10 +1,11 @@
-package me.semx11.autotip.api.reply;
+package me.semx11.autotip.api.reply.impl;
 
 import java.util.Collections;
 import java.util.List;
+import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.util.RequestType;
 
-public class TipReply extends AbstractReply {
+public class TipReply extends Reply {
 
     private List<Tip> tips;
 

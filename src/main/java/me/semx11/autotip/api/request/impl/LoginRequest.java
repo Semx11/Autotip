@@ -1,16 +1,17 @@
-package me.semx11.autotip.api.request;
+package me.semx11.autotip.api.request.impl;
 
 import com.mojang.authlib.GameProfile;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.api.reply.AbstractReply;
-import me.semx11.autotip.api.reply.LoginReply;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.reply.impl.LoginReply;
+import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.util.GetBuilder;
 import me.semx11.autotip.api.util.RequestHandler;
 import me.semx11.autotip.api.util.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class LoginRequest extends AbstractRequest<LoginReply> {
+public class LoginRequest extends Request<LoginReply> {
 
     private final GameProfile profile;
     private final String hash;
@@ -39,7 +40,7 @@ public class LoginRequest extends AbstractRequest<LoginReply> {
                 .addParameter("hash", this.hash)
                 .build();
 
-        Optional<AbstractReply> optional = RequestHandler.getReply(this, request.getURI());
+        Optional<Reply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
                 .map(reply -> (LoginReply) reply)
                 .orElseGet(() -> new LoginReply(false));

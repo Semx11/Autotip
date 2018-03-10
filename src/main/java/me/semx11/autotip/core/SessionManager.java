@@ -1,30 +1,38 @@
 package me.semx11.autotip.core;
 
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.SessionKey;
-import me.semx11.autotip.api.reply.KeepAliveReply;
-import me.semx11.autotip.api.reply.LoginReply;
-import me.semx11.autotip.api.reply.LogoutReply;
-import me.semx11.autotip.api.reply.TipReply;
-import me.semx11.autotip.api.reply.TipReply.Tip;
-import me.semx11.autotip.api.request.KeepAliveRequest;
-import me.semx11.autotip.api.request.LoginRequest;
-import me.semx11.autotip.api.request.LogoutRequest;
-import me.semx11.autotip.api.request.TipRequest;
+import me.semx11.autotip.api.reply.impl.KeepAliveReply;
+import me.semx11.autotip.api.reply.impl.LoginReply;
+import me.semx11.autotip.api.reply.impl.LogoutReply;
+import me.semx11.autotip.api.reply.impl.TipReply;
+import me.semx11.autotip.api.reply.impl.TipReply.Tip;
+import me.semx11.autotip.api.request.impl.KeepAliveRequest;
+import me.semx11.autotip.api.request.impl.LoginRequest;
+import me.semx11.autotip.api.request.impl.LogoutRequest;
+import me.semx11.autotip.api.request.impl.TipRequest;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
+import me.semx11.autotip.util.ErrorReport;
+import me.semx11.autotip.util.HashUtil;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
-import me.semx11.autotip.util.LoginUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.VersionInfo;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.util.Session;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 
 public class SessionManager {
 
@@ -106,9 +114,9 @@ public class SessionManager {
         GameProfile profile = session.getProfile();
 
         String uuid = profile.getId().toString().replace("-", "");
-        String serverHash = LoginUtil.hash(uuid + LoginUtil.getNextSalt());
+        String serverHash = HashUtil.hash(uuid + HashUtil.getNextSalt());
 
-        int statusCode = LoginUtil.joinServer(session.getToken(), uuid, serverHash);
+        int statusCode = this.authenticate(session.getToken(), uuid, serverHash);
         if (statusCode != 204) {
             messageUtil.send("&cError {} during authentication: Session servers down?", statusCode);
             return;
@@ -177,10 +185,11 @@ public class SessionManager {
         TipReply r = TipRequest.of(sessionKey).execute();
         if (r.isSuccess()) {
             tipQueue.addAll(r.getTips());
-            Autotip.LOGGER.info("Fetched Boosters: " + StringUtils.join(tipQueue.iterator(), ", "));
+            Autotip.LOGGER.info("Current tip queue: {}",
+                    StringUtils.join(tipQueue.iterator(), ", "));
         } else {
             tipQueue.addAll(TipReply.getDefault().getTips());
-            Autotip.LOGGER.info("Failed to fetch boosters, tipping 'all' instead.");
+            Autotip.LOGGER.info("Failed to fetch tip queue, tipping 'all' instead.");
         }
 
         long tipCycle = reply.getTipCycleRate();
@@ -195,6 +204,36 @@ public class SessionManager {
 
         Autotip.LOGGER.info("Attempting to tip: {}", tipQueue.peek().toString());
         messageUtil.sendCommand(tipQueue.poll().getAsCommand());
+    }
+
+    private int authenticate(String token, String uuid, String serverHash) {
+        try {
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/join");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+
+            JsonObject obj = new JsonObject();
+            obj.addProperty("accessToken", token);
+            obj.addProperty("selectedProfile", uuid);
+            obj.addProperty("serverId", serverHash);
+
+            byte[] jsonBytes = obj.toString().getBytes(StandardCharsets.UTF_8);
+
+            conn.setFixedLengthStreamingMode(jsonBytes.length);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.connect();
+
+            try (OutputStream out = conn.getOutputStream()) {
+                out.write(jsonBytes);
+            }
+
+            return conn.getResponseCode();
+        } catch (IOException e) {
+            ErrorReport.reportException(e);
+            return HttpStatus.SC_BAD_REQUEST;
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.universal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

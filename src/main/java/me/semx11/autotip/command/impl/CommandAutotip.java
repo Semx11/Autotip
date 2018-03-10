@@ -9,17 +9,17 @@ import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.CommandAbstract;
+import me.semx11.autotip.config.Config;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.misc.Stats;
 import me.semx11.autotip.misc.TipTracker;
-import me.semx11.autotip.util.Config;
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.LegacyFileUtil;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
-import me.semx11.autotip.util.UniversalUtil;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
 
@@ -137,15 +137,16 @@ public class CommandAutotip extends CommandAbstract {
                 case "t":
                 case "toggle":
                     config.toggleEnabled().save();
+                    messageUtil.send("Autotip: {}abled", config.isEnabled() ? "&aEn" : "&cDis");
                     if (config.isEnabled()) {
                         if (manager.isOnHypixel() && !manager.isLoggedIn()) {
                             taskManager.executeTask(TaskType.LOGIN, manager::login);
                         }
                     } else {
-                        taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                        if (manager.isLoggedIn()) {
+                            taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                        }
                     }
-                    messageUtil.send("Autotip: "
-                            + (config.isEnabled() ? "&aEn" : "&cDis") + "abled");
                     break;
                 case "wave":
                 case "time":
@@ -188,21 +189,112 @@ public class CommandAutotip extends CommandAbstract {
                     messageUtil.send("Last IP joined: {}", event.getServerIp());
                     messageUtil.send("Detected MC version: {}", autotip.getMcVersion());
                     Object header = event.getHeader();
-                    messageUtil.send("Tablist Header: {}", (header == null ? "No header."
+                    messageUtil.send("Tab Header: {}", (header == null ? "None"
                             : UniversalUtil.getUnformattedText(header)));
                     messageUtil.separator();
                     break;
                 // TODO: REMOVE THIS AT RELEASE
-//                case "hahayes":
-//                    messageUtil.sendRaw("&aYou were tipped by 1337 players in the last minute!");
-//                    messageUtil.sendRaw("&3+80220 Hypixel Experience");
-//                    messageUtil.sendRaw("&6+2865 Speed UHC Coins");
-//                    messageUtil.sendRaw("&6+2865 UHC Champions Coins");
-//                    messageUtil.sendRaw("&6+2865 Arena Brawl (Classic Games) Coins");
-//                    messageUtil.sendRaw("&6+2865 The Walls (Classic Games) Coins");
-//                    messageUtil.sendRaw("&6+2865 Warlords Coins");
-//                    messageUtil.sendRaw("&6+7258 Arcade Games Coins");
-//                    break;
+                case "msg":
+                    //old
+                    messageUtil.sendRaw("");
+                    messageUtil.sendRaw("&9+50 experience (Gave a player a /tip)");
+                    messageUtil.sendRaw("&aYou tipped Semx11 in Classic Games");
+                    messageUtil
+                            .sendRaw("&a+15 coins for you in Classic Games for being generous :)");
+                    messageUtil.sendRaw("");
+                    messageUtil.sendRaw("&9+50 experience (Gave a player a /tip)");
+                    messageUtil.sendRaw("&aYou tipped 2Pi in Arcade Games");
+                    messageUtil
+                            .sendRaw("&a+38 coins for you in Arcade Games for being generous :)");
+                    messageUtil.sendRaw("");
+                    //new
+                    messageUtil.sendRaw("&aYou tipped Semx11 in Classic Games!");
+                    messageUtil.sendRaw("&3+50 Hypixel Experience");
+                    messageUtil.sendRaw("&6+15 VampireZ Coins");
+                    messageUtil.sendRaw("&6+15 Quakecraft Coins");
+                    messageUtil.sendRaw("&6+15 Paintball Coins");
+                    messageUtil.sendRaw("&6+15 Turbo Kart Racers Coins");
+                    messageUtil.sendRaw("&6+15 Arena Brawl Coins");
+                    messageUtil.sendRaw("&6+15 Walls Coins");
+                    messageUtil.sendRaw("");
+                    messageUtil.sendRaw("&aYou tipped 2Pi in Arcade Games!");
+                    messageUtil.sendRaw("&3+50 Hypixel Experience");
+                    messageUtil.sendRaw("&6+38 Arcade Games Coins");
+                    messageUtil.sendRaw("");
+                    //old
+                    messageUtil.sendRaw(
+                            "&aYou earned &e600 coins &aand &9360 experience &afrom SkyWars tips in the last minute!");
+                    messageUtil.sendRaw("");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &90 experience &afrom VampireZ tips in the last minute!");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &90 experience &afrom Quakecraft tips in the last minute!");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &90 experience &afrom Paintball tips in the last minute!");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &90 experience &afrom Turbo Kart Racers tips in the last minute!");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &90 experience &afrom Arena Brawl tips in the last minute!");
+                    messageUtil.sendRaw(
+                            "&aYou earned &e100 coins &aand &960 experience &afrom Walls tips in the last minute!");
+                    messageUtil.sendRaw("");
+                    //new
+                    messageUtil.sendRaw("&aYou were tipped by 6 players in the last minute!");
+                    messageUtil.sendRaw("&3+360 Hypixel Experience");
+                    messageUtil.sendRaw("&6+600 SkyWars Coins");
+                    messageUtil.sendRaw("");
+                    messageUtil.sendRaw("&aYou were tipped by 1 player in the last minute!");
+                    messageUtil.sendRaw("&3+60 Hypixel Experience");
+                    messageUtil.sendRaw("&6+100 VampireZ Coins");
+                    messageUtil.sendRaw("&6+100 Quakecraft Coins");
+                    messageUtil.sendRaw("&6+100 Paintball Coins");
+                    messageUtil.sendRaw("&6+100 Turbo Kart Racers Coins");
+                    messageUtil.sendRaw("&6+100 Arena Brawl Coins");
+                    messageUtil.sendRaw("&6+100 Walls Coins");
+                    messageUtil.sendRaw("");
+                    //old
+                    messageUtil.sendRaw("&aYou tipped 17 players! You got the following rewards:");
+                    messageUtil.sendRaw("&3+600 Hypixel Experience");
+                    messageUtil.sendRaw("&6+15 Speed UHC Coins");
+                    messageUtil.sendRaw("&6+15 UHC Champions Coins");
+                    messageUtil.sendRaw("&6+15 Arena Brawl Coins");
+                    messageUtil.sendRaw("&6+15 The Walls Coins");
+                    messageUtil.sendRaw("&6+15 Blitz SG Coins");
+                    messageUtil.sendRaw("&6+15 Warlords Coins");
+                    messageUtil.sendRaw("&6+15 Turbo Kart Racers Coins");
+                    messageUtil.sendRaw("&6+15 VampireZ Coins");
+                    messageUtil.sendRaw("&6+15 The TNT Games Coins");
+                    messageUtil.sendRaw("&6+15 Cops and Crims Coins");
+                    messageUtil.sendRaw("&6+15 Paintball Warfare Coins");
+                    messageUtil.sendRaw("&6+38 Arcade Games Coins");
+                    messageUtil.sendRaw("&6+15 Mega Walls Coins");
+                    messageUtil.sendRaw("&6+15 SkyClash Coins");
+                    messageUtil.sendRaw("&6+15 Crazy Walls Coins");
+                    messageUtil.sendRaw("&6+15 SkyWars Coins");
+                    messageUtil.sendRaw("&6+15 Quakecraft Coins");
+                    messageUtil.sendRaw("");
+                    //new
+                    messageUtil.sendRaw("&aYou tipped 17 players in 12 different games!");
+                    messageUtil.sendRaw("&3+600 Hypixel Experience");
+                    messageUtil.sendRaw("&6+15 Speed UHC Coins");
+                    messageUtil.sendRaw("&6+15 UHC Champions Coins");
+                    messageUtil.sendRaw("&6+15 Arena Brawl Coins");
+                    messageUtil.sendRaw("&6+15 The Walls Coins");
+                    messageUtil.sendRaw("&6+15 Blitz SG Coins");
+                    messageUtil.sendRaw("&6+15 Warlords Coins");
+                    messageUtil.sendRaw("&6+15 Turbo Kart Racers Coins");
+                    messageUtil.sendRaw("&6+15 VampireZ Coins");
+                    messageUtil.sendRaw("&6+15 The TNT Games Coins");
+                    messageUtil.sendRaw("&6+15 Cops and Crims Coins");
+                    messageUtil.sendRaw("&6+15 Paintball Warfare Coins");
+                    messageUtil.sendRaw("&6+38 Arcade Games Coins");
+                    messageUtil.sendRaw("&6+15 Mega Walls Coins");
+                    messageUtil.sendRaw("&6+15 SkyClash Coins");
+                    messageUtil.sendRaw("&6+15 Crazy Walls Coins");
+                    messageUtil.sendRaw("&6+15 SkyWars Coins");
+                    messageUtil.sendRaw("&6+15 Quakecraft Coins");
+                    messageUtil.sendRaw("");
+                    break;
                 default:
                     messageUtil.send("&cUsage: " + getCommandUsage(sender));
                     break;

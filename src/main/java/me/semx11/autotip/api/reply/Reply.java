@@ -2,15 +2,15 @@ package me.semx11.autotip.api.reply;
 
 import me.semx11.autotip.api.util.RequestType;
 
-public abstract class AbstractReply {
+public abstract class Reply {
 
     private boolean success;
     private String cause;
 
-    AbstractReply() {
+    public Reply() {
     }
 
-    AbstractReply(boolean success) {
+    public Reply(boolean success) {
         this.success = success;
     }
 
