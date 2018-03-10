@@ -120,7 +120,6 @@ public class EventChatReceived implements Event {
 
         MessageUtil messageUtil = autotip.getMessageUtil();
         MessageOption option = config.getMessageOption();
-        StatsDaily statistic = autotip.getStatsManager().getToday();
 
         // TODO: Move to config (on autotip.pro)?
         if (msg.equals("Slow down! You can only use /tip every few seconds.")
@@ -140,7 +139,7 @@ public class EventChatReceived implements Event {
         Matcher xpMatcher = xpPattern.matcher(msg);
         if (xpMatcher.matches()) {
             int xp = Integer.parseInt(xpMatcher.group("xp"));
-            statistic.addXpSent(xp);
+            this.getStats().addXpSent(xp);
             event.setCanceled(option == COMPACT || option == HIDDEN);
             return;
         }
@@ -182,4 +181,9 @@ public class EventChatReceived implements Event {
         }
 
     }
+
+    private StatsDaily getStats() {
+        return this.autotip.getStatsManager().getToday();
+    }
+
 }

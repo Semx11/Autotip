@@ -17,17 +17,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.universal.ChatComponentBuilder;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.NioWrapper;
 
 public class Stats {
-
-    private static LocalDate upgradeDate;
-
-    public static void setUpgradeDate(LocalDate date) {
-        upgradeDate = date;
-    }
 
     public static void printBetween(String s, String e) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -58,11 +53,6 @@ public class Stats {
                 continue;
             }
 
-            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            final boolean oldTips = localDate.isBefore(LocalDate.of(2016, 11, 29));
-            final boolean fixTips = localDate.isAfter(LocalDate.of(2016, 11, 29)) && localDate
-                    .isBefore(upgradeDate);
-
             List<Map<String, Integer>> dailyStats = getDailyStats(f);
 
             dailyStats.get(0).forEach((game, coins) -> {
@@ -76,10 +66,7 @@ public class Stats {
             });
             dailyStats.get(1).forEach((game, coins) -> {
                 if (game.equals("tips")) {
-                    if (fixTips) {
-                        coins = coins / 2;
-                    }
-                    xp[1] += (oldTips ? 30 : 60) * coins;
+                    xp[1] += 60 * coins;
                     tips[1] += coins;
                 } else {
                     totalStats.merge(game, coins, (a, b) -> a + b);
@@ -105,34 +92,31 @@ public class Stats {
                 int sentCoins = sentStats.getOrDefault(game, 0);
                 int receivedCoins = receivedStats.getOrDefault(game, 0);
                 if (sentStats.containsKey(game) || receivedStats.containsKey(game)) {
-                    messageUtil.send(
-                            messageUtil.params("&a{}: &e{} coins",
-                                    game, format(sentCoins + receivedCoins)),
-                            null,
-                            messageUtil.params(
-                                    "&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{} coins",
+                    ChatComponentBuilder
+                            .of("&a{}: &e{} coins",
+                                    game, format(sentCoins + receivedCoins))
+                            .setHoverText("&a{}\n"
+                                            + "&cBy sending: &e{} coins\n"
+                                            + "&9By receiving: &e{} coins",
                                     game, format(sentCoins), format(receivedCoins))
-                    );
+                            .send();
                 }
             });
-            messageUtil.send(
-                    messageUtil.params("&6Tips: {}", format(tips[0] + tips[1])),
-                    null,
-                    messageUtil.params("&cSent: &6{} tips\n&9Received: &6{} tips",
+            ChatComponentBuilder
+                    .of("&6Tips: {}", format(tips[0] + tips[1]))
+                    .setHoverText("&cSent: &6{} tips\n&9Received: &6{} tips",
                             format(tips[0]), format(tips[1]))
-            );
-            messageUtil.send(
-                    messageUtil.params("&9XP: {}", format(xp[0] + xp[1])),
-                    null,
-                    messageUtil.params("&cBy sending: &9{} XP\n&9By receiving: {} XP",
+                    .send();
+            ChatComponentBuilder
+                    .of("&9XP: {}", format(xp[0] + xp[1]))
+                    .setHoverText("&cBy sending: &9{} XP\n&9By receiving: {} XP",
                             format(xp[0]), format(xp[1]))
-            );
+                    .send();
             if (karma > 0) {
-                messageUtil.send(
-                        messageUtil.params("&dKarma: {}", format(karma)),
-                        null,
-                        "&dI should probably fix this..."
-                );
+                ChatComponentBuilder
+                        .of("&dKarma: {}", format(karma))
+                        .setHoverText("&dI should probably fix this...")
+                        .send();
             }
 
             messageUtil.send("Stats from {}{}",
