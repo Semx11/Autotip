@@ -18,28 +18,51 @@ public class StatsManager {
     private final Autotip autotip;
     private final Map<LocalDate, StatsDaily> cache = new ConcurrentHashMap<>();
 
-    private StatsDaily statsDaily;
+    private LocalDate lastDate;
     private AtomicInteger ticks;
 
     public StatsManager(Autotip autotip) {
         this.autotip = autotip;
+        this.lastDate = LocalDate.now();
         this.ticks = new AtomicInteger(-1);
     }
 
     public synchronized StatsDaily getToday() {
-        LocalDate today = LocalDate.now();
-        if (statsDaily == null) {
-            statsDaily = this.get(today);
-        }
-        if (!statsDaily.getDate().equals(today)) {
-            this.save(statsDaily);
-            statsDaily = this.get(today);
-        }
-        // Save after 7 seconds (20 ticks/sec) of no access
-        this.ticks.set(7 * 20);
-        return statsDaily;
+        return this.getToday(false);
     }
 
+    private synchronized StatsDaily getToday(boolean readOnly) {
+        LocalDate now = LocalDate.now();
+        if (!lastDate.isEqual(now)) {
+            this.save(this.get(lastDate));
+            lastDate = now;
+        }
+        if (!readOnly) {
+            // Save after 7 seconds (20 ticks/sec) of no access
+            ticks.set(7 * 20);
+        }
+        return this.get(lastDate);
+    }
+
+    /**
+     * Get the {@link StatsDaily} for the current date without triggering the auto-save.
+     * This method is similar to using {@link #get(LocalDate)} with the {@link LocalDate}
+     * being today.
+     *
+     * @return {@link StatsDaily} of today
+     * @see #get(LocalDate)
+     */
+    public StatsDaily get() {
+        return this.getToday(true);
+    }
+
+    /**
+     * Get the {@link StatsDaily} for the specified date.
+     * This method uses a cache to reduce the amount of read/write cycles.
+     *
+     * @param date The {@link LocalDate} of the StatsDaily you want to get
+     * @return {@link StatsDaily} for the specified date
+     */
     public StatsDaily get(LocalDate date) {
         if (cache.containsKey(date)) {
             return cache.get(date);
@@ -49,7 +72,13 @@ public class StatsManager {
         return stats;
     }
 
+    /**
+     * Save a {@link StatsDaily} to the current user directory.
+     *
+     * @param stats The {@link StatsDaily} that you want to save
+     */
     public void save(StatsDaily stats) {
+        cache.put(stats.getDate(), stats);
         File file = stats.getFile();
         try {
             String json = autotip.getGson().toJson(stats);
@@ -60,7 +89,7 @@ public class StatsManager {
         }
     }
 
-    public StatsDaily load(StatsDaily stats) {
+    private StatsDaily load(StatsDaily stats) {
         File file = stats.getFile();
         try {
             String json = FileUtils.readFileToString(file);
@@ -82,7 +111,7 @@ public class StatsManager {
             return;
         }
         if (ticks.get() == 0) {
-            this.save(statsDaily);
+            this.save(this.get(lastDate));
             ticks.decrementAndGet();
         }
     }

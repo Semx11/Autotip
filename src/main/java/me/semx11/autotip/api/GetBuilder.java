@@ -1,4 +1,4 @@
-package me.semx11.autotip.api.util;
+package me.semx11.autotip.api;
 
 import me.semx11.autotip.api.request.Request;
 import org.apache.http.client.methods.HttpUriRequest;

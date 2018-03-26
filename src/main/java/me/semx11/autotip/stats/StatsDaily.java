@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +53,12 @@ public class StatsDaily extends Stats {
         return this;
     }
 
+    /**
+     * Wrapped version of {@link me.semx11.autotip.core.StatsManager#save(StatsDaily)}.
+     *
+     * @return this
+     * @see me.semx11.autotip.core.StatsManager#save(StatsDaily)
+     */
     public StatsDaily save() {
         autotip.getStatsManager().save(this);
         return this;

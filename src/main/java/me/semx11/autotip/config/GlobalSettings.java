@@ -3,6 +3,8 @@ package me.semx11.autotip.config;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import me.semx11.autotip.chat.Message;
+import me.semx11.autotip.chat.StatsMessage;
 
 public class GlobalSettings {
 
@@ -10,6 +12,8 @@ public class GlobalSettings {
     private int xpPerTipReceived;
     private LocalDate xpChangeDate;
     private List<GameGroup> gameGroups;
+    private List<Message> messages;
+    private List<StatsMessage> statsMessages;
 
     public String getHypixelHeader() {
         return hypixelHeader;
@@ -25,6 +29,14 @@ public class GlobalSettings {
 
     public List<GameGroup> getGameGroups() {
         return gameGroups;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public List<StatsMessage> getStatsMessages() {
+        return statsMessages;
     }
 
     public static class GameGroup {

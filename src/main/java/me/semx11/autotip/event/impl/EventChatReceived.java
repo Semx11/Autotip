@@ -1,20 +1,19 @@
 package me.semx11.autotip.event.impl;
 
-import static me.semx11.autotip.util.MessageOption.COMPACT;
-import static me.semx11.autotip.util.MessageOption.HIDDEN;
-
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.config.Config;
+import me.semx11.autotip.config.GlobalSettings;
 import me.semx11.autotip.event.Event;
-import me.semx11.autotip.legacy.TipTracker;
-import me.semx11.autotip.legacy.Writer;
+import me.semx11.autotip.chat.Message;
+import me.semx11.autotip.chat.MessageMatcher;
+import me.semx11.autotip.chat.StatsMessage;
+import me.semx11.autotip.chat.StatsMessageMatcher;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
-import me.semx11.autotip.util.MessageOption;
-import me.semx11.autotip.util.MessageUtil;
+import me.semx11.autotip.chat.MessageOption;
+import me.semx11.autotip.chat.MessageUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -24,11 +23,21 @@ public class EventChatReceived implements Event {
 
     private Pattern xpPattern = Pattern
             .compile("\\+(?<xp>\\d+) experience \\(Gave a player a /tip\\)");
-    private Pattern playerPattern = Pattern.compile("You tipped (?<player>\\w+) in .*");
-    private Pattern coinPattern = Pattern.compile(
-            "\\+(?<coins>\\d+) coins for you in (?<game>.+) for being generous :\\)");
-    private Pattern earnedPattern = Pattern.compile(
-            "You earned (?<coins>\\d+) coins and (?<xp>\\d+) experience from (?<game>.+) tips in the last minute!");
+    private Pattern playerPattern = Pattern
+            .compile("You tipped (?<player>\\w+) in .*");
+    private Pattern coinPattern = Pattern
+            .compile("\\+(?<coins>\\d+) coins for you in (?<game>.+) for being generous :\\)");
+    private Pattern earnedPattern = Pattern
+            .compile("You earned (?<coins>\\d+) coins and (?<xp>\\d+) experience from "
+                    + "(?<game>.+) tips in the last minute!");
+
+    // New stuff
+    private Pattern tipAllPattern = Pattern
+            .compile("You tipped (?<tipsSent>\\d+) players! You got the following rewards:");
+    private Pattern newXpPattern = Pattern
+            .compile("\\+(?<xpSent>\\d+) Hypixel Experience");
+    private Pattern newCoinPattern = Pattern
+            .compile("\\+(?<coins>\\d+) (?<game>.+) Coins");
 
     public EventChatReceived(Autotip autotip) {
         this.autotip = autotip;
@@ -118,25 +127,21 @@ public class EventChatReceived implements Event {
             return;
         }
 
+        GlobalSettings settings = autotip.getGlobalSettings();
         MessageUtil messageUtil = autotip.getMessageUtil();
         MessageOption option = config.getMessageOption();
 
-        // TODO: Move to config (on autotip.pro)?
-        if (msg.equals("Slow down! You can only use /tip every few seconds.")
-                || msg.equals("Still processing your most recent request!")
-                || msg.equals("You are not allowed to use commands as a spectator!")
-                || msg.equals("You cannot tip yourself!")
-                || msg.startsWith("You can only use the /tip command")
-                || msg.startsWith("You can't tip the same person")
-                || msg.startsWith("You've already tipped someone in the past hour in ")
-                || msg.startsWith("You've already tipped that person")
-                || msg.startsWith("That player is not online, try another user!")
-                || msg.startsWith("You already tipped everyone that has boosters active")) {
-            event.setCanceled(true);
-            return;
+        for (Message message : settings.getMessages()) {
+            MessageMatcher matcher = message.getMatcherFor(msg);
+            if (matcher.matches()) {
+                System.out.println(message.getPattern().pattern());
+                System.out.println(msg + ": " + matcher.matches());
+                event.setCanceled(message.shouldHide(option));
+                return;
+            }
         }
 
-        Matcher xpMatcher = xpPattern.matcher(msg);
+        /*Matcher xpMatcher = xpPattern.matcher(msg);
         if (xpMatcher.matches()) {
             int xp = Integer.parseInt(xpMatcher.group("xp"));
             this.getStats().addXpSent(xp);
@@ -146,6 +151,7 @@ public class EventChatReceived implements Event {
 
         Matcher playerMatcher = playerPattern.matcher(msg);
         if (playerMatcher.matches()) {
+            this.getStats().addTipsSent(1);
             TipTracker.addTip(playerMatcher.group("player"));
             event.setCanceled(option == HIDDEN);
             return;
@@ -156,9 +162,9 @@ public class EventChatReceived implements Event {
             int coins = Integer.parseInt(coinMatcher.group("coins"));
             String game = coinMatcher.group("game");
 
+            this.getStats().addCoinsSent(game, coins);
             TipTracker.tipsSentEarnings.merge(game, coins, (a, b) -> a + b);
             event.setCanceled(option == COMPACT || option == HIDDEN);
-
             return;
         }
 
@@ -168,16 +174,33 @@ public class EventChatReceived implements Event {
             int xp = Integer.parseInt(earnedMatcher.group("xp"));
             String game = earnedMatcher.group("game");
 
+            StatsDaily stats = this.getStats();
+            stats.addCoinsReceived(game, coins);
+            stats.addXpReceived(xp);
+            stats.addTipsReceived(xp / autotip.getGlobalSettings().getXpPerTipReceived());
+
             TipTracker.tipsReceivedEarnings.merge(game, coins, (a, b) -> a + b);
             TipTracker.tipsReceived += xp / 60;
             Writer.execute();
 
             if (option.equals(COMPACT)) {
-                messageUtil.sendRaw("&aEarned&e {} coins&a and&9 {} experience&a in {}.",
+                messageUtil.sendRaw("&aEarned &e{} coins &aand &9{} experience &ain {}.",
                         coins, xp, game);
             }
             event.setCanceled(option == COMPACT || option == HIDDEN);
             Autotip.LOGGER.info("Earned {} coins and {} experience in {}.", coins, xp, game);
+            return;
+        }*/
+
+        for (StatsMessage message : settings.getStatsMessages()) {
+            StatsMessageMatcher matcher = message.getMatcherFor(msg);
+            if (matcher.matches()) {
+                System.out.println(message.getPattern().pattern());
+                System.out.println(msg + ": " + matcher.matches());
+                matcher.applyStats(this.getStats());
+                event.setCanceled(message.shouldHide(option));
+                return;
+            }
         }
 
     }

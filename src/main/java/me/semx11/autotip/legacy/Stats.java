@@ -17,10 +17,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.universal.ChatComponentBuilder;
+import me.semx11.autotip.chat.ChatComponentBuilder;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.MessageUtil;
-import me.semx11.autotip.util.NioWrapper;
+import me.semx11.autotip.chat.MessageUtil;
 
 public class Stats {
 
@@ -38,7 +37,8 @@ public class Stats {
     }
 
     public static void printStats(String... days) {
-        MessageUtil messageUtil = Autotip.getInstance().getMessageUtil();
+        Autotip autotip = Autotip.getInstance();
+        MessageUtil messageUtil = autotip.getMessageUtil();
 
         Map<String, Integer> totalStats = new HashMap<>();
         Map<String, Integer> sentStats = new HashMap<>();
@@ -48,7 +48,7 @@ public class Stats {
         int[] tips = {0, 0};
 
         for (String date : days) {
-            File f = NioWrapper.getAutotipFile("stats/" + date + ".at");
+            File f = autotip.getFileUtil().getFile("stats/" + date + ".at");
             if (!f.exists()) {
                 continue;
             }
@@ -95,7 +95,7 @@ public class Stats {
                     ChatComponentBuilder
                             .of("&a{}: &e{} coins",
                                     game, format(sentCoins + receivedCoins))
-                            .setHoverText("&a{}\n"
+                            .setHover("&a{}\n"
                                             + "&cBy sending: &e{} coins\n"
                                             + "&9By receiving: &e{} coins",
                                     game, format(sentCoins), format(receivedCoins))
@@ -104,18 +104,18 @@ public class Stats {
             });
             ChatComponentBuilder
                     .of("&6Tips: {}", format(tips[0] + tips[1]))
-                    .setHoverText("&cSent: &6{} tips\n&9Received: &6{} tips",
+                    .setHover("&cSent: &6{} tips\n&9Received: &6{} tips",
                             format(tips[0]), format(tips[1]))
                     .send();
             ChatComponentBuilder
                     .of("&9XP: {}", format(xp[0] + xp[1]))
-                    .setHoverText("&cBy sending: &9{} XP\n&9By receiving: {} XP",
+                    .setHover("&cBy sending: &9{} XP\n&9By receiving: {} XP",
                             format(xp[0]), format(xp[1]))
                     .send();
             if (karma > 0) {
                 ChatComponentBuilder
                         .of("&dKarma: {}", format(karma))
-                        .setHoverText("&dI should probably fix this...")
+                        .setHover("&dI should probably fix this...")
                         .send();
             }
 

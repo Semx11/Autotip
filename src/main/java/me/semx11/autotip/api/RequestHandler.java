@@ -1,4 +1,4 @@
-package me.semx11.autotip.api.util;
+package me.semx11.autotip.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,11 +9,15 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.request.Request;
+import me.semx11.autotip.gson.adapter.impl.LocaleAdapter;
+import me.semx11.autotip.gson.adapter.impl.PatternAdapter;
 import me.semx11.autotip.gson.adapter.impl.SessionKeyAdapter;
 import me.semx11.autotip.util.ErrorReport;
 import org.apache.commons.io.IOUtils;
@@ -22,6 +26,8 @@ public class RequestHandler {
 
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(SessionKey.class, new SessionKeyAdapter())
+            .registerTypeAdapter(Pattern.class, new PatternAdapter())
+            .registerTypeAdapter(Locale.class, new LocaleAdapter())
             .create();
 
     public static Optional<Reply> getReply(Request request, URI uri) {

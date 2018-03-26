@@ -1,4 +1,4 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.chat;
 
 public enum ChatColor {
     BLACK('0'),

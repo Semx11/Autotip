@@ -4,14 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
+import me.semx11.autotip.api.reply.impl.LocaleReply;
 import me.semx11.autotip.api.reply.impl.SettingsReply;
+import me.semx11.autotip.api.request.impl.LocaleRequest;
 import me.semx11.autotip.api.request.impl.SettingsRequest;
+import me.semx11.autotip.chat.LocaleHolder;
+import me.semx11.autotip.chat.MessageUtil;
 import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.command.impl.CommandAutotip;
 import me.semx11.autotip.command.impl.CommandLimbo;
-import me.semx11.autotip.command.impl.CommandTipHistory;
 import me.semx11.autotip.config.Config;
 import me.semx11.autotip.config.GlobalSettings;
 import me.semx11.autotip.core.MigrationManager;
@@ -25,14 +29,12 @@ import me.semx11.autotip.event.impl.EventClientTick;
 import me.semx11.autotip.gson.creator.ConfigCreator;
 import me.semx11.autotip.gson.creator.StatsDailyCreator;
 import me.semx11.autotip.gson.exclusion.AnnotationExclusionStrategy;
+import me.semx11.autotip.legacy.LegacyFileUtil;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.FileUtil;
-import me.semx11.autotip.legacy.LegacyFileUtil;
-import me.semx11.autotip.util.MessageUtil;
 import me.semx11.autotip.util.MinecraftVersion;
-import me.semx11.autotip.util.NioWrapper;
 import me.semx11.autotip.util.Version;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -66,13 +68,13 @@ public class Autotip {
     private Version version;
 
     private Gson gson;
-    private String userDirString;
 
     private FileUtil fileUtil;
     private MessageUtil messageUtil;
 
-    private GlobalSettings globalSettings;
     private Config config;
+    private GlobalSettings globalSettings;
+    private LocaleHolder localeHolder;
 
     private TaskManager taskManager;
     private SessionManager sessionManager;
@@ -107,10 +109,6 @@ public class Autotip {
         return gson;
     }
 
-    public String getUserDirString() {
-        return userDirString;
-    }
-
     public FileUtil getFileUtil() {
         return fileUtil;
     }
@@ -119,12 +117,16 @@ public class Autotip {
         return messageUtil;
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
     public GlobalSettings getGlobalSettings() {
         return globalSettings;
     }
 
-    public Config getConfig() {
-        return config;
+    public LocaleHolder getLocaleHolder() {
+        return localeHolder;
     }
 
     public TaskManager getTaskManager() {
@@ -149,10 +151,7 @@ public class Autotip {
         this.mcVersion = UniversalUtil.getMinecraftVersion();
         this.version = new Version(VERSION);
 
-        // TODO: Remove because it's legacy
-        this.userDirString = NioWrapper.separator("mods/autotip/" + getGameProfile().getId() + "/");
-
-        this.messageUtil = new MessageUtil();
+        this.messageUtil = new MessageUtil(this);
         this.registerEvents(new EventClientTick(this));
 
         try {
@@ -164,12 +163,9 @@ public class Autotip {
                     .setPrettyPrinting()
                     .create();
 
-            SettingsReply reply = SettingsRequest.of(this).execute();
-            if (!reply.isSuccess()) {
-                throw new IllegalStateException("Could not fetch global settings");
-            }
-            this.globalSettings = reply.getSettings();
             this.config = new Config(this);
+            this.reloadGlobalSettings();
+            this.reloadLocale();
 
             this.taskManager = new TaskManager();
             this.sessionManager = new SessionManager(this);
@@ -188,7 +184,6 @@ public class Autotip {
             );
             this.registerCommands(
                     new CommandAutotip(this),
-                    new CommandTipHistory(this),
                     new CommandLimbo(this)
             );
             LegacyFileUtil.getVars();
@@ -198,9 +193,25 @@ public class Autotip {
             messageUtil.send("Autotip is disabled because it couldn't create the required files.");
             ErrorReport.reportException(e);
         } catch (IllegalStateException e) {
-            messageUtil.send("Autotip is disabled because it couldn't fetch the global settings.");
+            messageUtil.send("Autotip is disabled because it couldn't connect to the API.");
             ErrorReport.reportException(e);
         }
+    }
+
+    public void reloadGlobalSettings() {
+        SettingsReply reply = SettingsRequest.of(this).execute();
+        if (!reply.isSuccess()) {
+            throw new IllegalStateException("Connection error while fetching global settings");
+        }
+        this.globalSettings = reply.getSettings();
+    }
+
+    public void reloadLocale() {
+        LocaleReply reply = LocaleRequest.of(this).execute();
+        if (!reply.isSuccess()) {
+            throw new IllegalStateException("Could not fetch locale");
+        }
+        this.localeHolder = reply.getLocaleHolder();
     }
 
     @SuppressWarnings("unchecked")

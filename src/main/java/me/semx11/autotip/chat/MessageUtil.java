@@ -1,19 +1,39 @@
-package me.semx11.autotip.util;
+package me.semx11.autotip.chat;
 
 import com.google.common.collect.Queues;
 import java.util.Queue;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.universal.UniversalUtil;
+import me.semx11.autotip.util.StringUtil;
 import net.minecraft.client.Minecraft;
 
 public class MessageUtil {
 
     private static final String PREFIX = "&6A&eT &8> &7";
 
+    private final Autotip autotip;
+
     private final Queue<String> chatQueue = Queues.newConcurrentLinkedQueue();
     private final Queue<String> cmdQueue = Queues.newConcurrentLinkedQueue();
 
-    public MessageUtil() {
+    public MessageUtil(Autotip autotip) {
+        this.autotip = autotip;
+    }
+
+    public ChatComponentBuilder getBuilder(String text, Object... params) {
+        return this.getBuilder(true, text, params);
+    }
+
+    public ChatComponentBuilder getBuilder(boolean prefix, String text, Object... params) {
+        return new ChatComponentBuilder(StringUtil.params((prefix ? PREFIX : "") + text, params));
+    }
+
+    public void sendKey(String key, Object... params) {
+        this.send(this.getKey(key), params);
+    }
+
+    public String getKey(String key) {
+        return autotip.getLocaleHolder().getKey(key);
     }
 
     public void send(String msg, Object... params) {

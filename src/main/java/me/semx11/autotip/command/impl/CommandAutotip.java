@@ -8,17 +8,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.chat.MessageOption;
+import me.semx11.autotip.chat.MessageUtil;
 import me.semx11.autotip.command.CommandAbstract;
 import me.semx11.autotip.config.Config;
+import me.semx11.autotip.config.GlobalSettings;
 import me.semx11.autotip.core.SessionManager;
+import me.semx11.autotip.core.StatsManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
-import me.semx11.autotip.legacy.Stats;
-import me.semx11.autotip.legacy.TipTracker;
-import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.legacy.LegacyFileUtil;
-import me.semx11.autotip.util.MessageUtil;
+import me.semx11.autotip.legacy.Stats;
+import me.semx11.autotip.stats.StatsDaily;
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.MinecraftVersion;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
@@ -44,7 +47,7 @@ public class CommandAutotip extends CommandAbstract {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/autotip <stats, info, messages, toggle, time>";
+        return autotip.getLocaleHolder().getKey("command.usage");
     }
 
     @Override
@@ -62,143 +65,191 @@ public class CommandAutotip extends CommandAbstract {
         MessageUtil messageUtil = autotip.getMessageUtil();
         TaskManager taskManager = autotip.getTaskManager();
         SessionManager manager = autotip.getSessionManager();
+        StatsManager stats = autotip.getStatsManager();
+        GlobalSettings settings = autotip.getGlobalSettings();
 
-        if (args.length > 0) {
-            switch (args[0].toLowerCase()) {
-                case "m":
-                case "messages":
-                    config.nextMessageOption().save();
-                    messageUtil.send("Tip Messages: " + config.getMessageOption());
-                    break;
-                case "?":
-                case "info":
-                    messageUtil.separator();
-                    messageUtil.send("&6&lAutotip v" + autotip.getVersion() + " &7by &bSemx11");
-                    messageUtil.send("Brought to you by the &6Autotip Team &7(hover)",
-                            null,
-                            "&6The Autotip Team\n"
-                                    + "&b[MVP&4+&b] Semx11 &r&7- Lead Mod developer, API, PR\n"
-                                    + "&b[MVP&3+&b] 2Pi &r&7- Lead API developer, Founder, Creator, PR\n"
-                                    + "&6[YT] Sk1er &r&7- Host, not the creator, PR");
-                    messageUtil.send("Autotipper: " + (config.isEnabled() ? "&aEn" : "&cDis") +
-                            "abled");
-                    messageUtil.send("Tip Messages: " + config.getMessageOption());
-                    messageUtil.send("Tips sent today: &6" + TipTracker.tipsSent);
-                    messageUtil.send("Tips received today: &6" + TipTracker.tipsReceived);
-                    messageUtil.send("Lifetime tips sent: &6" + "a lotta tips");
-                    messageUtil.send("&6Type /autotip stats to see what has been earned.");
-                    messageUtil.separator();
-                    break;
-                case "s":
-                case "stats":
-                    LocalDate now = LocalDate.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        StatsDaily today = stats.get();
 
+        if (args.length <= 0) {
+            messageUtil.sendKey("command.usage");
+            return;
+        }
+
+        switch (args[0].toLowerCase()) {
+            case "s":
+            case "stats":
+                LocalDate now = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+                if (args.length <= 1) {
+                    stats.get(now).print();
+                    return;
+                }
+
+                switch (args[1].toLowerCase()) {
+                    case "day":
+                    case "daily":
+                    case "today":
+                        stats.get(now).print();
+                        break;
+                    case "yesterday":
+                        stats.get(now.minusDays(1)).print();
+                        break;
+                    case "week":
+                    case "weekly":
+                        Stats.printBetween(now.with(DayOfWeek.MONDAY).format(formatter),
+                                now.with(DayOfWeek.SUNDAY).format(formatter));
+                        break;
+                    case "month":
+                    case "monthly":
+                        Stats.printBetween(now.withDayOfMonth(1).format(formatter),
+                                now.withDayOfMonth(now.lengthOfMonth()).format(formatter));
+                        break;
+                    case "year":
+                    case "yearly":
+                        Stats.printBetween("01-01-" + Year.now().getValue(),
+                                "31-12-" + Year.now().getValue());
+                        break;
+                    case "all":
+                    case "total":
+                    case "life":
+                    case "lifetime":
+                        Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
+                        break;
+                    default:
+                        messageUtil.sendKey("command.stats.usage");
+                        break;
+
+                }
+                break;
+            case "?":
+            case "info":
+                messageUtil.separator();
+                messageUtil.sendKey("command.info.version", autotip.getVersion());
+                messageUtil.getBuilder(messageUtil.getKey("command.info.credits"))
+                        .setHover(messageUtil.getKey("command.info.creditsHover"))
+                        .send();
+                messageUtil.sendKey("command.info.status." + (config.isEnabled() ? "enabled"
+                        : "disabled"));
+                messageUtil.sendKey("command.info.messages", config.getMessageOption());
+                messageUtil.sendKey("command.info.tipsSent", today.getTipsSent());
+                messageUtil.sendKey("command.info.tipsReceived", today.getTipsReceived());
+                messageUtil.sendKey("command.info.statsCommand");
+                messageUtil.separator();
+                break;
+            case "m":
+            case "messages":
+                try {
                     if (args.length > 1) {
-                        switch (args[1].toLowerCase()) {
-                            case "day":
-                            case "daily":
-                            case "today":
-                                Stats.printStats(LegacyFileUtil.getDate());
-                                break;
-                            case "yesterday":
-                                Stats.printStats(now.minusDays(1).format(formatter));
-                                break;
-                            case "week":
-                            case "weekly":
-                                Stats.printBetween(now.with(DayOfWeek.MONDAY).format(formatter),
-                                        now.with(DayOfWeek.SUNDAY).format(formatter));
-                                break;
-                            case "month":
-                            case "monthly":
-                                Stats.printBetween(now.withDayOfMonth(1).format(formatter),
-                                        now.withDayOfMonth(now.lengthOfMonth()).format(formatter));
-                                break;
-                            case "year":
-                            case "yearly":
-                                Stats.printBetween("01-01-" + Year.now().getValue(),
-                                        "31-12-" + Year.now().getValue());
-                                break;
-                            case "all":
-                            case "total":
-                            case "life":
-                            case "lifetime":
-                                Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
-                                break;
-                            default:
-                                messageUtil.send("&cUsage: /autotip stats <day, week, month, year,"
-                                        + " lifetime>");
-                                break;
-                        }
+                        MessageOption option = MessageOption.valueOfIgnoreCase(args[1]);
+                        config.setMessageOption(option).save();
                     } else {
-                        Stats.printStats(LegacyFileUtil.getDate());
+                        config.nextMessageOption().save();
                     }
-                    break;
-                case "t":
-                case "toggle":
-                    config.toggleEnabled().save();
-                    messageUtil.send("Autotip: {}abled", config.isEnabled() ? "&aEn" : "&cDis");
-                    if (config.isEnabled()) {
-                        if (manager.isOnHypixel() && !manager.isLoggedIn()) {
-                            taskManager.executeTask(TaskType.LOGIN, manager::login);
-                        }
-                    } else {
-                        if (manager.isLoggedIn()) {
-                            taskManager.executeTask(TaskType.LOGOUT, manager::logout);
-                        }
+                    messageUtil.sendKey("command.messages.next", config.getMessageOption());
+                } catch (IllegalArgumentException e) {
+                    messageUtil.sendKey("command.messages.error", args.length > 1 ? args[1] : null);
+                }
+                break;
+            case "t":
+            case "toggle":
+                config.toggleEnabled().save();
+                messageUtil.sendKey("command.toggle." + (config.isEnabled() ? "enabled"
+                        : "disabled"));
+                if (config.isEnabled()) {
+                    if (manager.isOnHypixel() && !manager.isLoggedIn()) {
+                        taskManager.executeTask(TaskType.LOGIN, manager::login);
                     }
-                    break;
-                case "wave":
-                case "time":
-                    if (config.isEnabled()) {
-                        if (manager.isOnHypixel()) {
-                            if (manager.getNextTipWave() == 0) {
-                                messageUtil.send("The first tip wave hasn't occurred yet.");
-                                return;
-                            }
-                            messageUtil.separator();
-                            long time = System.currentTimeMillis();
-                            messageUtil.send("Last wave: &6" + LocalTime.MIN
-                                    .plusSeconds((time - manager.getLastTipWave()) / 1000)
-                                    .format(WAVE_FORMAT));
-                            messageUtil.send("Next wave: &6" + LocalTime.MIN
-                                    .plusSeconds((manager.getNextTipWave() - time) / 1000 + 1)
-                                    .format(WAVE_FORMAT));
-                            messageUtil.separator();
-                        } else {
-                            messageUtil.send("Autotip is disabled as you are not playing "
-                                    + "on Hypixel.");
-                        }
-                    } else {
-                        messageUtil.send("Autotip is disabled. Use &6/autotip toggle&7 to "
-                                + "enable it.");
-                    }
-                    break;
-                case "whatsnew":
-                    messageUtil.separator();
-                    messageUtil.send("&6What's new in Autotip v" + autotip.getVersion()
-                            + ":");
-                    Versions.getInstance().getInfoByVersion(autotip.getVersion()).getChangelog()
-                            .forEach(
-                                    s -> messageUtil.send("&8- &7" + s));
-                    messageUtil.separator();
-                    break;
-                case "debug":
-                    EventClientConnection event = autotip.getEvent(EventClientConnection.class);
-                    messageUtil.separator();
-                    messageUtil.send("Last IP joined: {}", event.getServerIp());
-                    messageUtil.send("Detected MC version: {}", autotip.getMcVersion());
-                    Object header = event.getHeader();
-                    messageUtil.send("Tab Header: {}", (header == null ? "None"
-                            : UniversalUtil.getUnformattedText(header)));
-                    messageUtil.separator();
-                    break;
-                default:
-                    messageUtil.send("&cUsage: " + getCommandUsage(sender));
-                    break;
-            }
-        } else {
-            messageUtil.send("&cUsage: " + getCommandUsage(sender));
+                } else if (manager.isLoggedIn()) {
+                    taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                }
+                break;
+            case "wave":
+                if (!config.isEnabled()) {
+                    messageUtil.send("error.disabled");
+                    return;
+                }
+                if (!manager.isOnHypixel()) {
+                    messageUtil.sendKey("error.disabledHypixel");
+                    return;
+                }
+                if (manager.getNextTipWave() == 0) {
+                    messageUtil.sendKey("command.wave.error");
+                    return;
+                }
+
+                messageUtil.separator();
+                long time = System.currentTimeMillis();
+                messageUtil.sendKey("command.wave.lastWave", LocalTime.MIN
+                        .plusSeconds((time - manager.getLastTipWave()) / 1000)
+                        .format(WAVE_FORMAT));
+                messageUtil.sendKey("command.wave.nextWave" + LocalTime.MIN
+                        .plusSeconds((manager.getNextTipWave() - time) / 1000 + 1)
+                        .format(WAVE_FORMAT));
+                messageUtil.separator();
+                break;
+            case "changelog":
+                // TODO: Fix this
+                messageUtil.separator();
+                messageUtil.sendKey("command.changelog.version", autotip.getVersion());
+                Versions.getInstance().getInfoByVersion(autotip.getVersion()).getChangelog()
+                        .forEach(s -> messageUtil.sendKey("command.changelog.entry", s));
+                messageUtil.separator();
+                break;
+            case "debug":
+                EventClientConnection event = autotip.getEvent(EventClientConnection.class);
+                messageUtil.separator();
+                messageUtil.send("command.debug.serverIp", event.getServerIp());
+                messageUtil.send("command.debug.mcVersion", autotip.getMcVersion());
+                Object header = event.getHeader();
+                messageUtil.sendKey("command.debug.header." + (header == null ? "none"
+                        : "present"), UniversalUtil.getUnformattedText(header));
+                messageUtil.separator();
+                break;
+            case "msgdebug":
+                config.setMessageOption(MessageOption.DEBUG).save();
+                messageUtil.send("Tip Messages: " + config.getMessageOption());
+                break;
+            case "reload":
+                try {
+                    autotip.reloadGlobalSettings();
+                    autotip.reloadLocale();
+                    messageUtil.sendKey("command.reload.success");
+                } catch (IllegalStateException e) {
+                    messageUtil.sendKey("command.reload.error");
+                }
+                break;
+            case "add":
+                // TODO: Remove before release
+                stats.getToday().addCoins("SkyWars", 1337, 1337);
+                break;
+            case "msg":
+                // TODO: Remove before release
+                messageUtil.getBuilder(false, "&aYou tipped 17 players in 12 different games!")
+                        .setHover("&aRewards\n"
+                                + "&3+600 Hypixel Experience\n"
+                                + "&6+15 Speed UHC Coins\n"
+                                + "&6+15 UHC Champions Coins\n"
+                                + "&6+15 Arena Brawl Coins\n"
+                                + "&6+15 The Walls Coins\n"
+                                + "&6+15 Blitz SG Coins\n"
+                                + "&6+15 Warlords Coins\n"
+                                + "&6+15 Turbo Kart Racers Coins\n"
+                                + "&6+15 VampireZ Coins\n"
+                                + "&6+15 The TNT Games Coins\n"
+                                + "&6+15 Cops and Crims Coins\n"
+                                + "&6+15 Paintball Warfare Coins\n"
+                                + "&6+38 Arcade Games Coins\n"
+                                + "&6+15 Mega Walls Coins\n"
+                                + "&6+15 SkyClash Coins\n"
+                                + "&6+15 Crazy Walls Coins\n"
+                                + "&6+15 SkyWars Coins\n"
+                                + "&6+15 Quakecraft Coins")
+                        .send();
+                break;
+            default:
+                messageUtil.send("&cUsage: " + getCommandUsage(sender));
+                break;
         }
     }
 

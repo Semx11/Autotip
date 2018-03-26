@@ -27,7 +27,7 @@ import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.HashUtil;
 import me.semx11.autotip.util.Host;
 import me.semx11.autotip.util.Hosts;
-import me.semx11.autotip.util.MessageUtil;
+import me.semx11.autotip.chat.MessageUtil;
 import me.semx11.autotip.util.VersionInfo;
 import me.semx11.autotip.util.Versions;
 import net.minecraft.util.Session;

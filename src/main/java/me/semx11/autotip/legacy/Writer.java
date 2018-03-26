@@ -4,14 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ErrorReport;
-import me.semx11.autotip.util.NioWrapper;
 
 public class Writer implements Runnable {
 
@@ -32,6 +26,7 @@ public class Writer implements Runnable {
                 TipTracker.tipsReceivedEarnings.clear();
             }
 
+            /*
             FileWriter dailyStats = new FileWriter(NioWrapper
                     .separator(autotip.getUserDirString() + "stats/" + LegacyFileUtil.getDate()
                             + ".at"));
@@ -52,11 +47,11 @@ public class Writer implements Runnable {
                 int receivedCoins = TipTracker.tipsReceivedEarnings.getOrDefault(game, 0);
                 write(dailyStats, game + ":" + sentCoins + ":" + receivedCoins);
             });
-            dailyStats.close();
+            dailyStats.close();*/
 
             lastDate = LegacyFileUtil.getDate();
 
-        } catch (IOException e) {
+        } catch (/*IO*/Exception e) {
             ErrorReport.reportException(e);
         }
     }

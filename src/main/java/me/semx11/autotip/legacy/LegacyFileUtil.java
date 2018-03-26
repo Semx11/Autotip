@@ -1,33 +1,25 @@
 package me.semx11.autotip.legacy;
 
-import static me.semx11.autotip.util.NioWrapper.exists;
-import static me.semx11.autotip.util.NioWrapper.getAutotipFile;
-import static me.semx11.autotip.util.NioWrapper.getAutotipPath;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import me.semx11.autotip.Autotip;
 import me.semx11.autotip.util.ErrorReport;
 
 public class LegacyFileUtil {
 
     public static void getVars() throws IOException {
         try {
-            File statsDir = getAutotipFile("stats");
-            if (!statsDir.exists() && !statsDir.mkdirs()) {
-                throw new IOException("Could not make required directories");
-            }
-
             boolean executeWriter = false;
 
-            Path today = getAutotipPath("stats/" + getDate() + ".at");
-            if (exists(today)) {
-                List<String> lines = Files.lines(today).collect(Collectors.toList());
+            File today = Autotip.getInstance().getFileUtil().getLegacyStatsFile(LocalDate.now());
+            if (today.exists()) {
+                List<String> lines = Files.lines(today.toPath()).collect(Collectors.toList());
                 if (lines.size() >= 2) {
                     String[] tipStats = lines.get(0).split(":");
                     TipTracker.tipsSent = Integer.parseInt(tipStats[0]);

@@ -21,7 +21,7 @@ public class StringUtil {
         }
         for (Object o : params) {
             if (o != null) {
-                String replacement = Matcher.quoteReplacement(o.toString());
+                String replacement = Matcher.quoteReplacement(format(o.toString()));
                 input = PARAM_PATTERN.matcher(input).replaceFirst(replacement);
             }
         }

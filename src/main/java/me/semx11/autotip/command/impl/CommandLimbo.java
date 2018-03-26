@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.command.CommandAbstract;
-import me.semx11.autotip.util.MessageUtil;
+import me.semx11.autotip.chat.MessageUtil;
 import net.minecraft.command.ICommandSender;
 
 public class CommandLimbo extends CommandAbstract {

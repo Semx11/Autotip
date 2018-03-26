@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.CheckReturnValue;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.chat.MessageOption;
 import me.semx11.autotip.gson.exclusion.Exclude;
 import me.semx11.autotip.util.FileUtil;
-import me.semx11.autotip.util.MessageOption;
 import org.apache.commons.io.FileUtils;
 
 public class Config {
@@ -22,6 +23,7 @@ public class Config {
     private final File configFile;
 
     private boolean enabled = true;
+    private Locale locale = Locale.forLanguageTag("en-US");
     private MessageOption messageOption = MessageOption.SHOWN;
 
     public Config(Autotip autotip) {
@@ -45,6 +47,16 @@ public class Config {
         return this;
     }
 
+    public Locale getLocale() {
+        return locale;
+    }
+
+    @CheckReturnValue
+    public Config setLocale(Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
     public MessageOption getMessageOption() {
         return messageOption;
     }
@@ -52,6 +64,12 @@ public class Config {
     @CheckReturnValue
     public Config nextMessageOption() {
         this.messageOption = messageOption.next();
+        return this;
+    }
+
+    @CheckReturnValue
+    public Config setMessageOption(MessageOption messageOption) {
+        this.messageOption = messageOption;
         return this;
     }
 
@@ -68,7 +86,7 @@ public class Config {
     public Config load() {
         try {
             String json = FileUtils.readFileToString(configFile);
-            return this.merge(autotip.getGson().fromJson(json, Config.class));
+            return this.merge(autotip.getGson().fromJson(json, Config.class)).save();
         } catch (FileNotFoundException e) {
             Autotip.LOGGER.info("config.at does not exist, creating...");
         } catch (JsonSyntaxException e) {
@@ -113,7 +131,8 @@ public class Config {
 
     private Config merge(final Config that) {
         this.enabled = that.enabled;
-        this.messageOption = that.messageOption;
+        this.locale = that.locale == null ? this.locale : that.locale;
+        this.messageOption = that.messageOption == null ? this.messageOption : that.messageOption;
         return this;
     }
 

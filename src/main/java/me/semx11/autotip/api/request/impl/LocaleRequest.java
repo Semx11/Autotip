@@ -1,43 +1,43 @@
 package me.semx11.autotip.api.request.impl;
 
+import java.util.Locale;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.reply.Reply;
-import me.semx11.autotip.api.reply.impl.SettingsReply;
+import me.semx11.autotip.api.reply.impl.LocaleReply;
 import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.GetBuilder;
 import me.semx11.autotip.api.RequestHandler;
 import me.semx11.autotip.api.RequestType;
-import me.semx11.autotip.util.Version;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class SettingsRequest implements Request<SettingsReply> {
+public class LocaleRequest implements Request<LocaleReply> {
 
-    private final Version version;
+    private final Locale locale;
 
-    private SettingsRequest(Autotip autotip) {
-        this.version = autotip.getVersion();
+    public LocaleRequest(Autotip autotip) {
+        this.locale = autotip.getConfig().getLocale();
     }
 
-    public static SettingsRequest of(Autotip autotip) {
-        return new SettingsRequest(autotip);
+    public static LocaleRequest of(Autotip autotip) {
+        return new LocaleRequest(autotip);
     }
 
     @Override
-    public SettingsReply execute() {
+    public LocaleReply execute() {
         HttpUriRequest request = GetBuilder.of(this)
-                .addParameter("v", this.version.get())
+                .addParameter("lang", this.locale.toLanguageTag())
                 .build();
 
         Optional<Reply> optional = RequestHandler.getReply(this, request.getURI());
         return optional
-                .map(reply -> (SettingsReply) reply)
-                .orElseGet(() -> new SettingsReply(false));
+                .map(reply -> (LocaleReply) reply)
+                .orElseGet(() -> new LocaleReply(false));
     }
 
     @Override
     public RequestType getType() {
-        return RequestType.SETTINGS;
+        return RequestType.LOCALE;
     }
 
 }

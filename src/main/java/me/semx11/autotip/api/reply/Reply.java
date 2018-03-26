@@ -1,6 +1,6 @@
 package me.semx11.autotip.api.reply;
 
-import me.semx11.autotip.api.util.RequestType;
+import me.semx11.autotip.api.RequestType;
 
 public abstract class Reply {
 

@@ -1,10 +1,8 @@
-package me.semx11.autotip.universal;
+package me.semx11.autotip.chat;
 
+import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.StringUtil;
 
-/**
- * Temporary solution until I fix all reflection related spaghetti
- */
 public class ChatComponentBuilder {
 
     private static final String PREFIX = "&6A&eT &8> &7";
@@ -13,12 +11,20 @@ public class ChatComponentBuilder {
     private String hoverText;
     private String url;
 
-    private ChatComponentBuilder(String text, Object... params) {
-        this.text = StringUtil.params(PREFIX + text, params);
+    ChatComponentBuilder(String text) {
+        this.text = text;
+    }
+
+    ChatComponentBuilder(boolean prefix, String text, Object... params) {
+        this.text = StringUtil.params((prefix ? PREFIX : "") + text, params);
     }
 
     public static ChatComponentBuilder of(String text, Object... params) {
-        return new ChatComponentBuilder(text, params);
+        return new ChatComponentBuilder(true, text, params);
+    }
+
+    public static ChatComponentBuilder of(boolean prefix, String text, Object... params) {
+        return new ChatComponentBuilder(prefix, text, params);
     }
 
     public ChatComponentBuilder setUrl(String url, Object... params) {
@@ -26,7 +32,7 @@ public class ChatComponentBuilder {
         return this;
     }
 
-    public ChatComponentBuilder setHoverText(String hoverText, Object... params) {
+    public ChatComponentBuilder setHover(String hoverText, Object... params) {
         this.hoverText = StringUtil.params(hoverText, params);
         return this;
     }

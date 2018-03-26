@@ -3,7 +3,7 @@ package me.semx11.autotip.api.reply.impl;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.api.reply.Reply;
-import me.semx11.autotip.api.util.RequestType;
+import me.semx11.autotip.api.RequestType;
 
 public class TipReply extends Reply {
 

@@ -85,6 +85,9 @@ public class UniversalUtil {
     }
 
     public static String getUnformattedText(Object component) {
+        if (component == null) {
+            return null;
+        }
         try {
             return (String) findMethod(
                     componentClass,
@@ -92,7 +95,7 @@ public class UniversalUtil {
             ).invoke(component);
         } catch (IllegalAccessException | InvocationTargetException e) {
             ErrorReport.reportException(e);
-            return "";
+            return null;
         }
     }
 

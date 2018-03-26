@@ -2,6 +2,7 @@ package me.semx11.autotip.util;
 
 import java.util.Arrays;
 import java.util.List;
+import me.semx11.autotip.chat.ChatColor;
 
 public class VersionInfo {
 

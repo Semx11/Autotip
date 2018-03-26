@@ -5,12 +5,12 @@ import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.reply.impl.LogoutReply;
 import me.semx11.autotip.api.request.Request;
-import me.semx11.autotip.api.util.GetBuilder;
-import me.semx11.autotip.api.util.RequestHandler;
-import me.semx11.autotip.api.util.RequestType;
+import me.semx11.autotip.api.GetBuilder;
+import me.semx11.autotip.api.RequestHandler;
+import me.semx11.autotip.api.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class LogoutRequest extends Request<LogoutReply> {
+public class LogoutRequest implements Request<LogoutReply> {
 
     private final SessionKey sessionKey;
 

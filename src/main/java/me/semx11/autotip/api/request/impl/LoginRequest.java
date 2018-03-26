@@ -6,12 +6,12 @@ import me.semx11.autotip.Autotip;
 import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.reply.impl.LoginReply;
 import me.semx11.autotip.api.request.Request;
-import me.semx11.autotip.api.util.GetBuilder;
-import me.semx11.autotip.api.util.RequestHandler;
-import me.semx11.autotip.api.util.RequestType;
+import me.semx11.autotip.api.GetBuilder;
+import me.semx11.autotip.api.RequestHandler;
+import me.semx11.autotip.api.RequestType;
 import org.apache.http.client.methods.HttpUriRequest;
 
-public class LoginRequest extends Request<LoginReply> {
+public class LoginRequest implements Request<LoginReply> {
 
     private final GameProfile profile;
     private final String hash;
