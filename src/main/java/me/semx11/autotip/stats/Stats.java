@@ -6,10 +6,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.config.GlobalSettings.GameGroup;
-import me.semx11.autotip.gson.exclusion.Exclude;
 import me.semx11.autotip.chat.ChatComponentBuilder;
 import me.semx11.autotip.chat.MessageUtil;
+import me.semx11.autotip.config.GlobalSettings.GameGroup;
+import me.semx11.autotip.gson.exclusion.Exclude;
 
 public abstract class Stats {
 
@@ -153,6 +153,10 @@ public abstract class Stats {
                 .setHover("&cBy sending: &9{} XP\n&9By receiving: {} XP",
                         this.getXpSent(), this.getXpReceived())
                 .send();
+        if (this instanceof StatsDaily) {
+            // TODO: Print date(s)
+            // TODO: Add above messages to locale
+        }
         messageUtil.separator();
     }
 

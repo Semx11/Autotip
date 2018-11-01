@@ -28,6 +28,10 @@ public class MessageUtil {
         return new ChatComponentBuilder(StringUtil.params((prefix ? PREFIX : "") + text, params));
     }
 
+    public KeyHelper getKeyHelper(String rootKey) {
+        return new KeyHelper(this, rootKey);
+    }
+
     public void sendKey(String key, Object... params) {
         this.send(this.getKey(key), params);
     }
@@ -37,7 +41,7 @@ public class MessageUtil {
     }
 
     public void send(String msg, Object... params) {
-        sendRaw(PREFIX + msg, params);
+        this.sendRaw(PREFIX + msg, params);
     }
 
     public void send(String msg, String url, String hoverText, Object... params) {
@@ -51,8 +55,8 @@ public class MessageUtil {
 
     public void sendRaw(String msg, Object... params) {
         msg = StringUtil.params(msg, params);
-        if (isPlayerLoaded()) {
-            flushQueues();
+        if (this.isPlayerLoaded()) {
+            this.flushQueues();
             UniversalUtil.addChatMessage(msg);
         } else {
             chatQueue.add(msg);
@@ -61,8 +65,8 @@ public class MessageUtil {
     }
 
     public void sendCommand(String command) {
-        if (isPlayerLoaded()) {
-            flushQueues();
+        if (this.isPlayerLoaded()) {
+            this.flushQueues();
             Autotip.getInstance().getMinecraft().thePlayer.sendChatMessage(command);
         } else {
             cmdQueue.add(command);
@@ -71,12 +75,12 @@ public class MessageUtil {
     }
 
     public void flushQueues() {
-        if (isPlayerLoaded()) {
+        if (this.isPlayerLoaded()) {
             while (!chatQueue.isEmpty()) {
-                sendRaw(chatQueue.poll());
+                this.sendRaw(chatQueue.poll());
             }
             while (!cmdQueue.isEmpty()) {
-                sendCommand(cmdQueue.poll());
+                this.sendCommand(cmdQueue.poll());
             }
         }
     }

@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.gson.adapter.impl.LocaleAdapter;
@@ -48,7 +47,7 @@ public class RequestHandler {
 
             Reply reply = GSON.fromJson(json, (Type) request.getType().getReplyClass());
 
-            return Optional.of(reply);
+            return Optional.ofNullable(reply);
         } catch (IOException | JsonParseException e) {
             ErrorReport.reportException(e);
             Autotip.LOGGER.info(request.getType() + " JSON: " + json);

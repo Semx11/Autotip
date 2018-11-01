@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import me.semx11.autotip.api.reply.impl.LocaleReply;
@@ -94,7 +93,7 @@ public class Autotip {
     }
 
     public GameProfile getGameProfile() {
-        return getMinecraft().getSession().getProfile();
+        return minecraft.getSession().getProfile();
     }
 
     public MinecraftVersion getMcVersion() {

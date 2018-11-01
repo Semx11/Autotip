@@ -45,9 +45,8 @@ public class StatsManager {
     }
 
     /**
-     * Get the {@link StatsDaily} for the current date without triggering the auto-save.
-     * This method is similar to using {@link #get(LocalDate)} with the {@link LocalDate}
-     * being today.
+     * Get the {@link StatsDaily} for the current date without triggering the auto-save. This method
+     * is similar to using {@link #get(LocalDate)} with the {@link LocalDate} being today.
      *
      * @return {@link StatsDaily} of today
      * @see #get(LocalDate)
@@ -57,8 +56,8 @@ public class StatsManager {
     }
 
     /**
-     * Get the {@link StatsDaily} for the specified date.
-     * This method uses a cache to reduce the amount of read/write cycles.
+     * Get the {@link StatsDaily} for the specified date. This method uses a cache to reduce the
+     * amount of read/write cycles.
      *
      * @param date The {@link LocalDate} of the StatsDaily you want to get
      * @return {@link StatsDaily} for the specified date

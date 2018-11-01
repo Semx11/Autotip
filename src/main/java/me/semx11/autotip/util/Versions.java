@@ -48,7 +48,7 @@ public class Versions {
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version) {
-        return getHigherVersionInfo(version, this.latest);
+        return this.getHigherVersionInfo(version, this.latest);
     }
 
     public List<VersionInfo> getHigherVersionInfo(Version version, Version highest) {

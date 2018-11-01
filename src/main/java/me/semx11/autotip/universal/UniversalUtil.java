@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketAddress;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.chat.ChatColor;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MinecraftVersion;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -22,7 +23,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
-// TODO: Static == bad
 public class UniversalUtil {
 
     private static Class<?> componentClass;
@@ -89,13 +89,54 @@ public class UniversalUtil {
             return null;
         }
         try {
-            return (String) findMethod(
+            String text = (String) findMethod(
                     componentClass,
                     new String[]{"func_150260_c", "getUnformattedText"}
             ).invoke(component);
+            return ChatColor.stripFormatting(text);
         } catch (IllegalAccessException | InvocationTargetException e) {
             ErrorReport.reportException(e);
             return null;
+        }
+    }
+
+    public static String getHoverText(ClientChatReceivedEvent event) {
+        try {
+            Object component = isLegacy()
+                    ? findField(ClientChatReceivedEvent.class, "message").get(event)
+                    : findMethod(ClientChatReceivedEvent.class, new String[]{"getMessage"})
+                            .invoke(event);
+            return getHoverText(component);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static String getHoverText(Object component) {
+        if (component == null) {
+            return null;
+        }
+        try {
+            Object style = findMethod(
+                    componentClass,
+                    new String[]{"func_150256_b", "getChatStyle"}
+            ).invoke(component);
+            Object hoverEvent = findMethod(
+                    chatStyleClass,
+                    new String[]{"func_150210_i", "getChatHoverEvent"}
+            ).invoke(style);
+            if (hoverEvent == null) {
+                return null;
+            }
+            Object hoverComponent = findMethod(
+                    hoverEventClass,
+                    new String[]{"func_150702_b", "getValue"}
+            ).invoke(hoverEvent);
+            return getUnformattedText(hoverComponent);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

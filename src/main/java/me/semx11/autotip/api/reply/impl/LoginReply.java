@@ -1,8 +1,8 @@
 package me.semx11.autotip.api.reply.impl;
 
+import me.semx11.autotip.api.RequestType;
 import me.semx11.autotip.api.SessionKey;
 import me.semx11.autotip.api.reply.Reply;
-import me.semx11.autotip.api.RequestType;
 
 public class LoginReply extends Reply {
 

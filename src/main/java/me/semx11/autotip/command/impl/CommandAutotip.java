@@ -124,18 +124,18 @@ public class CommandAutotip extends CommandAbstract {
                 break;
             case "?":
             case "info":
-                messageUtil.separator();
-                messageUtil.sendKey("command.info.version", autotip.getVersion());
-                messageUtil.getBuilder(messageUtil.getKey("command.info.credits"))
-                        .setHover(messageUtil.getKey("command.info.creditsHover"))
-                        .send();
-                messageUtil.sendKey("command.info.status." + (config.isEnabled() ? "enabled"
-                        : "disabled"));
-                messageUtil.sendKey("command.info.messages", config.getMessageOption());
-                messageUtil.sendKey("command.info.tipsSent", today.getTipsSent());
-                messageUtil.sendKey("command.info.tipsReceived", today.getTipsReceived());
-                messageUtil.sendKey("command.info.statsCommand");
-                messageUtil.separator();
+                messageUtil.getKeyHelper("command.info")
+                        .separator()
+                        .sendKey("version", autotip.getVersion())
+                        .withKey("credits", context -> context.getBuilder()
+                                .setHover(context.getKey("creditsHover"))
+                                .send())
+                        .sendKey("status." + (config.isEnabled() ? "enabled" : "disabled"))
+                        .sendKey("messages", config.getMessageOption())
+                        .sendKey("tipsSent", today.getTipsSent())
+                        .sendKey("tipsReceived", today.getTipsReceived())
+                        .sendKey("statsCommand")
+                        .separator();
                 break;
             case "m":
             case "messages":
@@ -154,8 +154,6 @@ public class CommandAutotip extends CommandAbstract {
             case "t":
             case "toggle":
                 config.toggleEnabled().save();
-                messageUtil.sendKey("command.toggle." + (config.isEnabled() ? "enabled"
-                        : "disabled"));
                 if (config.isEnabled()) {
                     if (manager.isOnHypixel() && !manager.isLoggedIn()) {
                         taskManager.executeTask(TaskType.LOGIN, manager::login);
@@ -163,6 +161,8 @@ public class CommandAutotip extends CommandAbstract {
                 } else if (manager.isLoggedIn()) {
                     taskManager.executeTask(TaskType.LOGOUT, manager::logout);
                 }
+                messageUtil.getKeyHelper("command.toggle")
+                        .sendKey(config.isEnabled() ? "enabled" : "disabled");
                 break;
             case "wave":
                 if (!config.isEnabled()) {
@@ -178,37 +178,39 @@ public class CommandAutotip extends CommandAbstract {
                     return;
                 }
 
-                messageUtil.separator();
-                long time = System.currentTimeMillis();
-                messageUtil.sendKey("command.wave.lastWave", LocalTime.MIN
-                        .plusSeconds((time - manager.getLastTipWave()) / 1000)
-                        .format(WAVE_FORMAT));
-                messageUtil.sendKey("command.wave.nextWave" + LocalTime.MIN
-                        .plusSeconds((manager.getNextTipWave() - time) / 1000 + 1)
-                        .format(WAVE_FORMAT));
-                messageUtil.separator();
+                long t = System.currentTimeMillis();
+                String last = LocalTime.MIN.plusSeconds((t - manager.getLastTipWave()) / 1000)
+                        .format(WAVE_FORMAT);
+                String next = LocalTime.MIN.plusSeconds((manager.getNextTipWave() - t) / 1000 + 1)
+                        .format(WAVE_FORMAT);
+
+                messageUtil.getKeyHelper("command.wave")
+                        .separator()
+                        .sendKey("lastWave", last)
+                        .sendKey("nextWave", next)
+                        .separator();
                 break;
             case "changelog":
                 // TODO: Fix this
-                messageUtil.separator();
-                messageUtil.sendKey("command.changelog.version", autotip.getVersion());
-                Versions.getInstance().getInfoByVersion(autotip.getVersion()).getChangelog()
-                        .forEach(s -> messageUtil.sendKey("command.changelog.entry", s));
-                messageUtil.separator();
+                messageUtil.getKeyHelper("command.changelog")
+                        .separator()
+                        .sendKey("version", autotip.getVersion())
+                        .withKey("entry", context -> Versions.getInstance()
+                                .getInfoByVersion(autotip.getVersion())
+                                .getChangelog()
+                                .forEach(context::send))
+                        .separator();
                 break;
             case "debug":
                 EventClientConnection event = autotip.getEvent(EventClientConnection.class);
-                messageUtil.separator();
-                messageUtil.send("command.debug.serverIp", event.getServerIp());
-                messageUtil.send("command.debug.mcVersion", autotip.getMcVersion());
                 Object header = event.getHeader();
-                messageUtil.sendKey("command.debug.header." + (header == null ? "none"
-                        : "present"), UniversalUtil.getUnformattedText(header));
-                messageUtil.separator();
-                break;
-            case "msgdebug":
-                config.setMessageOption(MessageOption.DEBUG).save();
-                messageUtil.send("Tip Messages: " + config.getMessageOption());
+                messageUtil.getKeyHelper("command.debug")
+                        .separator()
+                        .sendKey("serverIp", event.getServerIp())
+                        .sendKey("mcVersion", autotip.getMcVersion())
+                        .sendKey("header." + (header == null ? "none" : "present"),
+                                UniversalUtil.getUnformattedText(header))
+                        .separator();
                 break;
             case "reload":
                 try {
@@ -219,36 +221,8 @@ public class CommandAutotip extends CommandAbstract {
                     messageUtil.sendKey("command.reload.error");
                 }
                 break;
-            case "add":
-                // TODO: Remove before release
-                stats.getToday().addCoins("SkyWars", 1337, 1337);
-                break;
-            case "msg":
-                // TODO: Remove before release
-                messageUtil.getBuilder(false, "&aYou tipped 17 players in 12 different games!")
-                        .setHover("&aRewards\n"
-                                + "&3+600 Hypixel Experience\n"
-                                + "&6+15 Speed UHC Coins\n"
-                                + "&6+15 UHC Champions Coins\n"
-                                + "&6+15 Arena Brawl Coins\n"
-                                + "&6+15 The Walls Coins\n"
-                                + "&6+15 Blitz SG Coins\n"
-                                + "&6+15 Warlords Coins\n"
-                                + "&6+15 Turbo Kart Racers Coins\n"
-                                + "&6+15 VampireZ Coins\n"
-                                + "&6+15 The TNT Games Coins\n"
-                                + "&6+15 Cops and Crims Coins\n"
-                                + "&6+15 Paintball Warfare Coins\n"
-                                + "&6+38 Arcade Games Coins\n"
-                                + "&6+15 Mega Walls Coins\n"
-                                + "&6+15 SkyClash Coins\n"
-                                + "&6+15 Crazy Walls Coins\n"
-                                + "&6+15 SkyWars Coins\n"
-                                + "&6+15 Quakecraft Coins")
-                        .send();
-                break;
             default:
-                messageUtil.send("&cUsage: " + getCommandUsage(sender));
+                messageUtil.send(this.getCommandUsage(sender));
                 break;
         }
     }
@@ -258,15 +232,17 @@ public class CommandAutotip extends CommandAbstract {
         switch (args.length) {
             case 1:
                 return getListOfStringsMatchingLastWord(args, "stats", "info", "messages", "toggle",
-                        "time");
+                        "wave");
             case 2:
-                if (args[0].equalsIgnoreCase("stats") || args[0].equalsIgnoreCase("s")) {
-                    return getListOfStringsMatchingLastWord(args, "day", "yesterday", "week",
-                            "month", "year",
-                            "lifetime");
+                switch (args[0].toLowerCase()) {
+                    case "s":
+                    case "stats":
+                        return getListOfStringsMatchingLastWord(args, "day", "yesterday", "week",
+                                "month", "year", "lifetime");
                 }
+            default:
+                return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
 }

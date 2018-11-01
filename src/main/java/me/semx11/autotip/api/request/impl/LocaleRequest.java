@@ -3,12 +3,12 @@ package me.semx11.autotip.api.request.impl;
 import java.util.Locale;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.api.reply.Reply;
-import me.semx11.autotip.api.reply.impl.LocaleReply;
-import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.GetBuilder;
 import me.semx11.autotip.api.RequestHandler;
 import me.semx11.autotip.api.RequestType;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.reply.impl.LocaleReply;
+import me.semx11.autotip.api.request.Request;
 import org.apache.http.client.methods.HttpUriRequest;
 
 public class LocaleRequest implements Request<LocaleReply> {

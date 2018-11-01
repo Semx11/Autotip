@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.chat.ChatComponentBuilder;
-import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.chat.MessageUtil;
+import me.semx11.autotip.util.ErrorReport;
 
 public class Stats {
 

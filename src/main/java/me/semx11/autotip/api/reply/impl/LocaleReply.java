@@ -2,8 +2,8 @@ package me.semx11.autotip.api.reply.impl;
 
 import com.google.gson.JsonObject;
 import java.util.Locale;
-import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.api.RequestType;
+import me.semx11.autotip.api.reply.Reply;
 import me.semx11.autotip.chat.LocaleHolder;
 
 public class LocaleReply extends Reply {

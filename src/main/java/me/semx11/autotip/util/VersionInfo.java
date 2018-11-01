@@ -44,16 +44,13 @@ public class VersionInfo {
         OPTIONAL, ADVISED, CRITICAL;
 
         public String toColoredString() {
-            String color = "";
+            ChatColor color = ChatColor.GREEN;
             switch (this) {
-                case CRITICAL:
-                    color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
-                    break;
                 case ADVISED:
-                    color = ChatColor.YELLOW.toString();
+                    color = ChatColor.YELLOW;
                     break;
-                case OPTIONAL:
-                    color = ChatColor.GREEN.toString();
+                case CRITICAL:
+                    color = ChatColor.DARK_RED;
                     break;
             }
             return color + this.toString();

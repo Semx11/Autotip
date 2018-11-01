@@ -17,6 +17,10 @@ public class Message {
 
     }
 
+    public Message(Pattern pattern) {
+        this(pattern, MessageOption.HIDDEN);
+    }
+
     public Message(Pattern pattern, MessageOption hideFor) {
         this.pattern = pattern;
         this.hideFor = hideFor;

@@ -2,18 +2,17 @@ package me.semx11.autotip.event.impl;
 
 import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.chat.Message;
+import me.semx11.autotip.chat.MessageMatcher;
+import me.semx11.autotip.chat.MessageOption;
+import me.semx11.autotip.chat.StatsMessage;
+import me.semx11.autotip.chat.StatsMessageMatcher;
 import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.config.Config;
 import me.semx11.autotip.config.GlobalSettings;
 import me.semx11.autotip.event.Event;
-import me.semx11.autotip.chat.Message;
-import me.semx11.autotip.chat.MessageMatcher;
-import me.semx11.autotip.chat.StatsMessage;
-import me.semx11.autotip.chat.StatsMessageMatcher;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
-import me.semx11.autotip.chat.MessageOption;
-import me.semx11.autotip.chat.MessageUtil;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -113,6 +112,24 @@ public class EventChatReceived implements Event {
         +15 Quakecraft Coins
          */
 
+        /*
+        You tipped 8 players in 12 different games!
+        Rewards
+        +350 Hypixel Experience
+        +15 VampireZ Coins
+        +15 Smash Heroes Coins
+        +15 The Walls Coins
+        +15 Blitz SG Coins
+        +15 Warlords Coins
+        +15 UHC Champions Coins
+        +15 Turbo Kart Racers Coins
+        +15 Arena Brawl Coins
+        +15 Mega Walls Coins
+        +15 Quakecraft Coins
+        +15 Speed UHC Coins
+        +15 Paintball Warfare Coins
+         */
+
         CommandLimbo limboCommand = autotip.getCommand(CommandLimbo.class);
         if (limboCommand.hasExecuted()) {
             if (msg.startsWith("A kick occurred in your connection")) {
@@ -128,79 +145,27 @@ public class EventChatReceived implements Event {
         }
 
         GlobalSettings settings = autotip.getGlobalSettings();
-        MessageUtil messageUtil = autotip.getMessageUtil();
         MessageOption option = config.getMessageOption();
 
         for (Message message : settings.getMessages()) {
             MessageMatcher matcher = message.getMatcherFor(msg);
             if (matcher.matches()) {
-                System.out.println(message.getPattern().pattern());
-                System.out.println(msg + ": " + matcher.matches());
                 event.setCanceled(message.shouldHide(option));
                 return;
             }
         }
 
-        /*Matcher xpMatcher = xpPattern.matcher(msg);
-        if (xpMatcher.matches()) {
-            int xp = Integer.parseInt(xpMatcher.group("xp"));
-            this.getStats().addXpSent(xp);
-            event.setCanceled(option == COMPACT || option == HIDDEN);
-            return;
-        }
-
-        Matcher playerMatcher = playerPattern.matcher(msg);
-        if (playerMatcher.matches()) {
-            this.getStats().addTipsSent(1);
-            TipTracker.addTip(playerMatcher.group("player"));
-            event.setCanceled(option == HIDDEN);
-            return;
-        }
-
-        Matcher coinMatcher = coinPattern.matcher(msg);
-        if (coinMatcher.matches()) {
-            int coins = Integer.parseInt(coinMatcher.group("coins"));
-            String game = coinMatcher.group("game");
-
-            this.getStats().addCoinsSent(game, coins);
-            TipTracker.tipsSentEarnings.merge(game, coins, (a, b) -> a + b);
-            event.setCanceled(option == COMPACT || option == HIDDEN);
-            return;
-        }
-
-        Matcher earnedMatcher = earnedPattern.matcher(msg);
-        if (earnedMatcher.matches()) {
-            int coins = Integer.parseInt(earnedMatcher.group("coins"));
-            int xp = Integer.parseInt(earnedMatcher.group("xp"));
-            String game = earnedMatcher.group("game");
-
-            StatsDaily stats = this.getStats();
-            stats.addCoinsReceived(game, coins);
-            stats.addXpReceived(xp);
-            stats.addTipsReceived(xp / autotip.getGlobalSettings().getXpPerTipReceived());
-
-            TipTracker.tipsReceivedEarnings.merge(game, coins, (a, b) -> a + b);
-            TipTracker.tipsReceived += xp / 60;
-            Writer.execute();
-
-            if (option.equals(COMPACT)) {
-                messageUtil.sendRaw("&aEarned &e{} coins &aand &9{} experience &ain {}.",
-                        coins, xp, game);
-            }
-            event.setCanceled(option == COMPACT || option == HIDDEN);
-            Autotip.LOGGER.info("Earned {} coins and {} experience in {}.", coins, xp, game);
-            return;
-        }*/
+        String hover = UniversalUtil.getHoverText(event);
 
         for (StatsMessage message : settings.getStatsMessages()) {
             StatsMessageMatcher matcher = message.getMatcherFor(msg);
-            if (matcher.matches()) {
-                System.out.println(message.getPattern().pattern());
-                System.out.println(msg + ": " + matcher.matches());
-                matcher.applyStats(this.getStats());
-                event.setCanceled(message.shouldHide(option));
-                return;
+            if (!matcher.matches()) {
+                continue;
             }
+            StatsDaily stats = this.getStats();
+            matcher.applyStats(stats);
+            message.applyHoverStats(hover, stats);
+            event.setCanceled(message.shouldHide(option));
         }
 
     }

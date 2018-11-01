@@ -3,12 +3,12 @@ package me.semx11.autotip.api.request.impl;
 import com.mojang.authlib.GameProfile;
 import java.util.Optional;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.api.reply.Reply;
-import me.semx11.autotip.api.reply.impl.LoginReply;
-import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.api.GetBuilder;
 import me.semx11.autotip.api.RequestHandler;
 import me.semx11.autotip.api.RequestType;
+import me.semx11.autotip.api.reply.Reply;
+import me.semx11.autotip.api.reply.impl.LoginReply;
+import me.semx11.autotip.api.request.Request;
 import org.apache.http.client.methods.HttpUriRequest;
 
 public class LoginRequest implements Request<LoginReply> {

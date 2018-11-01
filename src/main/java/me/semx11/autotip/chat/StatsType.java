@@ -4,6 +4,12 @@ import java.util.function.BiConsumer;
 import me.semx11.autotip.stats.StatsDaily;
 
 public enum StatsType {
+    NONE((stats, matcher) -> {
+        // What did you expect?
+    }),
+    ONE_TIP_SENT((stats, matcher) -> {
+        stats.addTipsSent(1);
+    }),
     TIPS_SENT((stats, matcher) -> {
         stats.addTipsSent(matcher.getInt("tipsSent"));
     }),
