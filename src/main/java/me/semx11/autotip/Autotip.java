@@ -52,7 +52,7 @@ public class Autotip {
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
 
     static final String MOD_ID = "autotip";
-    static final String VERSION = "2.1";
+    static final String VERSION = "3.0";
 
     @Instance
     private static Autotip instance;
