@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,10 @@ public class StatsDaily extends Stats {
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public String getDateString() {
+        return DATE_FORMATTER.format(date);
     }
 
     public File getFile() {

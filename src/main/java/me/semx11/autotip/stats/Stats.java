@@ -2,11 +2,11 @@ package me.semx11.autotip.stats;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.chat.ChatComponentBuilder;
 import me.semx11.autotip.chat.MessageUtil;
 import me.semx11.autotip.config.GlobalSettings.GameGroup;
 import me.semx11.autotip.gson.exclusion.Exclude;
@@ -14,6 +14,9 @@ import me.semx11.autotip.gson.exclusion.Exclude;
 public abstract class Stats {
 
     public static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+
+    protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+            .ofPattern("dd/MM/yyyy");
 
     @Exclude
     protected final Autotip autotip;
@@ -138,24 +141,29 @@ public abstract class Stats {
                 .forEach(entry -> {
                     String game = entry.getKey();
                     Coins coins = entry.getValue();
-                    ChatComponentBuilder.of("&a{}: &e{} coins", game, coins.getTotal())
-                            .setHover("&a{}\n&cBy sending: &e{} coins\n&9By receiving: &e{} coins",
-                                    game, coins.getSent(), coins.getReceived())
-                            .send();
+                    messageUtil.getKeyHelper("command.stats").withKey("coins", context -> {
+                        context.getBuilder(game, coins.getTotal())
+                                .setHover(context.getKey("coinsHover"), game, coins.getSent(),
+                                        coins.getReceived())
+                                .send();
+                    });
                 });
-        ChatComponentBuilder
-                .of("&6Tips: {}", this.getTipsTotal())
-                .setHover("&cSent: &6{} tips\n&9Received: &6{} tips",
-                        this.getTipsSent(), this.getTipsReceived())
-                .send();
-        ChatComponentBuilder
-                .of("&9XP: {}", this.getXpTotal())
-                .setHover("&cBy sending: &9{} XP\n&9By receiving: {} XP",
-                        this.getXpSent(), this.getXpReceived())
-                .send();
+        messageUtil.getKeyHelper("command.stats").withKey("tips", context -> {
+            context.getBuilder(this.getTipsTotal())
+                    .setHover(context.getKey("tipsHover"), this.getTipsSent(),
+                            this.getTipsReceived())
+                    .send();
+        }).withKey("xp", context -> {
+            context.getBuilder(this.getXpTotal())
+                    .setHover(context.getKey("xpHover"), this.getXpSent(), this.getXpReceived())
+                    .send();
+        });
         if (this instanceof StatsDaily) {
-            // TODO: Print date(s)
-            // TODO: Add above messages to locale
+            messageUtil.sendKey("command.stats.date", ((StatsDaily) this).getDateString());
+        } else if (this instanceof StatsRange) {
+            StatsRange range = (StatsRange) this;
+            messageUtil.sendKey("command.stats.dateRange", range.getStartString(),
+                    range.getEndString());
         }
         messageUtil.separator();
     }
