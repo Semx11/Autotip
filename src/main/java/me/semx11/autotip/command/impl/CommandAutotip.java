@@ -3,7 +3,6 @@ package me.semx11.autotip.command.impl;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
@@ -18,8 +17,6 @@ import me.semx11.autotip.core.StatsManager;
 import me.semx11.autotip.core.TaskManager;
 import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
-import me.semx11.autotip.legacy.LegacyFileUtil;
-import me.semx11.autotip.legacy.Stats;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.MinecraftVersion;
@@ -68,8 +65,6 @@ public class CommandAutotip extends CommandAbstract {
         StatsManager stats = autotip.getStatsManager();
         GlobalSettings settings = autotip.getGlobalSettings();
 
-        StatsDaily today = stats.get();
-
         if (args.length <= 0) {
             messageUtil.sendKey("command.usage");
             return;
@@ -97,24 +92,25 @@ public class CommandAutotip extends CommandAbstract {
                         break;
                     case "week":
                     case "weekly":
-                        Stats.printBetween(now.with(DayOfWeek.MONDAY).format(formatter),
-                                now.with(DayOfWeek.SUNDAY).format(formatter));
+                        stats.getRange(now.with(DayOfWeek.MONDAY), now.with(DayOfWeek.SUNDAY))
+                                .print();
                         break;
                     case "month":
                     case "monthly":
-                        Stats.printBetween(now.withDayOfMonth(1).format(formatter),
-                                now.withDayOfMonth(now.lengthOfMonth()).format(formatter));
+                        stats.getRange(now.withDayOfMonth(1),
+                                now.withDayOfMonth(now.lengthOfMonth())).print();
                         break;
                     case "year":
                     case "yearly":
-                        Stats.printBetween("01-01-" + Year.now().getValue(),
-                                "31-12-" + Year.now().getValue());
+                        stats.getRange(now.withDayOfYear(1),
+                                now.withDayOfYear(now.lengthOfYear())).print();
                         break;
                     case "all":
                     case "total":
                     case "life":
                     case "lifetime":
-                        Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
+                        stats.getRange(autotip.getFileUtil().getFirstDate(), now).print();
+                        // Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
                         break;
                     default:
                         messageUtil.sendKey("command.stats.usage");
@@ -124,6 +120,7 @@ public class CommandAutotip extends CommandAbstract {
                 break;
             case "?":
             case "info":
+                StatsDaily today = stats.get();
                 messageUtil.getKeyHelper("command.info")
                         .separator()
                         .sendKey("version", autotip.getVersion())

@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
+import me.semx11.autotip.config.GlobalSettings.GameAlias;
 import me.semx11.autotip.config.GlobalSettings.GameGroup;
 import me.semx11.autotip.core.MigrationManager.LegacyState;
 import me.semx11.autotip.util.FileUtil;
@@ -30,6 +30,15 @@ public class StatsDaily extends Stats {
     public StatsDaily(Autotip autotip, LocalDate date) {
         super(autotip);
         this.date = date;
+    }
+
+    public StatsDaily(Autotip autotip, StatsDaily that) {
+        this(autotip, that.date);
+        this.tipsSent = that.tipsSent;
+        this.tipsReceived = that.tipsReceived;
+        this.xpSent = that.xpSent;
+        this.xpReceived = that.xpReceived;
+        this.gameStatistics = that.gameStatistics;
     }
 
     public LocalDate getDate() {
@@ -124,6 +133,18 @@ public class StatsDaily extends Stats {
                     Coins coins = gameStatistics.get(group.getName());
                     for (String game : group.getGames()) {
                         this.addCoins(game, coins);
+                    }
+                }
+            }
+
+            // Convert aliases
+            for (GameAlias alias : autotip.getGlobalSettings().getGameAliases()) {
+                for (String aliasAlias : alias.getAliases()) {
+                    if (gameStatistics.containsKey(aliasAlias)) {
+                        Coins coins = gameStatistics.get(aliasAlias);
+                        for (String aliasGame : alias.getGames()) {
+                            this.addCoins(aliasGame, coins);
+                        }
                     }
                 }
             }

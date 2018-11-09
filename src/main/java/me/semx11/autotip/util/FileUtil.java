@@ -9,7 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import me.semx11.autotip.Autotip;
+import org.apache.commons.io.FilenameUtils;
 
 public class FileUtil {
 
@@ -63,6 +66,28 @@ public class FileUtil {
 
     public File getStatsFile(LocalDate localDate) {
         return this.getFile(this.statsDir, localDate.format(ISO_LOCAL_DATE) + ".at");
+    }
+
+    public LocalDate getFirstDate() {
+        try {
+            return Files.list(this.getStatsDir())
+                    .map(this::getDateFromPath)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElseGet(LocalDate::now);
+        } catch (IOException e) {
+            Autotip.LOGGER.error("Could not list files in stats dir.");
+            return LocalDate.now();
+        }
+    }
+
+    private LocalDate getDateFromPath(Path path) {
+        String name = FilenameUtils.getBaseName(path.getFileName().toString());
+        try {
+            return LocalDate.parse(name);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     public File getFile(String path) {

@@ -16,6 +16,11 @@ public class Coins implements Comparable<Coins> {
         this.coinsReceived = coinsReceived;
     }
 
+    public Coins(Coins that) {
+        this.coinsSent = that.coinsSent;
+        this.coinsReceived = that.coinsReceived;
+    }
+
     public String getTotal() {
         return FORMAT.format(this.getTotalInt());
     }

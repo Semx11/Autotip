@@ -8,15 +8,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.chat.MessageUtil;
+import me.semx11.autotip.config.GlobalSettings.GameAlias;
 import me.semx11.autotip.config.GlobalSettings.GameGroup;
 import me.semx11.autotip.gson.exclusion.Exclude;
 
 public abstract class Stats {
 
-    public static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-
-    protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
+    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
             .ofPattern("dd/MM/yyyy");
+    private static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 
     @Exclude
     protected final Autotip autotip;
@@ -113,12 +113,23 @@ public abstract class Stats {
     }
 
     protected void addCoins(String game, Coins coins) {
+        coins = new Coins(coins);
         for (GameGroup group : autotip.getGlobalSettings().getGameGroups()) {
             if (game.equals(group.getName())) {
                 for (String groupGame : group.getGames()) {
                     this.addCoins(groupGame, coins);
                 }
                 return;
+            }
+        }
+        for (GameAlias alias : autotip.getGlobalSettings().getGameAliases()) {
+            for (String aliasAlias : alias.getAliases()) {
+                if (game.equals(aliasAlias)) {
+                    for (String aliasGame : alias.getGames()) {
+                        this.addCoins(aliasGame, coins);
+                    }
+                    return;
+                }
             }
         }
         this.gameStatistics.merge(game, coins, Coins::merge);

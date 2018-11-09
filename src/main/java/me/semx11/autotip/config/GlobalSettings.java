@@ -1,6 +1,7 @@
 package me.semx11.autotip.config;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import me.semx11.autotip.chat.Message;
@@ -12,6 +13,7 @@ public class GlobalSettings {
     private int xpPerTipReceived;
     private LocalDate xpChangeDate;
     private List<GameGroup> gameGroups;
+    private List<GameAlias> gameAliases;
     private List<Message> messages;
     private List<StatsMessage> statsMessages;
 
@@ -29,6 +31,10 @@ public class GlobalSettings {
 
     public List<GameGroup> getGameGroups() {
         return gameGroups;
+    }
+
+    public List<GameAlias> getGameAliases() {
+        return gameAliases;
     }
 
     public List<Message> getMessages() {
@@ -49,6 +55,30 @@ public class GlobalSettings {
         }
 
         public Set<String> getGames() {
+            return games;
+        }
+
+    }
+
+    public static class GameAlias {
+
+        private String alias;
+        private List<String> aliases;
+
+        private String game;
+        private List<String> games;
+
+        public List<String> getAliases() {
+            if (alias != null) {
+                return Collections.singletonList(alias);
+            }
+            return aliases;
+        }
+
+        public List<String> getGames() {
+            if (game != null) {
+                return Collections.singletonList(game);
+            }
             return games;
         }
 

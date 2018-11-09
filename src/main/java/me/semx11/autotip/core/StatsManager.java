@@ -6,11 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.stats.StatsDaily;
+import me.semx11.autotip.stats.StatsRange;
 import org.apache.commons.io.FileUtils;
 
 public class StatsManager {
@@ -71,6 +74,16 @@ public class StatsManager {
         return stats;
     }
 
+    public StatsRange getRange(LocalDate start, LocalDate end) {
+        StatsRange range = new StatsRange(autotip, start, end);
+        Stream.iterate(start, date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(start, end) + 1)
+                .forEach(date -> {
+                    range.merge(this.get(date));
+                });
+        return range;
+    }
+
     /**
      * Save a {@link StatsDaily} to the current user directory.
      *
@@ -94,7 +107,8 @@ public class StatsManager {
             String json = FileUtils.readFileToString(file);
             return stats.merge(autotip.getGson().fromJson(json, StatsDaily.class));
         } catch (FileNotFoundException e) {
-            Autotip.LOGGER.info(file.getName() + " does not exist, creating...");
+            // Autotip.LOGGER.info(file.getName() + " does not exist, skipping...");
+            return stats;
         } catch (JsonSyntaxException | IllegalArgumentException e) {
             Autotip.LOGGER.warn(file.getName() + " has invalid contents, resetting...");
         } catch (IOException e) {
