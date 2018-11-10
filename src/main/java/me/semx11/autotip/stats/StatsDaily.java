@@ -32,15 +32,6 @@ public class StatsDaily extends Stats {
         this.date = date;
     }
 
-    public StatsDaily(Autotip autotip, StatsDaily that) {
-        this(autotip, that.date);
-        this.tipsSent = that.tipsSent;
-        this.tipsReceived = that.tipsReceived;
-        this.xpSent = that.xpSent;
-        this.xpReceived = that.xpReceived;
-        this.gameStatistics = that.gameStatistics;
-    }
-
     public LocalDate getDate() {
         return date;
     }
