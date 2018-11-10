@@ -28,7 +28,6 @@ import me.semx11.autotip.event.impl.EventClientTick;
 import me.semx11.autotip.gson.creator.ConfigCreator;
 import me.semx11.autotip.gson.creator.StatsDailyCreator;
 import me.semx11.autotip.gson.exclusion.AnnotationExclusionStrategy;
-import me.semx11.autotip.legacy.LegacyFileUtil;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
@@ -185,7 +184,6 @@ public class Autotip {
                     new CommandAutotip(this),
                     new CommandLimbo(this)
             );
-            LegacyFileUtil.getVars();
             Runtime.getRuntime().addShutdownHook(new Thread(sessionManager::logout));
             this.initialized = true;
         } catch (IOException e) {
