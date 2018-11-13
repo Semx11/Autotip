@@ -52,6 +52,7 @@ processResources {
 }
 
 jar {
+    includeEmptyDirs = false
     from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
