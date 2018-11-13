@@ -1,6 +1,5 @@
 package me.semx11.autotip.event.impl;
 
-import java.util.regex.Pattern;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.chat.Message;
 import me.semx11.autotip.chat.MessageMatcher;

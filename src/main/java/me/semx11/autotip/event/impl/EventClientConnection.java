@@ -9,7 +9,6 @@ import me.semx11.autotip.event.Event;
 import me.semx11.autotip.universal.ReflectionUtil;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.ErrorReport;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
