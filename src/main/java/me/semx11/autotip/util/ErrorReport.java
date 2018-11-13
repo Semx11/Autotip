@@ -15,9 +15,14 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class ErrorReport {
 
+    private static Autotip autotip;
+
+    public static void setAutotip(Autotip autotip) {
+        ErrorReport.autotip = autotip;
+    }
+
     public static void reportException(Throwable t) {
         Autotip.LOGGER.error(t.getMessage(), t);
-        Autotip autotip = Autotip.getInstance();
         try {
             URL url = new URL("https://api.autotip.pro/error_report.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -75,21 +80,21 @@ public class ErrorReport {
             this.obj = obj;
         }
 
-        public static JsonObjectBuilder newBuilder() {
+        static JsonObjectBuilder newBuilder() {
             return new JsonObjectBuilder(new JsonObject());
         }
 
-        public JsonObjectBuilder addString(String property, Object value) {
+        JsonObjectBuilder addString(String property, Object value) {
             obj.addProperty(property, String.valueOf(value));
             return this;
         }
 
-        public JsonObjectBuilder addNumber(String property, Number value) {
+        JsonObjectBuilder addNumber(String property, Number value) {
             obj.addProperty(property, value);
             return this;
         }
 
-        public JsonObject build() {
+        JsonObject build() {
             return obj;
         }
 

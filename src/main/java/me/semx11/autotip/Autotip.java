@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import me.semx11.autotip.api.RequestHandler;
 import me.semx11.autotip.api.reply.impl.LocaleReply;
 import me.semx11.autotip.api.reply.impl.SettingsReply;
 import me.semx11.autotip.api.request.impl.LocaleRequest;
@@ -42,6 +43,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -141,6 +143,12 @@ public class Autotip {
 
     public StatsManager getStatsManager() {
         return statsManager;
+    }
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        RequestHandler.setAutotip(this);
+        UniversalUtil.setAutotip(this);
     }
 
     @EventHandler

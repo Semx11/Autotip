@@ -13,29 +13,30 @@ import org.apache.http.client.methods.HttpUriRequest;
 
 public class LoginRequest implements Request<LoginReply> {
 
+    private final Autotip autotip;
     private final GameProfile profile;
     private final String hash;
     private final int tips;
 
-    private LoginRequest(GameProfile profile, String hash, int tips) {
+    private LoginRequest(Autotip autotip, GameProfile profile, String hash, int tips) {
+        this.autotip = autotip;
         this.profile = profile;
         this.hash = hash;
         this.tips = tips;
     }
 
-    public static LoginRequest of(GameProfile profile, String hash, int tips) {
-        return new LoginRequest(profile, hash, tips);
+    public static LoginRequest of(Autotip autotip, GameProfile profile, String hash, int tips) {
+        return new LoginRequest(autotip, profile, hash, tips);
     }
 
     @Override
     public LoginReply execute() {
-        Autotip autotip = Autotip.getInstance();
         HttpUriRequest request = GetBuilder.of(this)
                 .addParameter("username", this.profile.getName())
                 .addParameter("uuid", this.profile.getId().toString().replace("-", ""))
                 .addParameter("tips", this.tips)
-                .addParameter("v", autotip.getVersion())
-                .addParameter("mc", autotip.getMcVersion())
+                .addParameter("v", this.autotip.getVersion())
+                .addParameter("mc", this.autotip.getMcVersion())
                 .addParameter("os", System.getProperty("os.name"))
                 .addParameter("hash", this.hash)
                 .build();

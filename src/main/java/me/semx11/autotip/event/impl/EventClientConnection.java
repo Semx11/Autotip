@@ -41,7 +41,7 @@ public class EventClientConnection implements Event {
 
     public Object getHeader() {
         try {
-            return HEADER_FIELD.get(Minecraft.getMinecraft().ingameGUI.getTabList());
+            return HEADER_FIELD.get(autotip.getMinecraft().ingameGUI.getTabList());
         } catch (IllegalAccessException | NullPointerException e) {
             ErrorReport.reportException(e);
             return null;
@@ -50,7 +50,7 @@ public class EventClientConnection implements Event {
 
     private void resetHeader() {
         try {
-            HEADER_FIELD.set(Minecraft.getMinecraft().ingameGUI.getTabList(), null);
+            HEADER_FIELD.set(autotip.getMinecraft().ingameGUI.getTabList(), null);
         } catch (IllegalAccessException e) {
             ErrorReport.reportException(e);
         }

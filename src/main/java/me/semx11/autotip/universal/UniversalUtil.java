@@ -25,6 +25,8 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToSe
 
 public class UniversalUtil {
 
+    private static Autotip autotip;
+
     private static Class<?> componentClass;
     private static Class<?> textComponentClass;
 
@@ -37,6 +39,10 @@ public class UniversalUtil {
 
     private static Class<?> hoverEventClass;
     private static Class<?> hoverEventActionClass;
+
+    public static void setAutotip(Autotip autotip) {
+        UniversalUtil.autotip = autotip;
+    }
 
     public static MinecraftVersion getMinecraftVersion() {
         try {
@@ -173,7 +179,7 @@ public class UniversalUtil {
     }
 
     private static void addChatMessage(Object component) {
-        EntityPlayerSP thePlayer = Autotip.getInstance().getMinecraft().thePlayer;
+        EntityPlayerSP thePlayer = autotip.getMinecraft().thePlayer;
         try {
             addChatMethod.invoke(thePlayer, component);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -239,7 +245,7 @@ public class UniversalUtil {
     }
 
     private static boolean isLegacy() {
-        switch (Autotip.getInstance().getMcVersion()) {
+        switch (autotip.getMcVersion()) {
             case V1_8:
             case V1_8_8:
             case V1_8_9:

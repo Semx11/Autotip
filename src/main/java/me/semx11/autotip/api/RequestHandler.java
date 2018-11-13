@@ -29,11 +29,16 @@ public class RequestHandler {
             .registerTypeAdapter(Locale.class, new LocaleAdapter())
             .create();
 
+    private static Autotip autotip;
+
+    public static void setAutotip(Autotip autotip) {
+        RequestHandler.autotip = autotip;
+    }
+
     public static Optional<Reply> getReply(Request request, URI uri) {
         String json = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-            Autotip autotip = Autotip.getInstance();
             conn.setRequestProperty("User-Agent", "Autotip v" + autotip.getVersion());
 
             InputStream input;

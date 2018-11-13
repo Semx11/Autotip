@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import me.semx11.autotip.Autotip;
@@ -74,14 +75,14 @@ public class CommandAutotip extends CommandAbstract {
             case "s":
             case "stats":
                 LocalDate now = LocalDate.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                 if (args.length <= 1) {
                     stats.get(now).print();
                     return;
                 }
 
-                switch (args[1].toLowerCase()) {
+                String param = args[1].toLowerCase();
+                switch (param) {
                     case "day":
                     case "daily":
                     case "today":
@@ -109,11 +110,14 @@ public class CommandAutotip extends CommandAbstract {
                     case "total":
                     case "life":
                     case "lifetime":
-                        stats.getRange(autotip.getFileUtil().getFirstDate(), now).print();
-                        // Stats.printBetween("25-06-2016", LegacyFileUtil.getDate());
+                        stats.getAll().print();
                         break;
                     default:
-                        messageUtil.sendKey("command.stats.usage");
+                        try {
+                            LocalDate.parse(param, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        } catch (DateTimeParseException e) {
+                            messageUtil.sendKey("command.stats.usage");
+                        }
                         break;
 
                 }
@@ -163,7 +167,7 @@ public class CommandAutotip extends CommandAbstract {
                 break;
             case "wave":
                 if (!config.isEnabled()) {
-                    messageUtil.send("error.disabled");
+                    messageUtil.sendKey("error.disabled");
                     return;
                 }
                 if (!manager.isOnHypixel()) {

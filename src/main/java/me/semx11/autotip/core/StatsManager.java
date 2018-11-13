@@ -84,6 +84,10 @@ public class StatsManager {
         return range;
     }
 
+    public StatsRange getAll() {
+        return this.getRange(autotip.getFileUtil().getFirstDate(), LocalDate.now());
+    }
+
     /**
      * Save a {@link StatsDaily} to the current user directory.
      *

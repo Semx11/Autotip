@@ -50,7 +50,7 @@ public class MessageUtil {
     }
 
     public void separator() {
-        sendRaw("&6&m&l----------------------------------");
+        this.sendRaw("&6&m&l----------------------------------");
     }
 
     public void sendRaw(String msg, Object... params) {
@@ -67,7 +67,7 @@ public class MessageUtil {
     public void sendCommand(String command) {
         if (this.isPlayerLoaded()) {
             this.flushQueues();
-            Autotip.getInstance().getMinecraft().thePlayer.sendChatMessage(command);
+            autotip.getMinecraft().thePlayer.sendChatMessage(command);
         } else {
             cmdQueue.add(command);
             Autotip.LOGGER.info("Queued command: " + command);
@@ -91,7 +91,7 @@ public class MessageUtil {
     }
 
     private boolean isPlayerLoaded() {
-        Minecraft minecraft = Autotip.getInstance().getMinecraft();
+        Minecraft minecraft = autotip.getMinecraft();
         return minecraft != null && minecraft.thePlayer != null;
     }
 

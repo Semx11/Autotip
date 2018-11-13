@@ -20,24 +20,6 @@ public class EventChatReceived implements Event {
 
     private final Autotip autotip;
 
-    private Pattern xpPattern = Pattern
-            .compile("\\+(?<xp>\\d+) experience \\(Gave a player a /tip\\)");
-    private Pattern playerPattern = Pattern
-            .compile("You tipped (?<player>\\w+) in .*");
-    private Pattern coinPattern = Pattern
-            .compile("\\+(?<coins>\\d+) coins for you in (?<game>.+) for being generous :\\)");
-    private Pattern earnedPattern = Pattern
-            .compile("You earned (?<coins>\\d+) coins and (?<xp>\\d+) experience from "
-                    + "(?<game>.+) tips in the last minute!");
-
-    // New stuff
-    private Pattern tipAllPattern = Pattern
-            .compile("You tipped (?<tipsSent>\\d+) players! You got the following rewards:");
-    private Pattern newXpPattern = Pattern
-            .compile("\\+(?<xpSent>\\d+) Hypixel Experience");
-    private Pattern newCoinPattern = Pattern
-            .compile("\\+(?<coins>\\d+) (?<game>.+) Coins");
-
     public EventChatReceived(Autotip autotip) {
         this.autotip = autotip;
     }
@@ -51,84 +33,6 @@ public class EventChatReceived implements Event {
         }
 
         String msg = UniversalUtil.getUnformattedText(event);
-
-        /*
-        +50 experience (Gave a player a /tip)
-        You tipped Semx12 in Classic Games
-        +15 coins for you in Classic Games for being generous :)
-         */
-
-        /*
-        You earned 100 coins and 0 experience from VampireZ tips in the last minute!
-        You earned 100 coins and 0 experience from Quakecraft tips in the last minute!
-        You earned 100 coins and 0 experience from Paintball tips in the last minute!
-        You earned 100 coins and 0 experience from Turbo Kart Racers tips in the last minute!
-        You earned 100 coins and 0 experience from Arena Brawl tips in the last minute!
-        You earned 100 coins and 60 experience from Walls tips in the last minute!
-         */
-
-        /*
-        You tipped Semx11 in Classic Games
-        +50 Hypixel Experience
-        +15 VampireZ Coins
-        +15 Quakecraft Coins
-        +15 Paintball Coins
-        +15 Turbo Kart Racers Coins
-        +15 Arena Brawl Coins
-        +15 Walls Coins
-         */
-
-        /*
-        You were tipped by 1337 players in the last minute! Rewards:
-        +80220 Hypixel Experience
-        +2865 Speed UHC Coins
-        +2865 UHC Champions Coins
-        +2865 Arena Brawl (Classic Games) Coins
-        +2865 The Walls (Classic Games) Coins
-        +2865 Blitz SG Coins
-        +2865 Warlords Coins
-        +7258 Arcade Games Coins
-         */
-
-        /*
-        You tipped 17 players! You got the following rewards:
-        +600 Hypixel Experience
-        +15 Speed UHC Coins
-        +15 UHC Champions Coins
-        +15 Arena Brawl Coins
-        +15 The Walls Coins
-        +15 Blitz SG Coins
-        +15 Warlords Coins
-        +15 Turbo Kart Racers Coins
-        +15 VampireZ Coins
-        +15 The TNT Games Coins
-        +15 Cops and Crims Coins
-        +15 Paintball Warfare Coins
-        +38 Arcade Games Coins
-        +15 Mega Walls Coins
-        +15 SkyClash Coins
-        +15 Crazy Walls Coins
-        +15 SkyWars Coins
-        +15 Quakecraft Coins
-         */
-
-        /*
-        You tipped 8 players in 12 different games!
-        Rewards
-        +350 Hypixel Experience
-        +15 VampireZ Coins
-        +15 Smash Heroes Coins
-        +15 The Walls Coins
-        +15 Blitz SG Coins
-        +15 Warlords Coins
-        +15 UHC Champions Coins
-        +15 Turbo Kart Racers Coins
-        +15 Arena Brawl Coins
-        +15 Mega Walls Coins
-        +15 Quakecraft Coins
-        +15 Speed UHC Coins
-        +15 Paintball Warfare Coins
-         */
 
         CommandLimbo limboCommand = autotip.getCommand(CommandLimbo.class);
         if (limboCommand.hasExecuted()) {
@@ -167,7 +71,6 @@ public class EventChatReceived implements Event {
             message.applyHoverStats(hover, stats);
             event.setCanceled(message.shouldHide(option));
         }
-
     }
 
     private StatsDaily getStats() {
