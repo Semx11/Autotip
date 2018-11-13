@@ -21,6 +21,8 @@ public class FileUtil {
     private final Path userDir;
     private final Path statsDir;
 
+    private LocalDate firstDate;
+
     public FileUtil(Autotip autotip) {
         this.userDir = this.getRawPath("mods/autotip/" + autotip.getGameProfile().getId());
         this.statsDir = this.getPath("stats");
@@ -69,8 +71,11 @@ public class FileUtil {
     }
 
     public LocalDate getFirstDate() {
+        if (firstDate != null) {
+            return firstDate;
+        }
         try {
-            return Files.list(this.getStatsDir())
+            return firstDate = Files.list(this.getStatsDir())
                     .map(this::getDateFromPath)
                     .filter(Objects::nonNull)
                     .findFirst()

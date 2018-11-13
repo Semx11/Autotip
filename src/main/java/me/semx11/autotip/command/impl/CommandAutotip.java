@@ -5,8 +5,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.chat.MessageOption;
 import me.semx11.autotip.chat.MessageUtil;
@@ -26,6 +29,7 @@ import net.minecraft.command.ICommandSender;
 
 public class CommandAutotip extends CommandAbstract {
 
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy");
     private static final DateTimeFormatter SESSION_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter WAVE_FORMAT = DateTimeFormatter.ofPattern("mm:ss");
 
@@ -113,9 +117,32 @@ public class CommandAutotip extends CommandAbstract {
                         stats.getAll().print();
                         break;
                     default:
-                        try {
-                            LocalDate.parse(param, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                        } catch (DateTimeParseException e) {
+                        if (param.contains("-")) {
+                            List<LocalDate> dates = Arrays.stream(param.split("-"))
+                                    .map(string -> {
+                                        try {
+                                            return LocalDate.parse(string, DATE_FORMAT);
+                                        } catch (DateTimeParseException e) {
+                                            return null;
+                                        }
+                                    })
+                                    .filter(Objects::nonNull)
+                                    .limit(2)
+                                    .sorted()
+                                    .collect(Collectors.toList());
+                            if (dates.size() != 2) {
+                                messageUtil.sendKey("command.stats.invalidRange");
+                                return;
+                            }
+                            stats.getRange(dates.get(0), dates.get(1)).print();
+                        } else if (param.contains("/")) {
+                            try {
+                                LocalDate date = LocalDate.parse(param, DATE_FORMAT);
+                                stats.get(date).print();
+                            } catch (DateTimeParseException e) {
+                                messageUtil.sendKey("command.stats.invalidDate");
+                            }
+                        } else {
                             messageUtil.sendKey("command.stats.usage");
                         }
                         break;

@@ -14,11 +14,13 @@ import java.util.stream.Stream;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.stats.StatsRange;
+import me.semx11.autotip.util.FileUtil;
 import org.apache.commons.io.FileUtils;
 
 public class StatsManager {
 
     private final Autotip autotip;
+    private final FileUtil fileUtil;
     private final Map<LocalDate, StatsDaily> cache = new ConcurrentHashMap<>();
 
     private LocalDate lastDate;
@@ -26,6 +28,7 @@ public class StatsManager {
 
     public StatsManager(Autotip autotip) {
         this.autotip = autotip;
+        this.fileUtil = autotip.getFileUtil();
         this.lastDate = LocalDate.now();
         this.ticks = new AtomicInteger(-1);
     }
@@ -75,6 +78,12 @@ public class StatsManager {
     }
 
     public StatsRange getRange(LocalDate start, LocalDate end) {
+        if (start.isBefore(fileUtil.getFirstDate())) {
+            start = fileUtil.getFirstDate();
+        }
+        if (end.isAfter(LocalDate.now())) {
+            end = LocalDate.now();
+        }
         StatsRange range = new StatsRange(autotip, start, end);
         Stream.iterate(start, date -> date.plusDays(1))
                 .limit(ChronoUnit.DAYS.between(start, end) + 1)
@@ -85,7 +94,7 @@ public class StatsManager {
     }
 
     public StatsRange getAll() {
-        return this.getRange(autotip.getFileUtil().getFirstDate(), LocalDate.now());
+        return this.getRange(fileUtil.getFirstDate(), LocalDate.now());
     }
 
     /**
