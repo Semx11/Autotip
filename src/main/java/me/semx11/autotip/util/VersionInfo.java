@@ -8,19 +8,15 @@ public class VersionInfo {
 
     private Version version;
     private Severity severity;
-    private boolean isBetaVersion;
     private List<String> changelog;
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
-            String... changelog) {
-        this(version, severity, isBetaVersion, Arrays.asList(changelog));
+    public VersionInfo(Version version, Severity severity, String... changelog) {
+        this(version, severity, Arrays.asList(changelog));
     }
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
-            List<String> changelog) {
+    public VersionInfo(Version version, Severity severity, List<String> changelog) {
         this.version = version;
         this.severity = severity;
-        this.isBetaVersion = isBetaVersion;
         this.changelog = changelog;
     }
 
@@ -30,10 +26,6 @@ public class VersionInfo {
 
     public Severity getSeverity() {
         return severity;
-    }
-
-    public boolean isBetaVersion() {
-        return isBetaVersion;
     }
 
     public List<String> getChangelog() {

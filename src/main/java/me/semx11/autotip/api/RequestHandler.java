@@ -18,15 +18,18 @@ import me.semx11.autotip.api.request.Request;
 import me.semx11.autotip.gson.adapter.impl.LocaleAdapter;
 import me.semx11.autotip.gson.adapter.impl.PatternAdapter;
 import me.semx11.autotip.gson.adapter.impl.SessionKeyAdapter;
+import me.semx11.autotip.gson.adapter.impl.VersionAdapter;
 import me.semx11.autotip.util.ErrorReport;
+import me.semx11.autotip.util.Version;
 import org.apache.commons.io.IOUtils;
 
 public class RequestHandler {
 
     private static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(SessionKey.class, new SessionKeyAdapter())
-            .registerTypeAdapter(Pattern.class, new PatternAdapter())
             .registerTypeAdapter(Locale.class, new LocaleAdapter())
+            .registerTypeAdapter(Pattern.class, new PatternAdapter())
+            .registerTypeAdapter(SessionKey.class, new SessionKeyAdapter())
+            .registerTypeAdapter(Version.class, new VersionAdapter())
             .create();
 
     private static Autotip autotip;

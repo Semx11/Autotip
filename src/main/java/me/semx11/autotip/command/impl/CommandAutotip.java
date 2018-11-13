@@ -24,7 +24,6 @@ import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
 import me.semx11.autotip.util.MinecraftVersion;
-import me.semx11.autotip.util.Versions;
 import net.minecraft.command.ICommandSender;
 
 public class CommandAutotip extends CommandAbstract {
@@ -219,12 +218,10 @@ public class CommandAutotip extends CommandAbstract {
                         .separator();
                 break;
             case "changelog":
-                // TODO: Fix this
                 messageUtil.getKeyHelper("command.changelog")
                         .separator()
                         .sendKey("version", autotip.getVersion())
-                        .withKey("entry", context -> Versions.getInstance()
-                                .getInfoByVersion(autotip.getVersion())
+                        .withKey("entry", context -> settings.getVersionInfo(autotip.getVersion())
                                 .getChangelog()
                                 .forEach(context::send))
                         .separator();

@@ -27,10 +27,7 @@ import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.stats.StatsRange;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.HashUtil;
-import me.semx11.autotip.util.Host;
-import me.semx11.autotip.util.Hosts;
 import me.semx11.autotip.util.VersionInfo;
-import me.semx11.autotip.util.Versions;
 import net.minecraft.util.Session;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -87,24 +84,20 @@ public class SessionManager {
     }
 
     public void checkVersions() {
-        Versions.updateVersions();
-
-        Host downloadHost = Hosts.getInstance().getHostById("download");
-
-        List<VersionInfo> vInfo = Versions.getInstance().getHigherVersionInfo(autotip.getVersion());
-        if (vInfo.size() > 0) {
+        List<VersionInfo> versions = autotip.getGlobalSettings()
+                .getHigherVersionInfo(autotip.getVersion());
+        if (versions.size() > 0) {
             messageUtil.separator();
             messageUtil.send(
                     "&cAutotip is out of date! Click here to update.",
-                    "https://" + downloadHost.getUrl(),
-                    "&7Click to visit &6" + downloadHost.getUrl() + "&7!"
+                    "https://autotip.pro/download",
+                    "&7Click to visit &6autotip.pro/download"
             );
-            messageUtil.send("Update info:");
-            vInfo.forEach(vi -> {
-                messageUtil.send("&6Autotip v" + vi.getVersion());
-                messageUtil.send("Update severity: " + vi.getSeverity().toColoredString());
-                vi.getChangelog().forEach(
-                        s -> messageUtil.send("&8- &7" + s));
+            messageUtil.send("Changelog:");
+            versions.forEach(info -> {
+                messageUtil.send("&6Autotip v" + info.getVersion());
+                messageUtil.send("Update severity: " + info.getSeverity().toColoredString());
+                info.getChangelog().forEach(s -> messageUtil.send("&8- &7" + s));
             });
             messageUtil.separator();
         }
