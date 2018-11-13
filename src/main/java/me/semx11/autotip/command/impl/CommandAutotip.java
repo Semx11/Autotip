@@ -86,29 +86,35 @@ public class CommandAutotip extends CommandAbstract {
 
                 String param = args[1].toLowerCase();
                 switch (param) {
+                    case "d":
                     case "day":
                     case "daily":
                     case "today":
                         stats.get(now).print();
                         break;
+                    case "yd":
                     case "yesterday":
                         stats.get(now.minusDays(1)).print();
                         break;
+                    case "w":
                     case "week":
                     case "weekly":
                         stats.getRange(now.with(DayOfWeek.MONDAY), now.with(DayOfWeek.SUNDAY))
                                 .print();
                         break;
+                    case "m":
                     case "month":
                     case "monthly":
                         stats.getRange(now.withDayOfMonth(1),
                                 now.withDayOfMonth(now.lengthOfMonth())).print();
                         break;
+                    case "y":
                     case "year":
                     case "yearly":
                         stats.getRange(now.withDayOfYear(1),
                                 now.withDayOfYear(now.lengthOfYear())).print();
                         break;
+                    case "a":
                     case "all":
                     case "total":
                     case "life":
@@ -191,6 +197,7 @@ public class CommandAutotip extends CommandAbstract {
                 messageUtil.getKeyHelper("command.toggle")
                         .sendKey(config.isEnabled() ? "enabled" : "disabled");
                 break;
+            case "w":
             case "wave":
                 if (!config.isEnabled()) {
                     messageUtil.sendKey("error.disabled");
@@ -206,15 +213,15 @@ public class CommandAutotip extends CommandAbstract {
                 }
 
                 long t = System.currentTimeMillis();
-                String last = LocalTime.MIN.plusSeconds((t - manager.getLastTipWave()) / 1000)
-                        .format(WAVE_FORMAT);
                 String next = LocalTime.MIN.plusSeconds((manager.getNextTipWave() - t) / 1000 + 1)
+                        .format(WAVE_FORMAT);
+                String last = LocalTime.MIN.plusSeconds((t - manager.getLastTipWave()) / 1000)
                         .format(WAVE_FORMAT);
 
                 messageUtil.getKeyHelper("command.wave")
                         .separator()
-                        .sendKey("lastWave", last)
                         .sendKey("nextWave", next)
+                        .sendKey("lastWave", last)
                         .separator();
                 break;
             case "changelog":

@@ -88,16 +88,17 @@ public class SessionManager {
                 .getHigherVersionInfo(autotip.getVersion());
         if (versions.size() > 0) {
             messageUtil.separator();
-            messageUtil.send(
-                    "&cAutotip is out of date! Click here to update.",
-                    "https://autotip.pro/download",
-                    "&7Click to visit &6autotip.pro/download"
-            );
-            messageUtil.send("Changelog:");
+            messageUtil.getKeyHelper("update")
+                    .withKey("message", context -> context.getBuilder()
+                            .setUrl(context.getKey("url"))
+                            .setHover(context.getKey("hover"))
+                            .send())
+                    .sendKey("changelogHeader");
             versions.forEach(info -> {
-                messageUtil.send("&6Autotip v" + info.getVersion());
-                messageUtil.send("Update severity: " + info.getSeverity().toColoredString());
-                info.getChangelog().forEach(s -> messageUtil.send("&8- &7" + s));
+                messageUtil.getKeyHelper("update")
+                        .sendKey("version", info.getVersion())
+                        .sendKey("severity", info.getSeverity().toColoredString());
+                info.getChangelog().forEach(s -> messageUtil.sendKey("update.logEntry" + s));
             });
             messageUtil.separator();
         }
