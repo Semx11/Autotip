@@ -23,7 +23,6 @@ import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
-import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MinecraftVersion;
 import net.minecraft.command.ICommandSender;
 
@@ -187,16 +186,29 @@ public class CommandAutotip extends CommandAbstract {
                 break;
             case "t":
             case "toggle":
-                config.toggleEnabled().save();
-                if (config.isEnabled()) {
-                    if (manager.isOnHypixel() && !manager.isLoggedIn()) {
-                        taskManager.executeTask(TaskType.LOGIN, manager::login);
-                    }
-                } else if (manager.isLoggedIn()) {
-                    taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                if (!manager.isOnHypixel()) {
+                    config.toggleEnabled().save();
+                    messageUtil.getKeyHelper("command.toggle")
+                            .sendKey(config.isEnabled() ? "enabled" : "disabled");
+                    return;
                 }
-                messageUtil.getKeyHelper("command.toggle")
-                        .sendKey(config.isEnabled() ? "enabled" : "disabled");
+                if (!config.isEnabled()) {
+                    if (!manager.isLoggedIn()) {
+                        taskManager.executeTask(TaskType.LOGIN, manager::login);
+                        config.setEnabled(true).save();
+                        messageUtil.sendKey("command.toggle.enabled");
+                    } else {
+                        messageUtil.sendKey("command.toggle.error");
+                    }
+                } else {
+                    if (manager.isLoggedIn()) {
+                        taskManager.executeTask(TaskType.LOGOUT, manager::logout);
+                        config.setEnabled(false).save();
+                        messageUtil.sendKey("command.toggle.disabled");
+                    } else {
+                        messageUtil.sendKey("command.toggle.error");
+                    }
+                }
                 break;
             case "w":
             case "wave":
@@ -252,13 +264,6 @@ public class CommandAutotip extends CommandAbstract {
                     messageUtil.sendKey("command.reload.success");
                 } catch (IllegalStateException e) {
                     messageUtil.sendKey("command.reload.error");
-                }
-                break;
-            case "error":
-                try {
-                    Integer.parseInt("a");
-                } catch (NumberFormatException e) {
-                    ErrorReport.reportException(e);
                 }
                 break;
             default:

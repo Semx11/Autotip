@@ -175,7 +175,7 @@ public class SessionManager {
         }
 
         this.lastTipWave = System.currentTimeMillis();
-        this.nextTipWave = lastTipWave + reply.getTipWaveRate() * 1000;
+        this.nextTipWave = System.currentTimeMillis() + reply.getTipWaveRate() * 1000;
 
         TipReply r = TipRequest.of(sessionKey).execute();
         if (r.isSuccess()) {
