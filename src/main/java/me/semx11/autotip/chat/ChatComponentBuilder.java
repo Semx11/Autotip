@@ -11,11 +11,7 @@ public class ChatComponentBuilder {
     private String hoverText;
     private String url;
 
-    ChatComponentBuilder(String text) {
-        this.text = text;
-    }
-
-    ChatComponentBuilder(boolean prefix, String text, Object... params) {
+    private ChatComponentBuilder(boolean prefix, String text, Object... params) {
         this.text = StringUtil.params((prefix ? PREFIX : "") + text, params);
     }
 

@@ -25,7 +25,7 @@ public class MessageUtil {
     }
 
     public ChatComponentBuilder getBuilder(boolean prefix, String text, Object... params) {
-        return new ChatComponentBuilder(StringUtil.params((prefix ? PREFIX : "") + text, params));
+        return ChatComponentBuilder.of(prefix, text, params);
     }
 
     public KeyHelper getKeyHelper(String rootKey) {
