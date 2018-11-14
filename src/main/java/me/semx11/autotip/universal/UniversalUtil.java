@@ -114,7 +114,7 @@ public class UniversalUtil {
                             .invoke(event);
             return getHoverText(component);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return "";
         }
     }
@@ -141,7 +141,7 @@ public class UniversalUtil {
             ).invoke(hoverEvent);
             return getUnformattedText(hoverComponent);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReport.reportException(e);
             return "";
         }
     }

@@ -23,6 +23,7 @@ import me.semx11.autotip.core.TaskManager.TaskType;
 import me.semx11.autotip.event.impl.EventClientConnection;
 import me.semx11.autotip.stats.StatsDaily;
 import me.semx11.autotip.universal.UniversalUtil;
+import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MinecraftVersion;
 import net.minecraft.command.ICommandSender;
 
@@ -253,6 +254,13 @@ public class CommandAutotip extends CommandAbstract {
                     messageUtil.sendKey("command.reload.error");
                 }
                 break;
+            case "error":
+                try {
+                    Integer.parseInt("a");
+                } catch (NumberFormatException e) {
+                    ErrorReport.reportException(e);
+                }
+                break;
             default:
                 messageUtil.send(this.getCommandUsage(sender));
                 break;
@@ -264,7 +272,7 @@ public class CommandAutotip extends CommandAbstract {
         switch (args.length) {
             case 1:
                 return getListOfStringsMatchingLastWord(args, "stats", "info", "messages", "toggle",
-                        "wave");
+                        "wave", "changelog");
             case 2:
                 switch (args[0].toLowerCase()) {
                     case "s":

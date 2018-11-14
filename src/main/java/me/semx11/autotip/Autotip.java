@@ -81,10 +81,6 @@ public class Autotip {
     private MigrationManager migrationManager;
     private StatsManager statsManager;
 
-    public static Autotip getInstance() {
-        return instance;
-    }
-
     public boolean isInitialized() {
         return initialized;
     }
@@ -147,6 +143,7 @@ public class Autotip {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        ErrorReport.setAutotip(this);
         RequestHandler.setAutotip(this);
         UniversalUtil.setAutotip(this);
     }
