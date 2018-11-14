@@ -41,7 +41,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
@@ -54,9 +53,6 @@ public class Autotip {
 
     static final String MOD_ID = "autotip";
     static final String VERSION = "3.0";
-
-    @Instance
-    private static Autotip instance;
 
     private final List<Event> events = new ArrayList<>();
     private final List<CommandAbstract> commands = new ArrayList<>();
