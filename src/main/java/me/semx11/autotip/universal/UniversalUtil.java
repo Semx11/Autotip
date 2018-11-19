@@ -15,11 +15,8 @@ import me.semx11.autotip.chat.ChatColor;
 import me.semx11.autotip.util.ErrorReport;
 import me.semx11.autotip.util.MinecraftVersion;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
@@ -155,18 +152,6 @@ public class UniversalUtil {
         } catch (IllegalAccessException | InvocationTargetException e) {
             ErrorReport.reportException(e);
             return "";
-        }
-    }
-
-    public static Entity getEntity(EntityJoinWorldEvent event) {
-        try {
-            Object entity = isLegacy()
-                    ? findField(EntityEvent.class, "entity").get(event)
-                    : findMethod(EntityEvent.class, new String[]{"getEntity"}).invoke(event);
-            return (Entity) entity;
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            ErrorReport.reportException(e);
-            return null;
         }
     }
 

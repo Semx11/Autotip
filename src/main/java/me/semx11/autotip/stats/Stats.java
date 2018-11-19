@@ -14,8 +14,7 @@ import me.semx11.autotip.gson.exclusion.Exclude;
 
 public abstract class Stats {
 
-    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter
-            .ofPattern("dd/MM/yyyy");
+    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 
     @Exclude

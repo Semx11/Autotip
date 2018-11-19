@@ -46,13 +46,15 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Autotip.MOD_ID, version = Autotip.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8, 1.12.2]")
+@Mod(modid = Autotip.MOD_ID, name = Autotip.NAME, version = Autotip.VERSION, acceptedMinecraftVersions = Autotip.ACCEPTED_VERSIONS, clientSideOnly = true)
 public class Autotip {
 
     public static final Logger LOGGER = LogManager.getLogger("Autotip");
 
     static final String MOD_ID = "autotip";
+    static final String NAME = "Autotip";
     static final String VERSION = "3.0";
+    static final String ACCEPTED_VERSIONS = "[1.8, 1.12.2]";
 
     private final List<Event> events = new ArrayList<>();
     private final List<CommandAbstract> commands = new ArrayList<>();
@@ -230,8 +232,8 @@ public class Autotip {
 
     private void registerEvents(Event... events) {
         for (Event event : events) {
-            MinecraftForge.EVENT_BUS.register(event);
-            FMLCommonHandler.instance().bus().register(event);
+            MinecraftForge.EVENT_BUS.register(event); // 1.8.9 - 1.12.2
+            FMLCommonHandler.instance().bus().register(event); // 1.8
             this.events.add(event);
         }
     }

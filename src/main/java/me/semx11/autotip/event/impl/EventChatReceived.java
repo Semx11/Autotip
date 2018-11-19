@@ -1,11 +1,11 @@
 package me.semx11.autotip.event.impl;
 
 import me.semx11.autotip.Autotip;
-import me.semx11.autotip.chat.Message;
-import me.semx11.autotip.chat.MessageMatcher;
+import me.semx11.autotip.message.Message;
+import me.semx11.autotip.message.MessageMatcher;
 import me.semx11.autotip.chat.MessageOption;
-import me.semx11.autotip.chat.StatsMessage;
-import me.semx11.autotip.chat.StatsMessageMatcher;
+import me.semx11.autotip.message.StatsMessage;
+import me.semx11.autotip.message.StatsMessageMatcher;
 import me.semx11.autotip.command.impl.CommandLimbo;
 import me.semx11.autotip.config.Config;
 import me.semx11.autotip.config.GlobalSettings;

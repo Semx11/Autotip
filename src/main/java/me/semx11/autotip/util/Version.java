@@ -49,7 +49,7 @@ public class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return get();
+        return this.get();
     }
 
 }

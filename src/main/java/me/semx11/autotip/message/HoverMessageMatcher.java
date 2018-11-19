@@ -1,4 +1,4 @@
-package me.semx11.autotip.chat;
+package me.semx11.autotip.message;
 
 import java.util.regex.Pattern;
 import me.semx11.autotip.stats.StatsDaily;

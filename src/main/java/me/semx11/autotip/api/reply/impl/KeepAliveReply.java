@@ -5,17 +5,11 @@ import me.semx11.autotip.api.reply.Reply;
 
 public class KeepAliveReply extends Reply {
 
-    private long time;
-
     public KeepAliveReply() {
     }
 
     public KeepAliveReply(boolean success) {
         super(success);
-    }
-
-    public long getTime() {
-        return time;
     }
 
     @Override

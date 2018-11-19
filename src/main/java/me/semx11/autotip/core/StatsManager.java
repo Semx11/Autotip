@@ -33,10 +33,22 @@ public class StatsManager {
         this.ticks = new AtomicInteger(-1);
     }
 
+    /**
+     * Get the {@link StatsDaily} for today, based on {@link LocalDate#now()}. Same as {@link
+     * #getToday(boolean)}, except that readOnly defaults to false.
+     *
+     * @return {@link StatsDaily} of today
+     */
     public synchronized StatsDaily getToday() {
         return this.getToday(false);
     }
 
+    /**
+     * Get the {@link StatsDaily} for today, based on {@link LocalDate#now()}.
+     *
+     * @param readOnly Set to true to prevent the auto-save
+     * @return {@link StatsDaily} of today
+     */
     private synchronized StatsDaily getToday(boolean readOnly) {
         LocalDate now = LocalDate.now();
         if (!lastDate.isEqual(now)) {
@@ -77,6 +89,14 @@ public class StatsManager {
         return stats;
     }
 
+    /**
+     * Get the {@link StatsRange} for the specified date range. This method uses {@link
+     * #get(LocalDate)} to get all the {@link StatsDaily} that are contained within this range.
+     *
+     * @param start The starting {@link LocalDate}
+     * @param end The ending {@link LocalDate}
+     * @return {@link StatsRange} for the specified date range
+     */
     public StatsRange getRange(LocalDate start, LocalDate end) {
         if (start.isBefore(fileUtil.getFirstDate())) {
             start = fileUtil.getFirstDate();
@@ -93,6 +113,13 @@ public class StatsManager {
         return range;
     }
 
+    /**
+     * Get the {@link StatsRange} for all the {@link StatsDaily} files in the current user
+     * directory. This method uses {@link FileUtil} to get the starting date, and then calls {@link
+     * #getRange(LocalDate, LocalDate) to get the specified StatsRange.
+     *
+     * @return {@link StatsRange} for the lifetime statistics from the current user directory
+     */
     public StatsRange getAll() {
         return this.getRange(fileUtil.getFirstDate(), LocalDate.now());
     }
@@ -114,13 +141,19 @@ public class StatsManager {
         }
     }
 
+    /**
+     * Load a {@link StatsDaily} from the current user directory.
+     *
+     * @param stats The {@link StatsDaily} that you want to load
+     * @return {@link StatsDaily} that contains the loaded stats, unchanged if there were errors
+     */
     private StatsDaily load(StatsDaily stats) {
         File file = stats.getFile();
         try {
             String json = FileUtils.readFileToString(file);
             return stats.merge(autotip.getGson().fromJson(json, StatsDaily.class));
         } catch (FileNotFoundException e) {
-            // Autotip.LOGGER.info(file.getName() + " does not exist, skipping...");
+            // Skip
             return stats;
         } catch (JsonSyntaxException | IllegalArgumentException e) {
             Autotip.LOGGER.warn(file.getName() + " has invalid contents, resetting...");
@@ -131,6 +164,9 @@ public class StatsManager {
         return stats;
     }
 
+    /**
+     * Method that is called each game-tick to trigger an auto-save for today's stats file.
+     */
     public void saveCycle() {
         if (ticks.get() > 0) {
             ticks.decrementAndGet();

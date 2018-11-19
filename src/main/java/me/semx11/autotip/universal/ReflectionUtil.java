@@ -21,7 +21,6 @@ public class ReflectionUtil {
     private static Map<Class<?>, Map<String, Field>> loadedFields = new HashMap<>();
     private static Map<Class<?>, Map<String, Enum<?>>> loadedEnums = new HashMap<>();
 
-
     public static Class<?> findClazz(String... classNames) {
         for (String className : classNames) {
             if (loadedClasses.containsKey(className)) {
@@ -39,9 +38,7 @@ public class ReflectionUtil {
                 err = e;
             }
         }
-
         throw new UnableToFindClassException(classNames, err);
-
     }
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) {
@@ -55,7 +52,7 @@ public class ReflectionUtil {
             clazzConstructors.get(params);
         }
 
-        Constructor<?> constructor = null;
+        Constructor<?> constructor;
         try {
             constructor = clazz.getConstructor(params);
             constructor.setAccessible(true);
@@ -92,7 +89,6 @@ public class ReflectionUtil {
                 err = e;
             }
         }
-
         throw new UnableToFindMethodException(methodNames, err);
     }
 
@@ -122,7 +118,6 @@ public class ReflectionUtil {
                 throw new UnableToAccessFieldException(fieldNames, e);
             }
         }
-
         throw new UnableToFindFieldException(fieldNames, err);
     }
 

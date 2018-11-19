@@ -1,8 +1,9 @@
-package me.semx11.autotip.chat;
+package me.semx11.autotip.message;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import me.semx11.autotip.chat.MessageOption;
 import me.semx11.autotip.gson.exclusion.Exclude;
 
 public class Message {

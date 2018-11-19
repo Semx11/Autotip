@@ -17,7 +17,7 @@ public class LocaleRequest implements Request<LocaleReply> {
     private final Locale locale;
     private final Version version;
 
-    public LocaleRequest(Autotip autotip) {
+    private LocaleRequest(Autotip autotip) {
         this.locale = autotip.getConfig().getLocale();
         this.version = autotip.getVersion();
     }

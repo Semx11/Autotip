@@ -41,8 +41,6 @@ public class RequestHandler {
     public static Optional<Reply> getReply(Request request, URI uri) {
         String json = null;
         try {
-            // TODO: Remove after beta
-            Autotip.LOGGER.info(request.getType() + " URL: " + uri.toURL());
             HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
             conn.setRequestProperty("User-Agent", "Autotip v" + autotip.getVersion());
 

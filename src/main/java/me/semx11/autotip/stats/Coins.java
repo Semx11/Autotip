@@ -6,7 +6,7 @@ import java.util.Locale;
 
 public class Coins implements Comparable<Coins> {
 
-    public static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+    private static final DecimalFormat FORMAT = (DecimalFormat) NumberFormat.getInstance(Locale.US);
 
     private int coinsSent;
     private int coinsReceived;

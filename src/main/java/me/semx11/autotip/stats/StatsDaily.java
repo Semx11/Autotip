@@ -60,20 +60,18 @@ public class StatsDaily extends Stats {
     /**
      * Wrapped version of {@link me.semx11.autotip.core.StatsManager#save(StatsDaily)}.
      *
-     * @return this
      * @see me.semx11.autotip.core.StatsManager#save(StatsDaily)
      */
-    public StatsDaily save() {
+    public void save() {
         autotip.getStatsManager().save(this);
-        return this;
     }
 
-    public StatsDaily migrate() {
+    public void migrate() {
         // Check if legacy stats file exists
         FileUtil fileUtil = autotip.getFileUtil();
         File file = fileUtil.getLegacyStatsFile(date);
         if (!file.exists()) {
-            return this;
+            return;
         }
 
         LegacyState state = autotip.getMigrationManager().getLegacyState(date);
@@ -83,7 +81,7 @@ public class StatsDaily extends Stats {
             List<String> lines = Files.readAllLines(file.toPath());
             if (lines.size() < 2) {
                 fileUtil.delete(file);
-                return this;
+                return;
             }
 
             // Parses the first line of the file to tips sent and received (e.g. "124:119").
@@ -144,10 +142,10 @@ public class StatsDaily extends Stats {
             fileUtil.delete(file);
 
             Autotip.LOGGER.info("Migrated legacy stats file " + file.getName());
-            return this.save();
+            this.save();
         } catch (IOException e) {
             Autotip.LOGGER.error("Could not read file " + file.getName(), e);
-            return this.save();
+            this.save();
         }
     }
 
