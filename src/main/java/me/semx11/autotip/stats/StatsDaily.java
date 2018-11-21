@@ -117,7 +117,7 @@ public class StatsDaily extends Stats {
                             }));
 
             // Remove grouped stats
-            for (GameGroup group : autotip.getGlobalSettings().getGameGroups()) {
+            for (GameGroup group : settings.getGameGroups()) {
                 if (gameStatistics.containsKey(group.getName())) {
                     Coins coins = gameStatistics.get(group.getName());
                     for (String game : group.getGames()) {
@@ -127,7 +127,7 @@ public class StatsDaily extends Stats {
             }
 
             // Convert aliases
-            for (GameAlias alias : autotip.getGlobalSettings().getGameAliases()) {
+            for (GameAlias alias : settings.getGameAliases()) {
                 for (String aliasAlias : alias.getAliases()) {
                     if (gameStatistics.containsKey(aliasAlias)) {
                         Coins coins = gameStatistics.get(aliasAlias);

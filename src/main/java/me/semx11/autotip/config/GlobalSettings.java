@@ -16,6 +16,7 @@ public class GlobalSettings {
     private Version latestVersion;
     private List<VersionInfo> versions;
     private String hypixelHeader;
+    private int xpPerTipSent;
     private int xpPerTipReceived;
     private LocalDate xpChangeDate;
     private List<GameGroup> gameGroups;
@@ -44,6 +45,10 @@ public class GlobalSettings {
 
     public String getHypixelHeader() {
         return hypixelHeader;
+    }
+
+    public int getXpPerTipSent() {
+        return xpPerTipSent;
     }
 
     public int getXpPerTipReceived() {

@@ -19,8 +19,14 @@ public enum StatsType {
     XP_SENT((stats, matcher) -> {
         stats.addXpSent(matcher.getInt("xpSent"));
     }),
+    XP_TIPS_SENT((stats, matcher) -> {
+        stats.addXpTipsSent(matcher.getInt("xpSent"));
+    }),
     XP_RECEIVED((stats, matcher) -> {
         stats.addXpReceived(matcher.getInt("xpReceived"));
+    }),
+    XP_TIPS_RECEIVED((stats, matcher) -> {
+        stats.addXpTipsReceived(matcher.getInt("xpReceived"));
     }),
     COINS_SENT((stats, matcher) -> {
         stats.addCoinsSent(matcher.getString("game"), matcher.getInt("coinsSent"));

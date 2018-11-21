@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.chat.MessageUtil;
+import me.semx11.autotip.config.GlobalSettings;
 import me.semx11.autotip.config.GlobalSettings.GameAlias;
 import me.semx11.autotip.config.GlobalSettings.GameGroup;
 import me.semx11.autotip.gson.exclusion.Exclude;
@@ -19,6 +20,8 @@ public abstract class Stats {
 
     @Exclude
     protected final Autotip autotip;
+    @Exclude
+    protected final GlobalSettings settings;
 
     protected int tipsSent = 0;
     protected int tipsReceived = 0;
@@ -29,6 +32,7 @@ public abstract class Stats {
 
     public Stats(Autotip autotip) {
         this.autotip = autotip;
+        this.settings = autotip.getGlobalSettings();
     }
 
     public String getTipsTotal() {
@@ -51,6 +55,11 @@ public abstract class Stats {
         this.tipsSent += tips;
     }
 
+    public void addXpTipsSent(int xp) {
+        this.addXpSent(xp);
+        this.addTipsSent(xp / settings.getXpPerTipSent());
+    }
+
     public String getTipsReceived() {
         return FORMAT.format(this.getTipsReceivedInt());
     }
@@ -61,6 +70,11 @@ public abstract class Stats {
 
     public void addTipsReceived(int tips) {
         this.tipsReceived += tips;
+    }
+
+    public void addXpTipsReceived(int xp) {
+        this.addXpReceived(xp);
+        this.addTipsReceived(xp / settings.getXpPerTipReceived());
     }
 
     public String getXpTotal() {
@@ -113,7 +127,7 @@ public abstract class Stats {
 
     protected void addCoins(String game, Coins coins) {
         coins = new Coins(coins);
-        for (GameGroup group : autotip.getGlobalSettings().getGameGroups()) {
+        for (GameGroup group : settings.getGameGroups()) {
             if (game.equals(group.getName())) {
                 for (String groupGame : group.getGames()) {
                     this.addCoins(groupGame, coins);
@@ -121,7 +135,7 @@ public abstract class Stats {
                 return;
             }
         }
-        for (GameAlias alias : autotip.getGlobalSettings().getGameAliases()) {
+        for (GameAlias alias : settings.getGameAliases()) {
             for (String aliasAlias : alias.getAliases()) {
                 if (game.equals(aliasAlias)) {
                     for (String aliasGame : alias.getGames()) {
