@@ -2,24 +2,21 @@ package me.semx11.autotip.util;
 
 import java.util.Arrays;
 import java.util.List;
+import me.semx11.autotip.chat.ChatColor;
 
 public class VersionInfo {
 
     private Version version;
     private Severity severity;
-    private boolean isBetaVersion;
     private List<String> changelog;
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
-            String... changelog) {
-        this(version, severity, isBetaVersion, Arrays.asList(changelog));
+    public VersionInfo(Version version, Severity severity, String... changelog) {
+        this(version, severity, Arrays.asList(changelog));
     }
 
-    public VersionInfo(Version version, Severity severity, boolean isBetaVersion,
-            List<String> changelog) {
+    public VersionInfo(Version version, Severity severity, List<String> changelog) {
         this.version = version;
         this.severity = severity;
-        this.isBetaVersion = isBetaVersion;
         this.changelog = changelog;
     }
 
@@ -31,10 +28,6 @@ public class VersionInfo {
         return severity;
     }
 
-    public boolean isBetaVersion() {
-        return isBetaVersion;
-    }
-
     public List<String> getChangelog() {
         return changelog;
     }
@@ -43,16 +36,17 @@ public class VersionInfo {
         OPTIONAL, ADVISED, CRITICAL;
 
         public String toColoredString() {
-            String color = "";
+            ChatColor color;
             switch (this) {
-                case CRITICAL:
-                    color = ChatColor.DARK_RED.toString() + ChatColor.BOLD;
+                default:
+                case OPTIONAL:
+                    color = ChatColor.GREEN;
                     break;
                 case ADVISED:
-                    color = ChatColor.YELLOW.toString();
+                    color = ChatColor.YELLOW;
                     break;
-                case OPTIONAL:
-                    color = ChatColor.GREEN.toString();
+                case CRITICAL:
+                    color = ChatColor.DARK_RED;
                     break;
             }
             return color + this.toString();
