@@ -95,9 +95,8 @@ public class SessionManager {
                             .send())
                     .sendKey("changelogHeader");
             versions.forEach(info -> {
-                messageUtil.getKeyHelper("update")
-                        .sendKey("version", info.getVersion())
-                        .sendKey("severity", info.getSeverity().toColoredString());
+                messageUtil.sendKey("update.version", info.getVersion(),
+                        info.getSeverity().toColoredString());
                 info.getChangelog().forEach(s -> messageUtil.sendKey("update.logEntry", s));
             });
             messageUtil.separator();

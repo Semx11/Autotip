@@ -46,7 +46,7 @@ public class VersionInfo {
                     color = ChatColor.YELLOW;
                     break;
                 case CRITICAL:
-                    color = ChatColor.DARK_RED;
+                    color = ChatColor.RED;
                     break;
             }
             return color + this.toString();
