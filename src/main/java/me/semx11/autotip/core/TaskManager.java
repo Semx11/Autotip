@@ -33,6 +33,14 @@ public class TaskManager {
         return executor;
     }
 
+    public void schedule(Runnable runnable, long delay) {
+        try {
+            scheduler.schedule(runnable, delay, SECONDS).get();
+        } catch (InterruptedException | ExecutionException e) {
+            ErrorReport.reportException(e);
+        }
+    }
+
     public <T> T scheduleAndAwait(Callable<T> callable, long delay) {
         try {
             return scheduler.schedule(callable, delay, SECONDS).get();
