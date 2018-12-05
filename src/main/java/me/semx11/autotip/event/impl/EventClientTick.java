@@ -20,7 +20,9 @@ public class EventClientTick implements Event {
             return;
         }
         autotip.getMessageUtil().flushQueues();
-        autotip.getStatsManager().saveCycle();
+        if (autotip.isInitialized()) {
+            autotip.getStatsManager().saveCycle();
+        }
     }
 
 }
