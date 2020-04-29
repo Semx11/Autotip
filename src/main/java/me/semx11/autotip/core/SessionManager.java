@@ -111,7 +111,7 @@ public class SessionManager {
         String serverHash = HashUtil.hash(uuid + HashUtil.getNextSalt());
 
         int statusCode = this.authenticate(session.getToken(), uuid, serverHash);
-        if (statusCode != 204) {
+        if (statusCode / 100 != 2) {
             messageUtil.send("&cError {} during authentication: Session servers down?", statusCode);
             return;
         }
