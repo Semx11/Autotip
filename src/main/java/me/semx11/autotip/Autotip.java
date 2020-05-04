@@ -3,9 +3,6 @@ package me.semx11.autotip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import me.semx11.autotip.api.RequestHandler;
 import me.semx11.autotip.api.reply.impl.LocaleReply;
 import me.semx11.autotip.api.reply.impl.SettingsReply;
@@ -46,6 +43,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 @Mod(modid = Autotip.MOD_ID, name = Autotip.NAME, version = Autotip.VERSION, acceptedMinecraftVersions = Autotip.ACCEPTED_VERSIONS, clientSideOnly = true)
 public class Autotip {
 
@@ -53,7 +54,7 @@ public class Autotip {
 
     static final String MOD_ID = "autotip";
     static final String NAME = "Autotip";
-    static final String VERSION = "3.0";
+    static final String VERSION = "3.0.1";
     static final String ACCEPTED_VERSIONS = "[1.8, 1.12.2]";
 
     private final List<Event> events = new ArrayList<>();
@@ -154,21 +155,26 @@ public class Autotip {
 
         this.messageUtil = new MessageUtil(this);
         this.registerEvents(new EventClientTick(this));
+        this.taskManager = new TaskManager();
+        taskManager.schedule(this::setup, 0);
+    }
+
+    private void setup() {
 
         try {
             this.fileUtil = new FileUtil(this);
             this.gson = new GsonBuilder()
-                    .registerTypeAdapter(Config.class, new ConfigCreator(this))
-                    .registerTypeAdapter(StatsDaily.class, new StatsDailyCreator(this))
-                    .setExclusionStrategies(new AnnotationExclusionStrategy())
-                    .setPrettyPrinting()
-                    .create();
+                .registerTypeAdapter(Config.class, new ConfigCreator(this))
+                .registerTypeAdapter(StatsDaily.class, new StatsDailyCreator(this))
+                .setExclusionStrategies(new AnnotationExclusionStrategy())
+                .setPrettyPrinting()
+                .create();
 
             this.config = new Config(this);
+
             this.reloadGlobalSettings();
             this.reloadLocale();
 
-            this.taskManager = new TaskManager();
             this.sessionManager = new SessionManager(this);
             this.statsManager = new StatsManager(this);
             this.migrationManager = new MigrationManager(this);
@@ -180,12 +186,12 @@ public class Autotip {
             });
 
             this.registerEvents(
-                    new EventClientConnection(this),
-                    new EventChatReceived(this)
+                new EventClientConnection(this),
+                new EventChatReceived(this)
             );
             this.registerCommands(
-                    new CommandAutotip(this),
-                    new CommandLimbo(this)
+                new CommandAutotip(this),
+                new CommandLimbo(this)
             );
             Runtime.getRuntime().addShutdownHook(new Thread(sessionManager::logout));
             this.initialized = true;
@@ -217,17 +223,17 @@ public class Autotip {
     @SuppressWarnings("unchecked")
     public <T extends Event> T getEvent(Class<T> clazz) {
         return (T) events.stream()
-                .filter(event -> event.getClass().equals(clazz))
-                .findFirst()
-                .orElse(null);
+            .filter(event -> event.getClass().equals(clazz))
+            .findFirst()
+            .orElse(null);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends CommandAbstract> T getCommand(Class<T> clazz) {
         return (T) commands.stream()
-                .filter(command -> command.getClass().equals(clazz))
-                .findFirst()
-                .orElse(null);
+            .filter(command -> command.getClass().equals(clazz))
+            .findFirst()
+            .orElse(null);
     }
 
     private void registerEvents(Event... events) {
