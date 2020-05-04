@@ -54,6 +54,11 @@ processResources {
 jar {
     includeEmptyDirs = false
     from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest {
+        attributes "TweakClass": "me.semx11.autotip.modcore.Tweaker",
+                "ModSide": "CLIENT",
+                "FMLCorePluginContainsFMLMod": "Yes, yes it does"
+    }
 }
 
 idea {
