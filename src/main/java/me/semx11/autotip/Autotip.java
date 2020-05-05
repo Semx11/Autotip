@@ -156,11 +156,10 @@ public class Autotip {
         this.messageUtil = new MessageUtil(this);
         this.registerEvents(new EventClientTick(this));
         this.taskManager = new TaskManager();
-        taskManager.schedule(this::setup, 0);
+        this.taskManager.getExecutor().execute(this::setup);
     }
 
     private void setup() {
-
         try {
             this.fileUtil = new FileUtil(this);
             this.gson = new GsonBuilder()
