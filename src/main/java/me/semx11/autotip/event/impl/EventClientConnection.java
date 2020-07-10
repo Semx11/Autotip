@@ -1,6 +1,5 @@
 package me.semx11.autotip.event.impl;
 
-import java.lang.reflect.Field;
 import me.semx11.autotip.Autotip;
 import me.semx11.autotip.core.SessionManager;
 import me.semx11.autotip.core.TaskManager;
@@ -14,10 +13,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
+import java.lang.reflect.Field;
+
 public class EventClientConnection implements Event {
 
-    private static final Field HEADER_FIELD = ReflectionUtil
-            .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
+    private static Field HEADER_FIELD;
+
+    static {
+        try {
+            HEADER_FIELD = ReflectionUtil
+                    .findField(ReflectionUtil.findClazz("net.labymod.core_implementation.mc18.gui.ModPlayerTabOverlay"),
+                            "header");
+        } catch (Exception e) {
+            HEADER_FIELD = ReflectionUtil
+                    .findField(GuiPlayerTabOverlay.class, "field_175256_i", "header");
+        }
+    }
 
     private final Autotip autotip;
     private final String hypixelHeader;
