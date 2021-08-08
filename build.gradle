@@ -1,66 +1,86 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-    }
+plugins {
+	id "java"
+	id "net.minecraftforge.gradle.forge" version "8708bf3e0"
+	id "com.github.johnrengelman.shadow" version "6.1.0"
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = modVersion
 group = modGroup + "." + modId
 archivesBaseName = modBaseName
 
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+targetCompatibility = sourceCompatibility = JavaVersion.VERSION_1_8
+compileJava.options.encoding = "UTF-8"
 
 minecraft {
     version = project.forgeVersion
+	mappings = project.mcpVersion
     runDir = "run"
-    mappings = project.mcpVersion
+	makeObfSourceJar = false
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io/" }
+    maven { url "https://repo.sk1er.club/repository/maven-releases/" }
+    maven { url "https://repo.spongepowered.org/maven/" }
 }
 
 configurations {
-    embed
-    compile.extendsFrom(embed)
+	// Creates an extra configuration that implements `implementation` to be used later as the configuration that shades libraries
+    include
+    implementation.extendsFrom include
 }
 
 dependencies {
+    // How to normally add a dependency (If you don"t want it to be added to the jar)
+    // implementation "com.example:example:1.0.0"
+    // If you would like to include it (have the library inside your jar) instead use
+    // include "com.example:example:1.0.0"
+	
+	include "gg.essential:loader-launchwrapper:1.1.0"
+	provided "gg.essential:essential-1.8.9-forge:1291"
+}
 
+jar {
+	manifest.attributes(
+		"TweakClass": "gg.essential.loader.stage0.EssentialSetupTweaker",
+		"ModSide": "CLIENT",
+		"FMLCorePluginContainsFMLMod": true
+	)
+	enabled = false
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'modId': project.modId, 'modBaseName': project.modBaseName,
-                'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.minecraft.version, "modId": project.modId, "modBaseName": project.modBaseName
     }
 }
 
-jar {
-    includeEmptyDirs = false
-    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
-    manifest {
-        attributes "TweakClass": "me.semx11.autotip.modcore.Tweaker",
-                "ModSide": "CLIENT",
-                "FMLCorePluginContainsFMLMod": "Yes, yes it does"
+task moveResources {
+    doLast {
+        ant.move (
+                file: "${buildDir}/resources/main",
+                todir: "${buildDir}/classes/java"
+        )
     }
 }
 
-idea {
-    module.inheritOutputDirs = true
+tasks.moveResources.dependsOn processResources
+tasks.classes.dependsOn moveResources
+
+shadowJar {
+    archiveClassifier.set("")
+
+    configurations = [project.configurations.include]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
+
+reobf {
+    shadowJar {
+        mappingType = "SEARGE"
+    }
+}
+
+reobfJar.dependsOn tasks.shadowJar

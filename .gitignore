@@ -1,4 +1,5 @@
 # eclipse
+eclipse
 bin
 *.launch
 .settings
@@ -8,6 +9,7 @@ bin
 
 # idea
 out
+classes
 *.ipr
 *.iws
 *.iml
@@ -16,14 +18,12 @@ out
 # gradle
 build
 .gradle
-gradle/
-gradlew
-gradlew.bat
 
-# forge
-*.txt
+#Netbeans
+.nb-gradle
+.nb-gradle-properties
 
 # other
-eclipse
 run
-logs
+.DS_Store
+Thumbs.db
