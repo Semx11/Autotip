@@ -44,7 +44,7 @@ public class CommandLimbo extends CommandAbstract {
 
         if (autotip.getSessionManager().isOnHypixel()) {
             this.executed = true;
-            messageUtil.sendCommand("/achat \u00a7c");
+            messageUtil.sendCommand("/achat \u00a7");
         } else {
             messageUtil.send("&cYou must be on Hypixel to use this command!");
         }
