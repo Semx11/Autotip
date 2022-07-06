@@ -54,7 +54,7 @@ public class Autotip {
 
     static final String MOD_ID = "autotip";
     static final String NAME = "Autotip";
-    static final String VERSION = "3.0.1";
+    static final String VERSION = "3.0.2";
     static final String ACCEPTED_VERSIONS = "[1.8, 1.12.2]";
 
     private final List<Event> events = new ArrayList<>();
